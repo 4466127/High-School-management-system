@@ -118,7 +118,7 @@ erDiagram
 ## شرح جدول‌ها
 
 ### دسترسی و ردپا
-**users** — `name`, `username` (یکتا), `password`, `staff_id` (اختیاری، یکتا → staff), `is_active`, `last_login_at`, `remember_token`
+**users** — `name`, `username` (یکتا، حروف کوچک), `password`, `is_active`, `must_change_password`, `last_login_at`, `remember_token`. ستون `staff_id` (اختیاری، یکتا → staff) همراه جدول `staff` در مرحله‌ی ۳ اضافه می‌شود. جدول `password_reset_tokens` و `jobs` ساخته نمی‌شوند (بازیابی رمز با ایمیل و صف نداریم).
 
 **roles** — `key` (یکتا: `admin`, `principal`, `office`, `teacher`, `accountant`, `course_manager`), `name`
 **role_user** — `user_id`, `role_id` (کلید مرکب)

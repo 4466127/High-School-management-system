@@ -1,0 +1,14 @@
+# پروژه داخل htdocs است؛ بدون این فایل Apache فایل‌های ریشه (مثل .env، storage، vendor) را نشان می‌دهد.
+# همه‌ی درخواست‌ها به پوشه‌ی public فرستاده می‌شود. در نصب نهایی، DocumentRoot مستقیم به public اشاره می‌کند
+# (DEVELOPMENT.md بخش ۶) و این فایل فقط لایه‌ی محافظ دوم است.
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteCond %{REQUEST_URI} ^(.*/)$
+    RewriteRule ^$ %1public/ [R=302,L]
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>
+
+<IfModule !mod_rewrite.c>
+    Require all denied
+</IfModule>

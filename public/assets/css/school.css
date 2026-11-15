@@ -1,0 +1,49 @@
+/* =====================================================================
+   افزوده‌های سیستم مدیریت مکتب روی app.css (app.css بدون تغییر از پروژه‌ی قبلی آمده است).
+   ===================================================================== */
+
+/* ---------- زیرمنو در منوی کنار ---------- */
+.nav-side .nav-group {
+    display: flex;
+    align-items: center;
+    gap: .55rem;
+    padding: 10px 12px 4px;
+    font-weight: 700;
+    opacity: .85;
+}
+.nav-side .nav-group i { width: 1.3em; text-align: center; }
+.nav-sub { list-style: none; margin: 0 0 4px; padding: 0 14px 0 0; }
+.nav-sub a, .nav-sub .soon { font-size: .92rem; padding: 7px 12px; }
+
+@media (max-width: 900px) {
+    .nav-side > li { flex: 0 0 auto; }
+    .nav-sub { display: flex; flex-wrap: wrap; gap: 4px; padding: 0; }
+    .nav-side .nav-group { display: none; }
+}
+
+/* ---------- جدول‌ها روی موبایل ---------- */
+.table-responsive { -webkit-overflow-scrolling: touch; }
+
+/* ---------- ثبت رویدادها ---------- */
+.log-values { font-size: .8rem; margin: 0; }
+.log-values dt { display: inline; color: var(--bs-secondary-color); font-weight: 400; }
+.log-values dd { display: inline; margin: 0 0 0 .5rem; }
+.log-values dd::after { content: ""; display: block; }
+
+/* ---------- صفحه‌ی خطا ---------- */
+.error-code { font-size: 3rem; font-weight: 700; color: var(--hk-accent); line-height: 1; }
+
+/* ---------- قالب چاپ (A4) ---------- */
+.print-body { background: #fff; }
+.print-tools { display: flex; gap: 8px; padding: 12px 16px; border-bottom: 1px solid var(--hk-line); background: #f8f6f0; }
+.print-page { max-width: 210mm; margin: 0 auto; padding: 12mm; }
+.print-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; border-bottom: 2px solid #000; padding-bottom: 8px; margin-bottom: 14px; }
+.print-school { font-size: 1.25rem; font-weight: 700; }
+.signatures { display: flex; justify-content: space-between; gap: 24px; margin-top: 48px; }
+.signatures > div { flex: 1; text-align: center; border-top: 1px solid #000; padding-top: 6px; }
+
+@page { size: A4; margin: 10mm; }
+@media print {
+    .print-tools, .noprint { display: none !important; }
+    .print-page { padding: 0; max-width: none; }
+}

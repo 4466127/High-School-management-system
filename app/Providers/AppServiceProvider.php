@@ -1,0 +1,39 @@
+<?php
+
+namespace App\Providers;
+
+use App\Models\User;
+use App\Support\Menu;
+use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\View;
+use Illuminate\Support\ServiceProvider;
+
+class AppServiceProvider extends ServiceProvider
+{
+    public function register(): void
+    {
+        //
+    }
+
+    public function boot(): void
+    {
+        // هر مجوز config/permissions.php یک Gate است: @can('students.manage')، ->middleware('can:students.manage')
+        foreach (array_keys(config('permissions.permissions', [])) as $permission) {
+            Gate::define($permission, fn (User $user) => $user->hasPermission($permission));
+        }
+
+        Paginator::useBootstrapFive();
+
+        // @jdate($date) ← ۱۴۰۵/۰۸/۲۴ — @jdate($date, 'long') ← ۲۴ عقرب ۱۴۰۵
+        Blade::directive('jdate', fn (string $args) => "<?php echo e(\\App\\Support\\JalaliDate::format({$args})); ?>");
+        // @fa($number) ← ارقام فارسی
+        Blade::directive('fa', fn (string $args) => "<?php echo e(\\App\\Support\\Digits::toPersian({$args})); ?>");
+
+        View::composer('layouts.partials.sidebar', function ($view) {
+            $user = auth()->user();
+            $view->with('menu', $user ? app(Menu::class)->for($user) : []);
+        });
+    }
+}

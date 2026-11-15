@@ -21,19 +21,30 @@
 
 پوشه‌ی `C:\xampp\php82` نسخه‌ی قبلی PHP است و استفاده نمی‌شود.
 
-## ۲. ساختار فعلی مخزن
+## ۲. ساختار مخزن (بعد از مرحله‌ی ۲)
 
 ```
-CLAUDE.md, ARCHITECTURE.md, DATABASE.md, ROADMAP.md, API.md, DEVELOPMENT.md
-assets/            کتابخانه‌های محلی (در مرحله‌ی ۲ به public/assets می‌رود)
-  vendor/bootstrap     Bootstrap 5.3.6 (CSS راست‌به‌چپ + JS)
-  vendor/fontawesome   Font Awesome Free 6.7.2
-  fonts/vazirmatn      وزیرمتن (Regular, Medium, Bold)
-  css/app.css, js/app.js, js/print.js, icons/   از پروژه‌ی قبلی؛ پایه‌ی ظاهر، در مرحله‌ی ۲ بازنویسی می‌شود
-references/        RosarioSIS — فقط مرجع، در git نیست
+app/Enums/Role.php            شش نقش
+app/Http/Controllers/         Auth/, Settings/, DashboardController
+app/Http/Middleware/          NormalizeDigits, EnsureUserIsActive, EnsurePasswordIsChanged, SecurityHeaders
+app/Http/Requests/            Form Requestها + Concerns/ConvertsJalaliDates
+app/Policies/UserPolicy.php
+app/Services/ActivityLogger.php
+app/Support/                  JalaliDate, Digits, Menu
+config/permissions.php        نقش‌ها، مجوزها، مجوزهای هر نقش (منبع اصلی)
+config/menu.php               منوی اصلی
+config/school.php             مقدار پیش‌فرض تنظیمات مکتب
+lang/fa/                      همه‌ی متن‌های رابط
+public/assets/                Bootstrap 5.3.6 RTL، Font Awesome 6.7.2، وزیرمتن،
+                              app.css / app.js / print.js (از پروژه‌ی قبلی، بدون تغییر)، school.css (افزوده‌ها)
+resources/views/              layouts/ (app, auth, print)، components/jalali-date، auth/، settings/، errors/
+tests/                        Unit/ و Feature/ — Concerns/UsesTestDatabase
+.htaccess                     پنهان کردن فایل‌های ریشه از Apache (پروژه زیر htdocs است)
+pint.json                     Pint پوشه‌ی references را دست نزند
+references/                   RosarioSIS — فقط مرجع، در git نیست
 ```
 
-## ۳. نصب برای توسعه (بعد از مرحله‌ی ۲)
+## ۳. نصب برای توسعه
 
 ```
 git clone https://github.com/4466127/High-School-management-system.git
@@ -43,48 +54,55 @@ copy .env.example .env
 php artisan key:generate
 ```
 
-در phpMyAdmin یا خط فرمان پایگاه داده بسازید:
+در phpMyAdmin یا خط فرمان دو پایگاه داده بسازید (دومی فقط برای تست‌ها):
 
 ```sql
 CREATE DATABASE maktab CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE maktab_test CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 ```
 
-در `.env`:
-
-```
-APP_NAME="سیستم مدیریت مکتب"
-APP_LOCALE=fa
-APP_TIMEZONE=Asia/Kabul
-DB_CONNECTION=mariadb
-DB_DATABASE=maktab
-DB_USERNAME=root
-DB_PASSWORD=
-SESSION_DRIVER=database
-CACHE_STORE=file
-QUEUE_CONNECTION=sync
-MAIL_MAILER=log
-```
+`.env.example` همه‌ی مقدارهای لازم را دارد (`APP_LOCALE=fa`، `DB_CONNECTION=mariadb`، `DB_DATABASE=maktab`، `SESSION_DRIVER=database`، `CACHE_STORE=file`، `QUEUE_CONNECTION=sync`، `MAIL_MAILER=log`). منطقه‌ی زمانی پیش‌فرض در `config/app.php` همان `Asia/Kabul` است.
 
 سپس:
 
 ```
-php artisan migrate --seed
-php artisan serve
+php artisan migrate
+php artisan db:seed
 ```
 
-و در مرورگر `http://127.0.0.1:8000`.
+`db:seed` این کارها را می‌کند (اجرای دوباره امن است و چیزی را پاک نمی‌کند):
+- نقش‌ها و مجوزها را با `config/permissions.php` هماهنگ می‌کند؛
+- تنظیمات پیش‌فرض را فقط برای کلیدهای نبوده می‌نویسد؛
+- اگر هیچ «مدیر سیستم» نباشد، کاربر `admin` با **رمز تصادفی** می‌سازد و رمز را یک بار در خروجی نشان می‌دهد (در اولین ورود باید عوض شود)؛
+- فقط وقتی `APP_ENV=local` است، شش کاربر آزمایشی: `demo.admin`، `demo.principal`، `demo.office`، `demo.teacher`، `demo.accountant`، `demo.course-manager` با رمز `password`. روی سرور مکتب (`APP_ENV=production`) ساخته نمی‌شوند.
+
+### باز کردن برنامه در توسعه
+- با Apache خود XAMPP: `http://localhost/High%20school%20management%20system/` (به `.../public/` می‌رود)
+- یا: `php artisan serve` و `http://127.0.0.1:8000`
 
 ## ۴. کار روزانه
 
 | کار | دستور |
 |---|---|
 | اجرای تست‌ها | `php artisan test` |
-| قالب‌بندی کد | `vendor\bin\pint` |
-| ساخت دوباره‌ی پایگاه داده‌ی توسعه | `php artisan migrate:fresh --seed` |
-| فهرست مسیرها | `php artisan route:list` |
+| قالب‌بندی کد | `vendor\bin\pint` (با `pint.json`؛ پوشه‌ی `references` را دست نمی‌زند) |
+| migrationهای تازه | `php artisan migrate` |
+| فهرست مسیرها | `php artisan route:list --except-vendor` |
 
-- تست‌ها روی پایگاه داده‌ی جدا (`maktab_test`) اجرا می‌شوند تا رفتار با MariaDB واقعی یکی باشد.
-- `migrate:fresh` همه‌ی داده را پاک می‌کند؛ **هرگز روی سرور مکتب اجرا نشود.**
+### تست‌ها
+- روی MariaDB واقعی و پایگاه داده‌ی جدای `maktab_test` اجرا می‌شوند (`phpunit.xml`).
+- `Tests\Concerns\UsesTestDatabase`: اگر نام پایگاه داده به `_test` ختم نشود، تست‌ها اجرا نمی‌شوند. در هر اجرا یک بار `migrate` عادی (نه `migrate:fresh`) و seed نقش‌ها و تنظیمات؛ هر تست داخل transaction اجرا و در پایان برگردانده می‌شود، پس پایگاه داده‌ی تست خالی می‌ماند.
+- اگر migration موجودی را عوض کردید (فقط پیش از نصب روی سرور مکتب)، جدول‌های `maktab_test` را دستی پاک کنید تا دوباره ساخته شوند.
+
+### قواعد پایگاه داده
+- `migrate:fresh`، `db:wipe` و `migrate:reset` همه‌ی داده را پاک می‌کنند؛ **روی `maktab` اجرا نشوند.** تغییر ساختار همیشه با migration تازه.
+- MariaDB 10.4: از `renameColumn` (نیاز به 10.5.2) و ستون `uuid` بومی (نیاز به 10.7) استفاده نکنید. ستون `json` به `LONGTEXT` با `CHECK (json_valid(...))` تبدیل می‌شود و درست کار می‌کند.
+
+### نوشتن صفحه‌ی تازه
+- متن‌ها در `lang/fa/*.php`؛ JavaScript داخل صفحه ممنوع (CSP آن را می‌بندد) — فایل جدا در `public/assets/js`.
+- مسیر را با `->middleware('can:<مجوز>')` ببندید و مورد منو را در `config/menu.php` با همان مجوز اضافه کنید.
+- تاریخ: `<x-jalali-date name="..." />` در فرم، `use ConvertsJalaliDates` + `new ValidJalaliDate` در Form Request، `@jdate($date)` برای نمایش.
+- هر تغییر حساس: `app(ActivityLogger::class)->log('module.action', $model, ...)` و برچسب فارسی در `lang/fa/activity.php`.
 
 ## ۵. Git و GitHub
 - مخزن: `https://github.com/4466127/High-School-management-system.git`، شاخه‌ی `main`.

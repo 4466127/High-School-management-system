@@ -10,12 +10,14 @@
 /public/storage
 /storage/*.key
 /storage/pail
-/bootstrap/cache/*.php
+/auth.json
 .env
 .env.backup
 .env.production
+.phpactor.json
 .phpunit.result.cache
 /.phpunit.cache
+*.log
 
 # داده و نسخه‌های پشتیبان
 /backups/
@@ -29,5 +31,7 @@
 /.nova
 /.zed
 /.claude/
+Homestead.json
+Homestead.yaml
 Thumbs.db
 .DS_Store
