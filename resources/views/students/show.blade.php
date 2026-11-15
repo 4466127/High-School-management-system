@@ -2,14 +2,14 @@
 
 @section('content')
     {{-- سربرگ پرونده --}}
-    <div class="card mb-3">
+    <div class="card profile-head mb-3">
         <div class="card-body d-flex flex-wrap align-items-center gap-3">
             <x-avatar :src="$student->photo_path ? route('students.photo', $student) : null" size="84" :alt="$student->full_name" />
             <div class="flex-grow-1">
                 <h1 class="h4 fw-bold mb-1">{{ $student->full_name }}</h1>
                 <div class="text-secondary">
                     {{ __('students.father_name') }}: {{ $student->father_name }}
-                    · {{ __('students.admission_no') }}: <span class="num">@fa($student->admission_no)</span>
+                    · {{ __('students.admission_no') }}: <span>@fa($student->admission_no)</span>
                 </div>
                 <div class="mt-1">
                     @if ($student->trashed())
@@ -78,17 +78,17 @@
             <div class="card">
                 <div class="card-body">
                     <dl class="row mb-0 info-list">
-                        <dt class="col-sm-3">{{ __('students.admission_no') }}</dt><dd class="col-sm-9 num">@fa($student->admission_no)</dd>
+                        <dt class="col-sm-3">{{ __('students.admission_no') }}</dt><dd class="col-sm-9">@fa($student->admission_no)</dd>
                         <dt class="col-sm-3">{{ __('students.first_name') }}</dt><dd class="col-sm-9">{{ $student->first_name }}</dd>
                         <dt class="col-sm-3">{{ __('students.last_name') }}</dt><dd class="col-sm-9">{{ $student->last_name ?: '—' }}</dd>
                         <dt class="col-sm-3">{{ __('students.father_name') }}</dt><dd class="col-sm-9">{{ $student->father_name }}</dd>
                         <dt class="col-sm-3">{{ __('students.grandfather_name') }}</dt><dd class="col-sm-9">{{ $student->grandfather_name ?: '—' }}</dd>
-                        <dt class="col-sm-3">{{ __('students.gender') }}</dt><dd class="col-sm-9">{{ $student->gender->label() }}</dd>
+                        <dt class="col-sm-3">{{ __('students.gender') }}</dt><dd class="col-sm-9">{{ $student->gender->studentLabel() }}</dd>
                         <dt class="col-sm-3">{{ __('students.birth_date') }}</dt><dd class="col-sm-9">{{ $student->birth_date ? \App\Support\JalaliDate::format($student->birth_date, 'long') : '—' }}</dd>
                         <dt class="col-sm-3">{{ __('students.admission_date') }}</dt><dd class="col-sm-9">{{ $student->admission_date ? \App\Support\JalaliDate::format($student->admission_date, 'long') : '—' }}</dd>
                         @if ($sensitive)
-                            <dt class="col-sm-3">{{ __('students.tazkira_no') }}</dt><dd class="col-sm-9" dir="ltr">{{ $student->tazkira_no ?: '—' }}</dd>
-                            <dt class="col-sm-3">{{ __('students.phone') }}</dt><dd class="col-sm-9" dir="ltr">{{ $student->phone ?: '—' }}</dd>
+                            <dt class="col-sm-3">{{ __('students.tazkira_no') }}</dt><dd class="col-sm-9"><span dir="ltr">{{ $student->tazkira_no ?: '—' }}</span></dd>
+                            <dt class="col-sm-3">{{ __('students.phone') }}</dt><dd class="col-sm-9"><span dir="ltr">{{ $student->phone ?: '—' }}</span></dd>
                             <dt class="col-sm-3">{{ __('students.province') }}</dt><dd class="col-sm-9">{{ collect([$student->province, $student->district, $student->village])->filter()->join('، ') ?: '—' }}</dd>
                             <dt class="col-sm-3">{{ __('students.address') }}</dt><dd class="col-sm-9">{{ $student->address ?: '—' }}</dd>
                             <dt class="col-sm-3">{{ __('students.notes') }}</dt><dd class="col-sm-9 text-pre-line">{{ $student->notes ?: '—' }}</dd>

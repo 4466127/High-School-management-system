@@ -5,6 +5,17 @@
    - پنجره‌ی فرمی که خطای اعتبارسنجی داشت دوباره باز می‌شود (.modal[data-open-on-load])
    ===================================================================== */
 (function () {
+    /* خانه‌ی فایل فارسی (x-form.input type=file): نام فایل انتخاب‌شده */
+    document.addEventListener('change', function (ev) {
+        var input = ev.target;
+        if (!input.classList || !input.classList.contains('file-pick-input')) { return; }
+        var label = input.closest('.file-pick');
+        var name = label && label.querySelector('.file-pick-name');
+        if (!name) { return; }
+        name.textContent = input.files && input.files.length ? input.files[0].name : name.getAttribute('data-empty');
+        label.classList.toggle('has-file', !!(input.files && input.files.length));
+    });
+
     if (!window.bootstrap) { return; }
 
     function showTabFromHash() {

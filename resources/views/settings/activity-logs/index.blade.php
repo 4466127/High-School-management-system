@@ -25,11 +25,11 @@
             </div>
             <div class="col-6 col-md-2">
                 <label for="from" class="form-label">{{ __('app.from_date') }}</label>
-                <input type="text" id="from" name="from" value="{{ request('from') }}" data-jdate autocomplete="off" dir="ltr" class="form-control" placeholder="{{ __('app.date_placeholder') }}">
+                <input type="text" id="from" name="from" value="{{ request('from') }}" data-jdate autocomplete="off" dir="ltr" class="form-control" placeholder="{{ __('app.date_placeholder_short') }}">
             </div>
             <div class="col-6 col-md-2">
                 <label for="to" class="form-label">{{ __('app.to_date') }}</label>
-                <input type="text" id="to" name="to" value="{{ request('to') }}" data-jdate autocomplete="off" dir="ltr" class="form-control" placeholder="{{ __('app.date_placeholder') }}">
+                <input type="text" id="to" name="to" value="{{ request('to') }}" data-jdate autocomplete="off" dir="ltr" class="form-control" placeholder="{{ __('app.date_placeholder_short') }}">
             </div>
             <div class="col-md-2 d-flex gap-2">
                 <button type="submit" class="btn btn-outline-primary flex-fill">{{ __('app.filter') }}</button>

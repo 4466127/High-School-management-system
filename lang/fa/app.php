@@ -33,7 +33,11 @@ return [
     'printed_on' => 'تاریخ چاپ',
     'from_date' => 'از تاریخ',
     'to_date' => 'تا تاریخ',
-    'date_placeholder' => '۱۴۰۵/۰۱/۰۱',
+    'date_placeholder' => '۱۴۰۵/۰۱/۱۵',
+    'date_placeholder_short' => '۱۴۰۵/۰۱/۱۵',
+    'date_help' => 'سال/ماه/روز — بنویسید یا از تقویم انتخاب کنید',
+    'choose_file' => 'انتخاب فایل',
+    'no_file' => 'هیچ فایلی انتخاب نشده',
 
     'permission_groups' => [
         'general' => 'عمومی',

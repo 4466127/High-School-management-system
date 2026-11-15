@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\EducationLevel;
 use App\Enums\EmploymentStatus;
 use App\Enums\Gender;
 use App\Enums\StaffType;
@@ -24,7 +25,7 @@ class StaffFactory extends Factory
             'father_name' => fake()->randomElement(StudentFactory::MALE_ADULT_NAMES),
             'gender' => $gender,
             'phone' => '07'.fake()->numerify('########'),
-            'education' => fake()->randomElement(['لیسانس', 'چهارده‌پاس', 'ماستری']),
+            'education' => fake()->randomElement([EducationLevel::Grade14, EducationLevel::Bachelor, EducationLevel::Bachelor, EducationLevel::Master]),
             'specialization' => fake()->randomElement(['ریاضی', 'دری', 'پشتو', 'انگلیسی', 'کیمیا', 'فزیک', 'بیولوژی', 'تاریخ']),
             'hire_date' => fake()->dateTimeBetween('-15 years', '-1 month')->format('Y-m-d'),
             'position' => 'معلم',

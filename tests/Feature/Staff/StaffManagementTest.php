@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Staff;
 
+use App\Enums\EducationLevel;
 use App\Enums\EmploymentStatus;
 use App\Enums\Role;
 use App\Enums\StaffType;
@@ -44,6 +45,22 @@ class StaffManagementTest extends TestCase
         $this->assertDatabaseHas('activity_logs', ['action' => 'staff.created', 'subject_id' => $member->id]);
 
         $this->actingAs($this->office)->get("/staff/{$member->id}")->assertOk()->assertSee('نورالله حکیمی')->assertSee('۱ میزان ۱۴۰۰');
+    }
+
+    public function test_education_is_chosen_from_fixed_list(): void
+    {
+        $base = ['staff_type' => 'teacher', 'first_name' => 'آزمایش', 'gender' => 'female'];
+
+        $this->actingAs($this->office)->post('/staff', $base + ['education' => 'هر متنی'])
+            ->assertSessionHasErrors('education');
+
+        $this->actingAs($this->office)->post('/staff', $base + ['education' => 'master'])->assertRedirect();
+        $member = Staff::where('first_name', 'آزمایش')->firstOrFail();
+
+        $this->assertSame(EducationLevel::Master, $member->education);
+        $this->actingAs($this->office)->get("/staff/{$member->id}")->assertSee('کارشناسی ارشد (ماستری)')->assertSee('زن');
+        $this->actingAs($this->office)->get('/staff/create')
+            ->assertSee('دوازده‌پاس')->assertSee('چهارده‌پاس')->assertSee('کارشناسی (لیسانس)')->assertSee('دکترا');
     }
 
     public function test_list_filters_by_type_and_search(): void

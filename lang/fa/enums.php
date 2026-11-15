@@ -6,6 +6,21 @@ return [
         'male' => 'پسر / مرد',
         'female' => 'دختر / زن',
     ],
+    'gender_student' => [
+        'male' => 'پسر',
+        'female' => 'دختر',
+    ],
+    'gender_staff' => [
+        'male' => 'مرد',
+        'female' => 'زن',
+    ],
+    'education_level' => [
+        'grade_12' => 'دوازده‌پاس',
+        'grade_14' => 'چهارده‌پاس',
+        'bachelor' => 'کارشناسی (لیسانس)',
+        'master' => 'کارشناسی ارشد (ماستری)',
+        'doctorate' => 'دکترا',
+    ],
     'student_status' => [
         'active' => 'فعال',
         'inactive' => 'غیرفعال',

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Staff;
 
+use App\Enums\EducationLevel;
 use App\Enums\Gender;
 use App\Enums\StaffType;
 use App\Http\Requests\Concerns\ConvertsJalaliDates;
@@ -29,7 +30,7 @@ class StaffRequest extends FormRequest
             'father_name' => ['nullable', 'string', 'max:100'],
             'gender' => ['required', Rule::enum(Gender::class)],
             'phone' => ['nullable', 'regex:'.StudentRequest::PHONE_REGEX],
-            'education' => ['nullable', 'string', 'max:150'],
+            'education' => ['nullable', Rule::enum(EducationLevel::class)],
             'specialization' => ['nullable', 'string', 'max:150'],
             'address' => ['nullable', 'string', 'max:500'],
             'hire_date' => ['nullable', new ValidJalaliDate(notFuture: true)],

@@ -9,7 +9,7 @@
 
     <main class="main">
         <div class="topbar">
-            <span>@jdate(now(), 'full')</span>
+            <span class="topbar-date"><i class="fa-regular fa-calendar" aria-hidden="true"></i> @jdate(now(), 'full')</span>
             <div class="topbar-user dropdown">
                 <button class="btn btn-sm btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                     <i class="fa-solid fa-circle-user" aria-hidden="true"></i>

@@ -58,6 +58,27 @@ return [
     'history_added' => 'سابقه‌ی کاری اضافه شد.',
     'history_removed' => 'سابقه‌ی کاری حذف شد.',
 
+    'section_identity' => 'مشخصات شخصی',
+    'section_job' => 'وظیفه و تحصیلات',
+    'section_other' => 'عکس و یادداشت',
+
+    'ph' => [
+        'first_name' => 'مثلاً نورالله',
+        'last_name' => 'مثلاً حکیمی',
+        'father_name' => 'مثلاً محمد کریم',
+        'gender' => '— مرد یا زن —',
+        'phone' => 'مثلاً ۰۷۸۸۱۲۳۴۵۶',
+        'education' => '— سطح تحصیل —',
+        'specialization' => 'مثلاً ریاضی، ادبیات دری، کمپیوتر',
+        'position' => 'مثلاً معلم ریاضی، سرمعلم، محافظ',
+        'address' => 'محل سکونت، مثلاً کارته‌ی سه، کابل',
+        'notes' => 'معلومات ضروری دیگر',
+        'history_title' => 'مثلاً معلم کیمیا',
+        'history_organization' => 'مثلاً لیسه‌ی عالی استقلال',
+        'history_notes' => 'اختیاری',
+        'reason' => 'مثلاً تبدیلی به مکتب دیگر، تقاعد',
+    ],
+
     'attributes' => [
         'staff_type' => 'نوع',
         'first_name' => 'نام',

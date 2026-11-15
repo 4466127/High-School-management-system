@@ -32,7 +32,7 @@
                 <label for="gender" class="form-label">{{ __('students.gender') }}</label>
                 <select id="gender" name="gender" class="form-select">
                     <option value="">{{ __('students.all_genders') }}</option>
-                    @foreach (\App\Enums\Gender::options() as $value => $label)
+                    @foreach (\App\Enums\Gender::studentOptions() as $value => $label)
                         <option value="{{ $value }}" @selected(request('gender') === $value)>{{ $label }}</option>
                     @endforeach
                 </select>
@@ -67,10 +67,10 @@
                 @forelse ($students as $student)
                     <tr>
                         <td><x-avatar :src="$student->photo_path ? route('students.photo', $student) : null" size="40" /></td>
-                        <td class="num">@fa($student->admission_no)</td>
+                        <td>@fa($student->admission_no)</td>
                         <td><a href="{{ route('students.show', $student) }}" class="fw-medium text-decoration-none">{{ $student->full_name }}</a></td>
                         <td>{{ $student->father_name }}</td>
-                        <td>{{ $student->gender->label() }}</td>
+                        <td>{{ $student->gender->studentLabel() }}</td>
                         @if ($canManage)
                             <td dir="ltr" class="text-end small">{{ $student->phone }}</td>
                         @endif

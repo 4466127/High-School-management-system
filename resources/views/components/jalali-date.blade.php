@@ -2,8 +2,9 @@
     خانه‌ی تاریخ شمسی با انتخاب‌گر (public/assets/js/app.js، input[data-jdate]).
     <x-jalali-date name="birth_date" :label="__('...')" :value="$student->birth_date" required />
     مقدار به شکل ۱۴۰۵/۰۸/۲۴ فرستاده می‌شود؛ Form Request با ConvertsJalaliDates آن را میلادی می‌کند.
+    inputmode=numeric عمداً گذاشته نشده: کیبورد عددی موبایل «/» ندارد.
 --}}
-@props(['name', 'label' => null, 'value' => null, 'required' => false, 'help' => null])
+@props(['name', 'label' => null, 'value' => null, 'required' => false, 'help' => null, 'placeholder' => null])
 
 @php
     $id = $attributes->get('id', str_replace(['[', ']', '.'], '_', $name));
@@ -19,13 +20,11 @@
         <label for="{{ $id }}" class="form-label">{{ $label }} @if ($required)<span class="text-danger">*</span>@endif</label>
     @endif
     <input type="text" id="{{ $id }}" name="{{ $name }}" value="{{ $current }}"
-           data-jdate autocomplete="off" inputmode="numeric" dir="ltr"
-           placeholder="{{ __('app.date_placeholder') }}"
+           data-jdate autocomplete="off" dir="ltr"
+           placeholder="{{ $placeholder ?? __('app.date_placeholder') }}"
            @required($required)
            @class(['form-control', 'is-invalid' => $errorBag->has($dotName)])>
-    @if ($help)
-        <div class="form-text">{{ $help }}</div>
-    @endif
+    <div class="form-text">{{ $help ?? __('app.date_help') }}</div>
     @if ($errorBag->has($dotName))
         <div class="invalid-feedback">{{ $errorBag->first($dotName) }}</div>
     @endif

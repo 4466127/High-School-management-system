@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\EducationLevel;
 use App\Enums\EmploymentStatus;
 use App\Enums\Gender;
 use App\Enums\StaffType;
@@ -33,6 +34,7 @@ class Staff extends Model
         return [
             'staff_type' => StaffType::class,
             'gender' => Gender::class,
+            'education' => EducationLevel::class,
             'employment_status' => EmploymentStatus::class,
             'hire_date' => 'date',
             'status_changed_on' => 'date',

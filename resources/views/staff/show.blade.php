@@ -1,7 +1,7 @@
 @extends('layouts.app', ['title' => $member->full_name])
 
 @section('content')
-    <div class="card mb-3">
+    <div class="card profile-head mb-3">
         <div class="card-body d-flex flex-wrap align-items-center gap-3">
             <x-avatar :src="$member->photo_path ? route('staff.photo', $member) : null" size="84" :alt="$member->full_name" />
             <div class="flex-grow-1">
@@ -41,9 +41,9 @@
                 <div class="card-body">
                     <dl class="row mb-0 info-list">
                         <dt class="col-sm-4">{{ __('staff.father_name') }}</dt><dd class="col-sm-8">{{ $member->father_name ?: '—' }}</dd>
-                        <dt class="col-sm-4">{{ __('staff.gender') }}</dt><dd class="col-sm-8">{{ $member->gender->label() }}</dd>
-                        <dt class="col-sm-4">{{ __('staff.phone') }}</dt><dd class="col-sm-8" dir="ltr">{{ $member->phone ?: '—' }}</dd>
-                        <dt class="col-sm-4">{{ __('staff.education') }}</dt><dd class="col-sm-8">{{ $member->education ?: '—' }}</dd>
+                        <dt class="col-sm-4">{{ __('staff.gender') }}</dt><dd class="col-sm-8">{{ $member->gender->staffLabel() }}</dd>
+                        <dt class="col-sm-4">{{ __('staff.phone') }}</dt><dd class="col-sm-8"><span dir="ltr">{{ $member->phone ?: '—' }}</span></dd>
+                        <dt class="col-sm-4">{{ __('staff.education') }}</dt><dd class="col-sm-8">{{ $member->education?->label() ?? '—' }}</dd>
                         <dt class="col-sm-4">{{ __('staff.specialization') }}</dt><dd class="col-sm-8">{{ $member->specialization ?: '—' }}</dd>
                         <dt class="col-sm-4">{{ __('staff.hire_date') }}</dt><dd class="col-sm-8">{{ $member->hire_date ? \App\Support\JalaliDate::format($member->hire_date, 'long') : '—' }}</dd>
                         <dt class="col-sm-4">{{ __('staff.address') }}</dt><dd class="col-sm-8">{{ $member->address ?: '—' }}</dd>
@@ -123,8 +123,8 @@
     @unless ($member->trashed())
         @php($own = old('_modal'))
         <x-modal-form id="historyAdd" :title="__('staff.history_add')" :action="route('staff.history.store', $member)" :submit="__('app.add')">
-            <x-form.input name="title" :label="__('staff.history_title')" required maxlength="150" :use-old="$own === 'historyAdd'" />
-            <x-form.input name="organization" :label="__('staff.history_organization')" maxlength="150" :use-old="$own === 'historyAdd'" />
+            <x-form.input name="title" :label="__('staff.history_title')" :placeholder="__('staff.ph.history_title')" required maxlength="150" :use-old="$own === 'historyAdd'" />
+            <x-form.input name="organization" :label="__('staff.history_organization')" :placeholder="__('staff.ph.history_organization')" maxlength="150" :use-old="$own === 'historyAdd'" />
             <div class="row">
                 <x-jalali-date class="col-6 mb-3" name="from_date" :label="__('staff.history_from')" />
                 <x-jalali-date class="col-6 mb-3" name="to_date" :label="__('staff.history_to')" />
@@ -135,7 +135,7 @@
         <x-modal-form id="statusModal" :title="__('staff.change_status')" :action="route('staff.status', $member)" method="PATCH" :submit="__('app.save')">
             <x-form.select name="employment_status" :label="__('staff.employment_status')" :options="\App\Enums\EmploymentStatus::options()" :value="$member->employment_status" required />
             <p class="form-text mt-0">{{ __('staff.left_deactivates_user') }}</p>
-            <x-form.textarea name="reason" :label="__('staff.reason')" rows="2" maxlength="500" :use-old="$own === 'statusModal'" />
+            <x-form.textarea name="reason" :label="__('staff.reason')" :placeholder="__('staff.ph.reason')" rows="2" maxlength="500" :use-old="$own === 'statusModal'" />
             <x-jalali-date name="date" :label="__('staff.status_date')" :value="now()" />
         </x-modal-form>
 
