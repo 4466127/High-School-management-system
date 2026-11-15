@@ -1,0 +1,33 @@
+# مرجع بیرونی و فایل‌های فشرده (در مخزن نمی‌روند)
+/references/
+*.zip
+
+# Laravel
+/vendor/
+/node_modules/
+/public/build
+/public/hot
+/public/storage
+/storage/*.key
+/storage/pail
+/bootstrap/cache/*.php
+.env
+.env.backup
+.env.production
+.phpunit.result.cache
+/.phpunit.cache
+
+# داده و نسخه‌های پشتیبان
+/backups/
+*.sql
+*.sql.gz
+
+# ابزارها
+/.idea
+/.vscode
+/.fleet
+/.nova
+/.zed
+/.claude/
+Thumbs.db
+.DS_Store

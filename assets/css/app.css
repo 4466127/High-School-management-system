@@ -1,0 +1,367 @@
+/* =====================================================================
+   ظاهر سیستم — روی Bootstrap 5.3 (نسخه‌ی راست‌به‌چپ).
+   این فایل فقط رنگ‌ها، فونت و چند بخش مخصوص (منوی کنار، کارت آمار، ورود) را تعیین می‌کند.
+   رنگ‌ها از فایل نمونه (hesab-namuna.html) گرفته شده‌اند.
+   ===================================================================== */
+
+/* ---------- فونت وزیرمتن (داخل پروژه؛ از انترنت بار نمی‌شود) ---------- */
+@font-face {
+    font-family: "Vazirmatn";
+    src: url("../fonts/vazirmatn/Vazirmatn-Regular.woff2") format("woff2");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+@font-face {
+    font-family: "Vazirmatn";
+    src: url("../fonts/vazirmatn/Vazirmatn-Medium.woff2") format("woff2");
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+@font-face {
+    font-family: "Vazirmatn";
+    src: url("../fonts/vazirmatn/Vazirmatn-Bold.woff2") format("woff2");
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* ---------- رنگ‌ها و متغیرهای Bootstrap ---------- */
+:root {
+    --hk-accent: #1f6f5c;
+    --hk-accent-hover: #185a4a;
+    --hk-accent-dark: #17332c;
+    --hk-accent-soft: #e2efea;
+    --hk-line: #e2ddd2;
+    --hk-focus: rgba(31, 111, 92, .22);
+
+    --bs-body-font-family: "Vazirmatn", Tahoma, "Segoe UI", Arial, sans-serif;
+    --bs-body-bg: #f3f0e8;
+    --bs-body-color: #1f2a2e;
+    --bs-secondary-color: #6b7478;
+    --bs-border-color: #e2ddd2;
+    --bs-primary: #1f6f5c;
+    --bs-primary-rgb: 31, 111, 92;
+    --bs-primary-text-emphasis: #17332c;
+    --bs-primary-bg-subtle: #e2efea;
+    --bs-primary-border-subtle: #b9d8cc;
+    --bs-link-color: #1f6f5c;
+    --bs-link-color-rgb: 31, 111, 92;
+    --bs-link-hover-color: #17332c;
+    --bs-link-hover-color-rgb: 23, 51, 44;
+    --bs-border-radius: .6rem;
+    --bs-border-radius-lg: .8rem;
+    --bs-focus-ring-color: var(--hk-focus);
+}
+
+body { line-height: 1.8; }
+
+/* ---------- دکمه‌ها: بزرگ و واضح ---------- */
+.btn { font-weight: 500; display: inline-flex; align-items: center; justify-content: center; gap: .4rem; }
+.btn:not(.btn-sm):not(.btn-link) { min-height: 44px; }
+.btn-lg { min-height: 52px; }
+.btn-primary {
+    --bs-btn-bg: var(--hk-accent);
+    --bs-btn-border-color: var(--hk-accent);
+    --bs-btn-hover-bg: var(--hk-accent-hover);
+    --bs-btn-hover-border-color: var(--hk-accent-hover);
+    --bs-btn-active-bg: var(--hk-accent-dark);
+    --bs-btn-active-border-color: var(--hk-accent-dark);
+    --bs-btn-disabled-bg: var(--hk-accent);
+    --bs-btn-disabled-border-color: var(--hk-accent);
+    --bs-btn-focus-shadow-rgb: 31, 111, 92;
+}
+.btn-outline-primary {
+    --bs-btn-color: var(--hk-accent);
+    --bs-btn-border-color: var(--hk-accent);
+    --bs-btn-hover-bg: var(--hk-accent);
+    --bs-btn-hover-border-color: var(--hk-accent);
+    --bs-btn-active-bg: var(--hk-accent-dark);
+    --bs-btn-active-border-color: var(--hk-accent-dark);
+    --bs-btn-focus-shadow-rgb: 31, 111, 92;
+}
+.nav-pills { --bs-nav-pills-link-active-bg: var(--hk-accent); }
+.nav-pills .nav-link { color: var(--hk-accent-dark); }
+
+/* ---------- فورم‌ها ---------- */
+.form-control, .form-select { min-height: 44px; background-color: #fff; }
+.form-control-lg { min-height: 52px; }
+.form-control:focus, .form-select:focus { border-color: #7fb5a5; box-shadow: 0 0 0 .25rem var(--hk-focus); }
+.form-check-input { width: 1.25em; height: 1.25em; margin-top: .3em; }
+.form-check-input:checked { background-color: var(--hk-accent); border-color: var(--hk-accent); }
+.form-check-input:focus { border-color: #7fb5a5; box-shadow: 0 0 0 .25rem var(--hk-focus); }
+.form-switch .form-check-input { width: 2.4em; }
+.form-label { font-weight: 500; }
+/* خانه‌های عددی و انگلیسی (نام کاربری، رمز، مبلغ) چپ‌به‌راست */
+.n { direction: ltr; text-align: left; }
+.role-choices.is-invalid { border: 1px solid var(--bs-danger); border-radius: var(--bs-border-radius); padding: .4rem .6rem; }
+
+/* ---------- کارت و جدول ---------- */
+.card { --bs-card-border-color: var(--hk-line); --bs-card-bg: #fff; --bs-card-cap-bg: #f8f6f0; }
+.card.narrow { max-width: 640px; }
+.table { --bs-table-bg: transparent; }
+.table > thead th { background: #f8f6f0; color: #3b484c; font-size: .85rem; white-space: nowrap; }
+.table > :not(caption) > * > * { padding: .6rem .75rem; }
+code { color: #8a3c3c; white-space: nowrap; }
+.lan-list code { white-space: normal; overflow-wrap: anywhere; }
+
+/* ---------- قالب کلی: منوی کنار ---------- */
+.app { display: flex; min-height: 100vh; }
+.side {
+    width: 240px;
+    flex-shrink: 0;
+    background: var(--hk-accent-dark);
+    color: #dcebe6;
+    padding: 14px 10px;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+}
+.brand {
+    font-weight: 700;
+    font-size: 1.05rem;
+    padding: 4px 10px 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, .12);
+    margin-bottom: 10px;
+}
+.brand small { display: block; font-weight: 400; font-size: .8rem; opacity: .7; }
+.nav-side { list-style: none; margin: 0; padding: 0; flex: 1; }
+.nav-side a, .nav-side .soon {
+    display: flex;
+    align-items: center;
+    gap: .55rem;
+    padding: 10px 12px;
+    border-radius: 8px;
+    margin-bottom: 2px;
+    color: inherit;
+    text-decoration: none;
+}
+.nav-side i { width: 1.3em; text-align: center; opacity: .9; }
+.nav-side a:hover { background: rgba(255, 255, 255, .08); color: #fff; }
+.nav-side a.active { background: #2b5d4f; color: #fff; font-weight: 700; }
+.nav-side .soon { opacity: .45; cursor: default; }
+.nav-side .soon em { font-style: normal; font-size: .72rem; margin-inline-start: auto; }
+.side-foot { font-size: .75rem; opacity: .6; padding: 8px 12px 0; }
+
+.main { flex: 1; min-width: 0; padding: 16px 24px 48px; }
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    color: var(--bs-secondary-color);
+    font-size: .88rem;
+    margin-bottom: 14px;
+}
+.topbar-user { display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; color: var(--bs-body-color); }
+.page-title { font-size: 1.4rem; font-weight: 700; margin-bottom: 1rem; }
+.page-head { display: flex; justify-content: space-between; align-items: center; gap: .75rem; flex-wrap: wrap; margin-bottom: 1rem; }
+
+/* ---------- بخش‌های مخصوص ---------- */
+.welcome { background: var(--hk-accent-soft); border: 1px solid #c5dfd5; border-radius: var(--bs-border-radius-lg); padding: 16px 18px; margin-bottom: 16px; }
+
+/* کاشی‌های بزرگ کارهای روزانه (داشبورد؛ ت۵۸): آیکن بزرگ و دو سه کلمه — برای کاربر کم‌آشنا با کمپیوتر و برای صفحه‌ی لمسی */
+.hk-tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(124px, 1fr)); gap: 10px; margin-bottom: 16px; }
+.hk-tile { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; min-height: 100px; padding: 12px 8px;
+    background: #fff; border: 1px solid var(--hk-line); border-radius: var(--bs-border-radius-lg); color: var(--hk-accent-dark);
+    text-decoration: none; text-align: center; font-weight: 700; line-height: 1.35; transition: box-shadow .15s, border-color .15s, background-color .15s; }
+.hk-tile:hover, .hk-tile:focus-visible { border-color: var(--hk-accent); box-shadow: 0 0 0 3px var(--hk-focus); color: var(--hk-accent-dark); outline: 0; }
+.hk-tile-icon { font-size: 1.8rem; line-height: 1; color: var(--hk-accent); }
+.hk-tile-sale { background: var(--hk-accent); border-color: var(--hk-accent); color: #fff; }
+.hk-tile-sale .hk-tile-icon { color: #fff; }
+.hk-tile-sale:hover, .hk-tile-sale:focus-visible { background: var(--hk-accent-hover); color: #fff; }
+.hk-tile-money { border-color: #a3cfbb; background: #f3faf6; }
+.hk-tile-money .hk-tile-icon { color: #198754; }
+.hk-tiles-big { grid-template-columns: repeat(auto-fill, minmax(168px, 1fr)); gap: 14px; }
+.hk-tiles-big .hk-tile { min-height: 136px; font-size: 1.15rem; }
+.hk-tiles-big .hk-tile-icon { font-size: 2.6rem; }
+/* مبلغ به حروف زیر خانه‌ی مبلغ (ت۵۸) */
+.hk-words { color: var(--hk-accent-dark); font-weight: 500; min-height: 1.4em; }
+.hk-words:empty { display: none; }
+.stat .label { color: var(--bs-secondary-color); font-size: .85rem; }
+.stat .val { font-size: 1.35rem; font-weight: 700; margin-top: 2px; }
+.stat .sub { font-size: .8rem; color: var(--bs-secondary-color); }
+.steps { margin: 0; padding: 0; list-style: none; columns: 2 260px; }
+.steps li { margin-bottom: 4px; break-inside: avoid; }
+.steps li.done { font-weight: 700; color: #2e7d32; }
+.lan-list { margin: 6px 0; padding-inline-start: 22px; }
+.result-list { display: grid; grid-template-columns: minmax(0, max-content) minmax(0, 1fr); gap: 6px 16px; margin: 14px 0 0; overflow-wrap: anywhere; }
+.result-list:empty { display: none; }
+.result-list dt { color: var(--bs-secondary-color); font-weight: 400; }
+.result-list dd { margin: 0; font-weight: 700; }
+
+/* تصویر بارکد */
+.barcode-svg svg { max-width: 100%; height: auto; }
+.border-dashed { border-style: dashed !important; }
+
+/* صفحه‌ی نقش: اجازه‌ها در چند ستون */
+.perm-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+.perm-group { margin: 0; min-width: 0; }
+.perm-group legend { float: none; width: auto; font-size: 1rem; }
+
+/* ---------- صفحه‌ی ورود ---------- */
+.auth-body { background: linear-gradient(160deg, #17332c 0%, #1f6f5c 55%, #f3f0e8 55%); min-height: 100vh; }
+.auth-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 16px; }
+.auth-card { width: min(440px, 100%); }
+.auth-logo { font-size: 2.2rem; color: var(--hk-accent); line-height: 1; margin-bottom: .4rem; }
+
+/* ---------- داشبورد (ت۲۵): کارت‌های عددی ---------- */
+/* یک ستون در موبایل؛ دو ستون در صفحه‌ی متوسط؛ شش ستون در صفحه‌ی بزرگ (کارت صندوق‌ها دو خانه، چون لیست صندوق‌ها دارد) */
+.kpi-row { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
+@media (min-width: 576px) { .kpi-row { grid-template-columns: repeat(2, minmax(0, 1fr)); } .kpi-wide { grid-column: span 2; } }
+@media (min-width: 1300px) { .kpi-row { grid-template-columns: repeat(6, minmax(0, 1fr)); } .kpi-row .kpi-val { font-size: 1.4rem; } }
+a.kpi { color: inherit; text-decoration: none; padding: 14px 16px; transition: box-shadow .15s, border-color .15s; }
+a.kpi:hover, a.kpi:focus-visible { border-color: var(--hk-accent); box-shadow: 0 0 0 3px var(--hk-focus); }
+.kpi-label { color: var(--bs-secondary-color); font-size: .88rem; }
+.kpi-val { font-size: 1.6rem; font-weight: 700; margin-top: 4px; line-height: 1.25; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.kpi-val small { font-size: .9rem; font-weight: 500; color: var(--bs-secondary-color); }
+.kpi-sub { font-size: .8rem; color: var(--bs-secondary-color); margin-top: 4px; }
+.kpi-accent { border-color: #c5dfd5; background: linear-gradient(180deg, #f3faf7, #fff); }
+.num { font-variant-numeric: tabular-nums; }
+details > summary.card-header { cursor: pointer; }
+
+/* ---------- نمودار ستونی (partials/bar_chart.php) — رنگ‌ها بررسی‌شده برای کوررنگی ---------- */
+.viz {
+    --viz-s1: #2a78d6;      /* سری ۱: آبی */
+    --viz-s2: #eb6834;      /* سری ۲: نارنجی */
+    --viz-grid: #e1e0d9;    /* خط راهنما */
+    --viz-base: #c3c2b7;    /* خط صفر */
+    --viz-muted: #898781;   /* عدد محور و نام دوره */
+    --viz-text: #52514e;
+    position: relative;
+}
+.viz-legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: .82rem; color: var(--viz-text); margin-bottom: 4px; }
+.viz-key { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-inline-end: 6px; vertical-align: -1px; }
+.viz-key.s1 { background: var(--viz-s1); }
+.viz-key.s2 { background: var(--viz-s2); }
+.viz-plot { position: relative; }
+.viz svg { display: block; width: 100%; height: auto; overflow: visible; direction: ltr; }
+.viz .viz-grid { stroke: var(--viz-grid); stroke-width: 1; shape-rendering: crispEdges; }
+.viz .viz-base { stroke: var(--viz-base); stroke-width: 1; shape-rendering: crispEdges; }
+.viz .viz-tick { fill: var(--viz-muted); font-size: 12px; font-variant-numeric: tabular-nums; }
+.viz .viz-label { fill: var(--viz-muted); font-size: 12.5px; }
+.viz .viz-label.now { fill: var(--viz-text); font-weight: 700; }
+.viz .viz-bar.s1 { fill: var(--viz-s1); }
+.viz .viz-bar.s2 { fill: var(--viz-s2); }
+.viz .viz-hit { fill: transparent; }
+.viz .viz-group { outline: none; cursor: default; }
+.viz .viz-group:hover .viz-hit, .viz .viz-group:focus .viz-hit { fill: rgba(11, 11, 11, .045); }
+.viz-tip {
+    position: absolute; z-index: 5; pointer-events: none; min-width: 150px;
+    background: #fff; border: 1px solid rgba(11, 11, 11, .12); border-radius: 8px;
+    box-shadow: 0 6px 18px rgba(23, 51, 44, .14); padding: 8px 10px; font-size: .82rem;
+}
+.viz-tip-title { color: var(--viz-text); margin-bottom: 4px; }
+.viz-tip-row { display: flex; align-items: center; gap: 8px; }
+.viz-tip-row b { font-weight: 700; color: #0b0b0b; }
+.viz-tip-row span { color: var(--viz-text); }
+.viz-tip-key { width: 12px; height: 2.5px; border-radius: 2px; flex: none; }
+.viz-tip-key.s1 { background: var(--viz-s1); }
+.viz-tip-key.s2 { background: var(--viz-s2); }
+.viz-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; color: var(--bs-secondary-color); background: #faf9f6; border: 1px dashed var(--hk-line); border-radius: 10px; padding: 16px; font-size: .9rem; }
+.viz-table { margin-top: 6px; font-size: .85rem; }
+.viz-table summary { color: var(--bs-secondary-color); cursor: pointer; width: fit-content; }
+
+/* ---------- صفحه‌ی فروش (POS) ---------- */
+.pos-search-wrap { position: relative; }
+.pos-results { position: absolute; z-index: 30; inset-inline: 1rem; top: calc(100% - .75rem); max-height: 360px; overflow-y: auto; }
+.pos-quick-btn { min-width: 92px; }
+.pos-lines td { vertical-align: middle; }
+.pos-grand { font-size: 1.15rem; border-top: 1px solid var(--hk-line); padding-top: 8px; }
+.pos-grand strong { font-size: 2rem; color: var(--hk-accent-dark); }
+
+/* ---------- رسید A4 ---------- */
+.receipt-a4 .receipt-meta { display: flex; flex-wrap: wrap; gap: 4px 28px; margin-bottom: 12px; }
+.receipt-a4 .receipt-totals { width: 50%; margin-inline-start: auto; }
+.receipt-a4 .receipt-totals td { padding: 3px 8px; }
+.receipt-a4 .receipt-grand td { font-weight: 700; border-top: 2px solid #000; }
+.receipt-a4 .receipt-balance td { font-weight: 700; }
+.receipt-words td { font-size: .85em; font-weight: 400; padding-top: 0; }
+.receipt-a4 .receipt-thanks { margin-top: 16px; text-align: center; }
+
+/* ---------- تقویم شمسی (ت۲۳): خانه‌ی تاریخ با نشان تقویم، و پنجره‌ی انتخاب روز ---------- */
+.form-control.jdate-input,
+.form-control.jdate-input.is-invalid {
+    background-image: url("../icons/calendar.svg");
+    background-repeat: no-repeat;
+    background-position: right .6rem center;
+    background-size: 1.15rem;
+    padding-right: 2.2rem;
+    cursor: pointer;
+}
+.jdp {
+    position: absolute; z-index: 1080; width: 292px; padding: 10px;
+    background: #fff; border: 1px solid var(--hk-line); border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(23, 51, 44, .18); direction: rtl; user-select: none;
+}
+.jdp-head { display: flex; align-items: center; gap: 4px; margin-bottom: 8px; }
+.jdp-title { flex: 1; text-align: center; font-weight: 700; color: var(--hk-accent-dark); }
+.jdp-nav { border: 0; background: transparent; color: var(--hk-accent); width: 30px; height: 30px; border-radius: 8px; }
+.jdp-nav:hover, .jdp-nav:focus-visible { background: var(--hk-accent-soft); outline: none; }
+.jdp-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+.jdp-wd { text-align: center; font-size: .78rem; color: #6c757d; padding: 2px 0 4px; }
+.jdp-wd.fri, .jdp-day.fri { color: #b42318; }
+.jdp-day { border: 0; background: transparent; height: 34px; border-radius: 8px; font-size: .92rem; color: #212529; }
+.jdp-day:hover, .jdp-day:focus-visible { background: var(--hk-accent-soft); outline: none; }
+.jdp-day.today { box-shadow: inset 0 0 0 1.5px var(--hk-accent); font-weight: 700; }
+.jdp-day.sel { background: var(--hk-accent); color: #fff; font-weight: 700; }
+.jdp-foot { display: flex; gap: 6px; margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--hk-line); }
+.jdp-foot button { flex: 1; }
+
+/* ---------- خانه‌ی عددی که حرف دارد ---------- */
+.num-warn { color: #b42318; font-size: .82rem; margin-top: 3px; }
+
+/* ---------- موبایل و صفحه‌ی کوچک ---------- */
+@media (max-width: 900px) {
+    .app { flex-direction: column; }
+    .side { width: auto; height: auto; position: static; }
+    .nav-side { display: flex; flex-wrap: wrap; gap: 4px; }
+    .nav-side a, .nav-side .soon { padding: 8px 10px; }
+    .nav-side .soon em { margin-inline-start: 0; }
+    .main { padding: 14px 16px 40px; }
+}
+
+/* ---------- چاپ ---------- */
+@media print {
+    body { background: #fff; font-size: 12px; }
+    .side, .topbar, .btn, .noprint, .alert-dismissible .btn-close { display: none !important; }
+    .main { padding: 0; }
+    .card { border: 1px solid #ccc; break-inside: avoid; }
+}
+
+/* ---------- حالت آموزش (تمرین): نوار سرخ بالای هر صفحه ---------- */
+.demo-banner {
+    position: sticky;
+    top: 0;
+    z-index: 1040;
+    background: #b42318;
+    color: #fff;
+    text-align: center;
+    padding: .35rem 1rem;
+    font-size: .9rem;
+    line-height: 1.6;
+}
+.demo-banner a { color: #fff; font-weight: 600; text-decoration: underline; margin-inline-start: .5rem; white-space: nowrap; }
+body.is-demo .topbar { border-top: 3px solid #b42318; }
+@media print { .demo-banner { display: none; } }
+
+/* ---------- چارت حساب (نمای ساده): ترازو و پنج بخش ---------- */
+.coa-eq { display: flex; flex-wrap: wrap; align-items: stretch; gap: 8px; }
+.coa-eq-box { flex: 1 1 150px; border: 1px solid var(--hk-line); border-top-width: 4px !important; border-radius: 10px; padding: 8px 12px; background: #fff; }
+.coa-eq-op { align-self: center; font-size: 1.6rem; font-weight: 700; color: var(--bs-secondary-color); padding: 0 2px; }
+.coa-section { border-top: 4px solid; }
+.coa-table a { text-decoration: none; }
+.coa-table a:hover { color: var(--hk-accent) !important; text-decoration: underline; }
+.coa-group { background: #faf9f6; }
+.min-w-0 { min-width: 0; }
+@media (max-width: 575.98px) { .coa-eq-op { display: none; } }
+
+/* ---------- قیمت پرچون و عمده: همه‌ی واحدهای یک جنس در یک سطر ---------- */
+.price-cell { width: 15rem; max-width: 100%; }
+/* قیمت خودکار واحد بزرگ از قیمت اصلی (data-price-group) */
+.hk-auto { background-color: #eef7f2 !important; }
