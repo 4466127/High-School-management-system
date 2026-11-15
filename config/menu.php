@@ -12,8 +12,8 @@
 
 return [
     ['key' => 'dashboard', 'icon' => 'fa-gauge-high', 'route' => 'dashboard', 'can' => ['dashboard.view']],
-    ['key' => 'students', 'icon' => 'fa-user-graduate', 'route' => null, 'can' => ['students.view']],
-    ['key' => 'staff', 'icon' => 'fa-chalkboard-user', 'route' => null, 'can' => ['staff.manage']],
+    ['key' => 'students', 'icon' => 'fa-user-graduate', 'route' => 'students.index', 'can' => ['students.view']],
+    ['key' => 'staff', 'icon' => 'fa-chalkboard-user', 'route' => 'staff.index', 'can' => ['staff.manage']],
     ['key' => 'academics', 'icon' => 'fa-school', 'route' => null, 'can' => ['academics.view', 'academics.manage']],
     ['key' => 'attendance', 'icon' => 'fa-clipboard-check', 'route' => null, 'can' => ['attendance.take', 'attendance.edit']],
     ['key' => 'exams', 'icon' => 'fa-file-pen', 'route' => null, 'can' => ['marks.enter', 'exams.manage', 'reportcards.print']],

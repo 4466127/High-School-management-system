@@ -2,7 +2,7 @@
 
 use App\Http\Middleware\EnsurePasswordIsChanged;
 use App\Http\Middleware\EnsureUserIsActive;
-use App\Http\Middleware\NormalizeDigits;
+use App\Http\Middleware\NormalizeInput;
 use App\Http\Middleware\SecurityHeaders;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -16,7 +16,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->web(append: [
-            NormalizeDigits::class,
+            NormalizeInput::class,
             SecurityHeaders::class,
         ]);
 

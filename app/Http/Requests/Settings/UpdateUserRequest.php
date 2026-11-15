@@ -25,6 +25,8 @@ class UpdateUserRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
             'username' => ['required', 'string', 'min:3', 'max:50', 'regex:/^[a-z0-9._-]+$/',
                 Rule::unique('users', 'username')->ignore($this->route('user'))],
+            'staff_id' => ['nullable', 'integer', Rule::exists('staff', 'id')->whereNull('deleted_at'),
+                Rule::unique('users', 'staff_id')->ignore($this->route('user'))],
             'roles' => ['required', 'array', 'min:1'],
             'roles.*' => ['integer', Rule::exists('roles', 'id')],
             'permissions' => ['nullable', 'array'],

@@ -24,13 +24,14 @@
 ## ۲. ساختار مخزن (بعد از مرحله‌ی ۲)
 
 ```
-app/Enums/Role.php            شش نقش
-app/Http/Controllers/         Auth/, Settings/, DashboardController
-app/Http/Middleware/          NormalizeDigits, EnsureUserIsActive, EnsurePasswordIsChanged, SecurityHeaders
+app/Enums/                    Role، Gender، StudentStatus، StaffType، EmploymentStatus
+app/Http/Controllers/         Auth/، Settings/، Students/، Staff/، DashboardController
+app/Http/Middleware/          NormalizeInput (ارقام و ی/ک)، EnsureUserIsActive، EnsurePasswordIsChanged، SecurityHeaders
 app/Http/Requests/            Form Requestها + Concerns/ConvertsJalaliDates
-app/Policies/UserPolicy.php
-app/Services/ActivityLogger.php
-app/Support/                  JalaliDate, Digits, Menu
+app/Policies/                 UserPolicy، StudentPolicy
+app/Services/                 ActivityLogger، StudentService، StaffService
+app/Support/                  JalaliDate، Digits، PersianText، Menu، PrivateFiles، ModelChanges
+config/afghanistan.php        ۳۴ ولایت، نسبت‌های سرپرست
 config/permissions.php        نقش‌ها، مجوزها، مجوزهای هر نقش (منبع اصلی)
 config/menu.php               منوی اصلی
 config/school.php             مقدار پیش‌فرض تنظیمات مکتب
@@ -74,7 +75,16 @@ php artisan db:seed
 - نقش‌ها و مجوزها را با `config/permissions.php` هماهنگ می‌کند؛
 - تنظیمات پیش‌فرض را فقط برای کلیدهای نبوده می‌نویسد؛
 - اگر هیچ «مدیر سیستم» نباشد، کاربر `admin` با **رمز تصادفی** می‌سازد و رمز را یک بار در خروجی نشان می‌دهد (در اولین ورود باید عوض شود)؛
-- فقط وقتی `APP_ENV=local` است، شش کاربر آزمایشی: `demo.admin`، `demo.principal`، `demo.office`، `demo.teacher`، `demo.accountant`، `demo.course-manager` با رمز `password`. روی سرور مکتب (`APP_ENV=production`) ساخته نمی‌شوند.
+- فقط وقتی `APP_ENV=local` است، شش کاربر آزمایشی: `demo.admin`، `demo.principal`، `demo.office`، `demo.teacher`، `demo.accountant`، `demo.course-manager` با رمز `password`، و دانش‌آموزان و کارکنان ساختگی (`DemoSchoolSeeder`؛ فقط وقتی هیچ دانش‌آموز و کارمندی نیست). روی سرور مکتب (`APP_ENV=production`) ساخته نمی‌شوند.
+
+### فایل‌های آپلودی
+عکس‌ها و اسناد در `storage/app/private/` (بیرون از `public`) ذخیره می‌شوند و فقط از راه برنامه، پس از بررسی مجوز، نمایش داده می‌شوند. `php artisan storage:link` لازم نیست و نباید اجرا شود. این پوشه در git نیست و باید در نسخه‌ی پشتیبان باشد.
+
+### پشتیبان پیش از migration
+پیش از migration روی `maktab`، یک نسخه در `backups/` (بیرون از git) بگیرید:
+```
+mysqldump -u root --single-transaction --routines maktab --result-file=backups\maktab-YYYYMMDD.sql
+```
 
 ### باز کردن برنامه در توسعه
 - با Apache خود XAMPP: `http://localhost/High%20school%20management%20system/` (به `.../public/` می‌رود)

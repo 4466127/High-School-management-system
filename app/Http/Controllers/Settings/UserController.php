@@ -8,6 +8,7 @@ use App\Http\Requests\Settings\StoreUserRequest;
 use App\Http\Requests\Settings\UpdateUserRequest;
 use App\Models\Permission;
 use App\Models\Role;
+use App\Models\Staff;
 use App\Models\User;
 use App\Services\ActivityLogger;
 use Illuminate\Http\RedirectResponse;
@@ -61,6 +62,7 @@ class UserController extends Controller
             $user = User::create([
                 'name' => $data['name'],
                 'username' => $data['username'],
+                'staff_id' => $data['staff_id'] ?? null,
                 'password' => $data['password'],
                 'is_active' => $data['is_active'] ?? false,
                 'must_change_password' => true,
@@ -90,7 +92,7 @@ class UserController extends Controller
         $old = $this->snapshot($user);
 
         DB::transaction(function () use ($user, $data, $old) {
-            $user->update(['name' => $data['name'], 'username' => $data['username']]);
+            $user->update(['name' => $data['name'], 'username' => $data['username'], 'staff_id' => $data['staff_id'] ?? null]);
             $user->roles()->sync($data['roles']);
             $user->permissions()->sync($data['permissions'] ?? []);
             $user->flushPermissionCache();
@@ -150,6 +152,11 @@ class UserController extends Controller
             'user' => $user,
             'roles' => Role::orderBy('id')->get(),
             'permissionGroups' => Permission::orderBy('id')->get()->groupBy('group'),
+            // کارمندانی که هنوز حساب ندارند + کارمند فعلی همین حساب
+            'staffOptions' => Staff::query()
+                ->where(fn ($q) => $q->whereDoesntHave('user')->orWhere('id', $user->staff_id))
+                ->orderBy('first_name')
+                ->get(['id', 'first_name', 'last_name', 'staff_type']),
         ];
     }
 
@@ -161,6 +168,7 @@ class UserController extends Controller
         return [
             'name' => $user->name,
             'username' => $user->username,
+            'staff_id' => $user->staff_id,
             'is_active' => $user->is_active,
             'roles' => $user->roles()->orderBy('key')->pluck('key')->all(),
             'permissions' => $user->permissions()->orderBy('key')->pluck('key')->all(),

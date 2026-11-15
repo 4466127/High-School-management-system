@@ -21,6 +21,20 @@
         @error('username')<div class="invalid-feedback">{{ $message }}</div>@enderror
     </div>
 
+    <div class="col-md-6">
+        <label for="staff_id" class="form-label">{{ __('users.staff') }}</label>
+        <select id="staff_id" name="staff_id" class="form-select @error('staff_id') is-invalid @enderror">
+            <option value="">{{ __('users.no_staff') }}</option>
+            @foreach ($staffOptions as $member)
+                <option value="{{ $member->id }}" @selected((string) old('staff_id', $user->staff_id) === (string) $member->id)>
+                    {{ $member->full_name }} — {{ $member->staff_type->label() }}
+                </option>
+            @endforeach
+        </select>
+        <div class="form-text">{{ __('users.staff_hint') }}</div>
+        @error('staff_id')<div class="invalid-feedback">{{ $message }}</div>@enderror
+    </div>
+
     @unless ($user->exists)
         <div class="col-md-6">
             <label for="password" class="form-label">{{ __('users.password') }} <span class="text-danger">*</span></label>

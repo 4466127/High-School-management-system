@@ -33,7 +33,8 @@ return [
         'local' => [
             'driver' => 'local',
             'root' => storage_path('app/private'),
-            'serve' => true,
+            // فایل‌های خصوصی (عکس و اسناد دانش‌آموز) فقط از راه کنترلرها با بررسی مجوز داده می‌شوند
+            'serve' => false,
             'throw' => false,
             'report' => false,
         ],

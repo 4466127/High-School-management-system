@@ -118,7 +118,7 @@ erDiagram
 ## شرح جدول‌ها
 
 ### دسترسی و ردپا
-**users** — `name`, `username` (یکتا، حروف کوچک), `password`, `is_active`, `must_change_password`, `last_login_at`, `remember_token`. ستون `staff_id` (اختیاری، یکتا → staff) همراه جدول `staff` در مرحله‌ی ۳ اضافه می‌شود. جدول `password_reset_tokens` و `jobs` ساخته نمی‌شوند (بازیابی رمز با ایمیل و صف نداریم).
+**users** — `name`, `username` (یکتا، حروف کوچک), `staff_id` (اختیاری، یکتا → staff؛ از مرحله‌ی ۳), `password`, `is_active`, `must_change_password`, `last_login_at`, `remember_token`. جدول `password_reset_tokens` و `jobs` ساخته نمی‌شوند (بازیابی رمز با ایمیل و صف نداریم).
 
 **roles** — `key` (یکتا: `admin`, `principal`, `office`, `teacher`, `accountant`, `course_manager`), `name`
 **role_user** — `user_id`, `role_id` (کلید مرکب)
@@ -146,16 +146,16 @@ erDiagram
 **teacher_assignments** — `section_id`, `subject_id`, `staff_id`. یکتا: (`section_id`, `subject_id`). سال تحصیلی از `section` می‌آید.
 
 ### اشخاص
-**students** — `admission_no` (نمبر اساس، یکتا), `first_name`, `last_name`, `father_name`, `grandfather_name`, `gender`, `birth_date`, `tazkira_no` (اختیاری), `photo_path`, `phone`, `province`, `district`, `village`, `address`, `admission_date`, `status` (active / transferred / dropped / graduated / inactive), `status_changed_on`, `status_reason`, `notes`, `deleted_at`
+**students** — `admission_no` (نمبر اساس، یکتا حتی بین حذف‌شده‌ها؛ اگر خالی بماند: بزرگ‌ترین نمبر عددی + ۱), `first_name`, `last_name`, `father_name`, `grandfather_name`, `gender`, `birth_date`, `tazkira_no` (اختیاری), `photo_path`, `phone`, `province`, `district`, `village`, `address`, `admission_date`, `status` (active / inactive / transferred / dropped / graduated), `status_changed_on`, `status_reason`, `notes`, `deleted_reason`, `deleted_at`
 
 **guardians** — `name`, `phone`, `phone2`, `occupation`, `address`
 **guardian_student** — `student_id`, `guardian_id`, `relation` (پدر، مادر، کاکا، …), `is_primary`. یک سرپرست می‌تواند برای چند خواهر و برادر باشد.
 
-**student_documents** — `student_id`, `title`, `file_path`, `uploaded_by`
+**student_documents** — `student_id`, `title`, `file_path` (در `storage/app/private`), `original_name`, `mime_type`, `size`, `uploaded_by`
 
 **enrollments** — `student_id`, `academic_year_id`, `section_id`, `roll_no` (نمبر حاضری), `enrolled_on`, `status` (active / promoted / repeated / transferred / dropped / graduated), `left_on`, `leave_reason`, و نتیجه‌ی نهایی: `final_total`, `final_average`, `final_result` (passed / conditional / failed / deprived), `class_rank`, `finalized_at`, `finalized_by`. یکتا: (`student_id`, `academic_year_id`).
 
-**staff** — `staff_type` (teacher / admin / service / course_teacher), `first_name`, `last_name`, `father_name`, `gender`, `phone`, `education`, `specialization`, `address`, `hire_date`, `position` (وظیفه), `employment_status` (active / on_leave / left), `photo_path`, `notes`, `deleted_at`
+**staff** — `staff_type` (teacher / admin / service / course_teacher), `first_name`, `last_name`, `father_name`, `gender`, `phone`, `education`, `specialization`, `address`, `hire_date`, `position` (وظیفه), `employment_status` (active / on_leave / left), `status_changed_on`, `status_reason`, `photo_path`, `notes`, `deleted_at`. وضعیت «left» حساب کاربری وصل‌شده را غیرفعال می‌کند.
 
 **staff_work_history** — `staff_id`, `title`, `organization`, `from_date`, `to_date`, `notes`
 

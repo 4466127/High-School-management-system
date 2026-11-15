@@ -65,7 +65,7 @@
                                         @php
                                             $show = fn ($v) => is_array($v) ? implode('، ', $v) : (is_bool($v) ? ($v ? __('app.yes') : __('app.no')) : (string) $v);
                                         @endphp
-                                        <dt>{{ $field }}:</dt>
+                                        <dt>{{ __('activity.fields.'.$field) !== 'activity.fields.'.$field ? __('activity.fields.'.$field) : $field }}:</dt>
                                         <dd>
                                             @if (isset($log->old_values[$field]))
                                                 <del class="text-danger">{{ $show($log->old_values[$field]) }}</del>

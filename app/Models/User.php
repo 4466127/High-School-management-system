@@ -8,10 +8,11 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
-#[Fillable(['name', 'username', 'password', 'is_active', 'must_change_password'])]
+#[Fillable(['name', 'username', 'staff_id', 'password', 'is_active', 'must_change_password'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -35,6 +36,12 @@ class User extends Authenticatable
     protected function username(): Attribute
     {
         return Attribute::make(set: fn (string $value) => mb_strtolower(trim($value)));
+    }
+
+    /** کارمند/معلمی که این حساب به او تعلق دارد (اختیاری؛ برای محدوده‌ی معلم در مرحله‌های بعد) */
+    public function staff(): BelongsTo
+    {
+        return $this->belongsTo(Staff::class);
     }
 
     public function roles(): BelongsToMany

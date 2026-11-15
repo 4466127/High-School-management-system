@@ -30,6 +30,14 @@
 .log-values dd { display: inline; margin: 0 0 0 .5rem; }
 .log-values dd::after { content: ""; display: block; }
 
+/* ---------- عکس کوچک و پرونده ---------- */
+.avatar { flex: none; border: 1px solid var(--hk-line); }
+.avatar-empty { display: inline-flex; align-items: center; justify-content: center; background: var(--hk-accent-soft); color: var(--hk-accent); font-size: 1.1em; }
+.info-list dt { color: var(--bs-secondary-color); font-weight: 500; }
+.info-list dd { margin-bottom: .55rem; }
+.text-pre-line { white-space: pre-line; }
+.modal-header .btn-close { margin: 0; }
+
 /* ---------- صفحه‌ی خطا ---------- */
 .error-code { font-size: 3rem; font-weight: 700; color: var(--hk-accent); line-height: 1; }
 

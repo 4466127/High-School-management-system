@@ -12,7 +12,7 @@
 - [API.md](API.md) — مسیرهای داخلی JSON و خروجی CSV
 
 ## وضعیت فعلی
-مرحله‌ی ۰ و ۱ تمام و تأیید شده. مرحله‌ی ۲ (هسته، ورود، نقش‌ها) ساخته و آزمایش شده و منتظر بررسی صاحب پروژه است.
+مرحله‌های ۰ تا ۲ تأیید شده. مرحله‌ی ۳ (دانش‌آموزان، معلمان، کارکنان) ساخته، آزمایش و push شده است. بعدی: مرحله‌ی ۴ (سال تحصیلی، صنف، بخش، مضمون، شمولیت سالانه).
 وضعیت دقیق همیشه در ROADMAP.md است؛ تغییرات در CHANGELOG.md.
 
 ## قواعد سخت (استثنا ندارد)
@@ -62,7 +62,13 @@ php artisan school:backup       # نسخه‌ی پشتیبان (مرحله‌ی 
 - مجوز تازه: کلید در `config/permissions.php` + برچسب در `lang/fa/permissions.php` + `php artisan db:seed --class=RolePermissionSeeder`.
 - منو: `config/menu.php`؛ `route => null` یعنی «به‌زودی».
 - `User::hasPermission()` مدیر سیستم را همیشه مجاز می‌داند؛ Gate::before نداریم تا Policyها (مثلاً «خودت را غیرفعال نکن») برای مدیر هم کار کنند.
-- `app.css` و `app.js` از پروژه‌ی قبلی بدون تغییر‌اند؛ سبک تازه در `school.css`. انتخاب‌گر تاریخ: `input[data-jdate]`.
+- `app.css` و `app.js` از پروژه‌ی قبلی بدون تغییر‌اند؛ سبک تازه در `school.css`، JS تازه در `school.js`. انتخاب‌گر تاریخ: `input[data-jdate]`.
+
+## نکته‌های پیاده‌سازی مرحله‌ی ۳
+- تغییر پرونده‌ها فقط از راه `StudentService` / `StaffService` (transaction + ثبت رویداد با `ModelChanges::capture` پس از fill و پیش از save).
+- فرم‌ها با `x-form.input/select/textarea` و `x-jalali-date`؛ چند فرم هم‌نام در یک صفحه (پنجره‌ها) با `x-modal-form` و `:use-old="old('_modal') === '<id>'"`.
+- فایل خصوصی: `PrivateFiles::store/inline/download` روی دیسک `local` (`storage/app/private`). هرگز `storage:link`.
+- در تست‌ها رکورد را با نام پیدا نکنید وقتی factory نام تصادفی می‌دهد (`latest('id')`)؛ پیام موفقیت flash در درخواست بعدی دیده می‌شود.
 
 ## Git و GitHub
 - بعد از تمام شدن هر مرحله: commit و push به `origin main` (صاحب پروژه این را خواسته است).

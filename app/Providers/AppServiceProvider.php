@@ -7,6 +7,7 @@ use App\Support\Menu;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
@@ -22,6 +23,11 @@ class AppServiceProvider extends ServiceProvider
         // هر مجوز config/permissions.php یک Gate است: @can('students.manage')، ->middleware('can:students.manage')
         foreach (array_keys(config('permissions.permissions', [])) as $permission) {
             Gate::define($permission, fn (User $user) => $user->hasPermission($permission));
+        }
+
+        // شناسه‌ی همه‌ی مدل‌ها در آدرس فقط عدد است (تا students/create با students/{student} قاطی نشود)
+        foreach (['student', 'staff', 'user', 'guardian', 'document', 'history'] as $parameter) {
+            Route::pattern($parameter, '[0-9]+');
         }
 
         Paginator::useBootstrapFive();

@@ -5,8 +5,11 @@ namespace Tests\Feature;
 use App\Models\Permission;
 use App\Models\Role;
 use App\Models\Setting;
+use App\Models\Staff;
+use App\Models\Student;
 use App\Models\User;
 use Database\Seeders\AdminUserSeeder;
+use Database\Seeders\DemoSchoolSeeder;
 use Database\Seeders\RolePermissionSeeder;
 use Database\Seeders\SettingsSeeder;
 use Tests\TestCase;
@@ -39,6 +42,19 @@ class SeederTest extends TestCase
         $this->assertSame('40', (string) Setting::get('pass_percent'));
         $this->assertFalse(Setting::enabled('fees_enabled'));
         $this->assertSame('AFN', Setting::get('currency'));
+    }
+
+    public function test_demo_school_seeder_creates_unique_records_once(): void
+    {
+        $this->seed(DemoSchoolSeeder::class);
+
+        $count = Student::count();
+        $this->assertGreaterThanOrEqual(30, $count);
+        $this->assertSame($count, Student::distinct()->count('admission_no'));
+        $this->assertSame(15, Staff::count());
+
+        $this->seed(DemoSchoolSeeder::class); // دوباره: هیچ کاری نکند
+        $this->assertSame($count, Student::count());
     }
 
     public function test_admin_seeder_creates_one_admin_only_once(): void
