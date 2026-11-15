@@ -12,7 +12,7 @@
 - [API.md](API.md) — مسیرهای داخلی JSON و خروجی CSV
 
 ## وضعیت فعلی
-مرحله‌های ۰ تا ۲ تأیید شده. مرحله‌ی ۳ (دانش‌آموزان، معلمان، کارکنان) ساخته، آزمایش و push شده است. بعدی: مرحله‌ی ۴ (سال تحصیلی، صنف، بخش، مضمون، شمولیت سالانه).
+مرحله‌های ۰ تا ۳ تأیید شده. مرحله‌ی ۴ (سال تحصیلی، صنف، بخش، مضمون، شمولیت، ارتقا، مشخصات مکتب) ساخته، آزمایش و push شده است. بعدی: مرحله‌ی ۵ (حاضری).
 وضعیت دقیق همیشه در ROADMAP.md است؛ تغییرات در CHANGELOG.md.
 
 ## قواعد سخت (استثنا ندارد)
@@ -69,6 +69,15 @@ php artisan school:backup       # نسخه‌ی پشتیبان (مرحله‌ی 
 - فرم‌ها با `x-form.input/select/textarea` و `x-jalali-date`؛ چند فرم هم‌نام در یک صفحه (پنجره‌ها) با `x-modal-form` و `:use-old="old('_modal') === '<id>'"`.
 - فایل خصوصی: `PrivateFiles::store/inline/download` روی دیسک `local` (`storage/app/private`). هرگز `storage:link`.
 - در تست‌ها رکورد را با نام پیدا نکنید وقتی factory نام تصادفی می‌دهد (`latest('id')`)؛ پیام موفقیت flash در درخواست بعدی دیده می‌شود.
+
+## نکته‌های پیاده‌سازی مرحله‌ی ۴
+- صنف/بخش دانش‌آموز فقط در `enrollments` (یک سطر برای هر سال). حاضری و نمرات به `enrollment_id` وصل شوند، نه `student_id`.
+- تغییر شمولیت فقط از راه `EnrollmentService` (enroll، changeSection، leave، promote، renumber). سطر سال‌های قبل ویرایش نمی‌شود.
+- سال جاری: `AcademicYear::current()` (cache در static؛ پس از تغییر `forgetCurrent()`؛ در TestCase خودکار).
+- محدوده‌ی معلم: `$user->taughtSectionIds()` (نگران صنف + معلم مضمون در سال جاری). دیدن همه‌ی دانش‌آموزان: `students.view_all` یا `students.manage`.
+- `Section::ordered()` ستون‌ها را فقط اگر خالی باشد `sections.*` می‌گذارد (تا `withCount` از بین نرود).
+- Form Requestی که مسیرش با middleware مجوز بسته نیست، باید `authorize()` داشته باشد (مجوز پیش از اعتبارسنجی).
+- تست‌ها: `makeYear()` و `makeSection()` در `Tests\TestCase`.
 
 ## Git و GitHub
 - بعد از تمام شدن هر مرحله: commit و push به `origin main` (صاحب پروژه این را خواسته است).

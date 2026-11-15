@@ -1,16 +1,25 @@
 <?php
 
+use App\Http\Controllers\Academics\AcademicYearController;
+use App\Http\Controllers\Academics\GradeSubjectController;
+use App\Http\Controllers\Academics\PromotionController;
+use App\Http\Controllers\Academics\SectionController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Settings\ActivityLogController;
+use App\Http\Controllers\Settings\SchoolSettingController;
 use App\Http\Controllers\Settings\UserController;
 use App\Http\Controllers\Staff\StaffController;
 use App\Http\Controllers\Staff\WorkHistoryController;
+use App\Http\Controllers\Students\EnrollmentController;
 use App\Http\Controllers\Students\GuardianController;
 use App\Http\Controllers\Students\StudentController;
 use App\Http\Controllers\Students\StudentDocumentController;
 use Illuminate\Support\Facades\Route;
+
+// لوگوی مکتب: برای همه (صفحه‌ی ورود هم نشان می‌دهد)
+Route::get('/school-logo', [SchoolSettingController::class, 'logo'])->name('school.logo');
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', [LoginController::class, 'create'])->name('login');
@@ -42,6 +51,10 @@ Route::middleware(['auth', 'active'])->group(function () {
             Route::put('/{student}/guardians/{guardian}', [GuardianController::class, 'update'])->name('guardians.update');
             Route::delete('/{student}/guardians/{guardian}', [GuardianController::class, 'destroy'])->name('guardians.destroy');
 
+            Route::post('/{student}/enrollment', [EnrollmentController::class, 'store'])->name('enrollment.store');
+            Route::patch('/{student}/enrollment/move', [EnrollmentController::class, 'move'])->name('enrollment.move');
+            Route::patch('/{student}/enrollment/leave', [EnrollmentController::class, 'leave'])->name('enrollment.leave');
+
             Route::post('/{student}/documents', [StudentDocumentController::class, 'store'])->name('documents.store');
             Route::get('/{student}/documents/{document}', [StudentDocumentController::class, 'show'])->name('documents.show');
             Route::delete('/{student}/documents/{document}', [StudentDocumentController::class, 'destroy'])->name('documents.destroy');
@@ -64,8 +77,53 @@ Route::middleware(['auth', 'active'])->group(function () {
             Route::delete('/{staff}/history/{history}', [WorkHistoryController::class, 'destroy'])->name('history.destroy');
         });
 
+        // ---------- صنف‌ها و مضامین (مجوز دقیق بخش‌ها در SectionPolicy) ----------
+        Route::prefix('academics')->name('academics.')->group(function () {
+            Route::get('/sections', [SectionController::class, 'index'])->name('sections.index');
+            Route::get('/sections/create', [SectionController::class, 'create'])->name('sections.create');
+            Route::post('/sections', [SectionController::class, 'store'])->name('sections.store');
+            Route::get('/sections/{section}', [SectionController::class, 'show'])->name('sections.show');
+            Route::get('/sections/{section}/edit', [SectionController::class, 'edit'])->name('sections.edit');
+            Route::put('/sections/{section}', [SectionController::class, 'update'])->name('sections.update');
+            Route::delete('/sections/{section}', [SectionController::class, 'destroy'])->name('sections.destroy');
+            Route::put('/sections/{section}/assignments', [SectionController::class, 'updateAssignments'])->name('sections.assignments');
+            Route::get('/sections/{section}/enroll', [SectionController::class, 'enrollForm'])->name('sections.enroll');
+            Route::post('/sections/{section}/enroll', [SectionController::class, 'enroll'])->name('sections.enroll.store');
+            Route::patch('/sections/{section}/renumber', [SectionController::class, 'renumber'])->name('sections.renumber');
+
+            Route::middleware('can:academics.manage')->group(function () {
+                Route::get('/years', [AcademicYearController::class, 'index'])->name('years.index');
+                Route::get('/years/create', [AcademicYearController::class, 'create'])->name('years.create');
+                Route::post('/years', [AcademicYearController::class, 'store'])->name('years.store');
+                Route::get('/years/{year}/edit', [AcademicYearController::class, 'edit'])->name('years.edit');
+                Route::put('/years/{year}', [AcademicYearController::class, 'update'])->name('years.update');
+                Route::patch('/years/{year}/current', [AcademicYearController::class, 'setCurrent'])->name('years.current');
+                Route::post('/years/{year}/terms', [AcademicYearController::class, 'storeTerm'])->name('years.terms.store');
+                Route::put('/years/{year}/terms/{term}', [AcademicYearController::class, 'updateTerm'])->name('years.terms.update');
+                Route::delete('/years/{year}/terms/{term}', [AcademicYearController::class, 'destroyTerm'])->name('years.terms.destroy');
+
+                Route::get('/grades', [GradeSubjectController::class, 'index'])->name('grades.index');
+                Route::post('/grades', [GradeSubjectController::class, 'storeGrade'])->name('grades.store');
+                Route::put('/grades/{grade}', [GradeSubjectController::class, 'updateGrade'])->name('grades.update');
+                Route::get('/grades/{grade}/subjects', [GradeSubjectController::class, 'editSubjects'])->name('grades.subjects');
+                Route::put('/grades/{grade}/subjects', [GradeSubjectController::class, 'updateSubjects'])->name('grades.subjects.update');
+                Route::post('/subjects', [GradeSubjectController::class, 'storeSubject'])->name('subjects.store');
+                Route::put('/subjects/{subject}', [GradeSubjectController::class, 'updateSubject'])->name('subjects.update');
+            });
+
+            Route::middleware('can:students.manage')->group(function () {
+                Route::get('/promotion', [PromotionController::class, 'create'])->name('promotion.create');
+                Route::post('/promotion', [PromotionController::class, 'store'])->name('promotion.store');
+            });
+        });
+
         // ---------- تنظیمات ----------
         Route::prefix('settings')->name('settings.')->group(function () {
+            Route::middleware('can:settings.manage')->group(function () {
+                Route::get('school', [SchoolSettingController::class, 'edit'])->name('school.edit');
+                Route::put('school', [SchoolSettingController::class, 'update'])->name('school.update');
+            });
+
             Route::middleware('can:users.manage')->group(function () {
                 Route::resource('users', UserController::class)->except(['show', 'destroy']);
                 Route::patch('users/{user}/toggle-active', [UserController::class, 'toggleActive'])->name('users.toggle-active');

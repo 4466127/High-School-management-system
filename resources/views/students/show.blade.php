@@ -21,6 +21,11 @@
                             <span class="small text-secondary">{{ $student->status_reason }} (@jdate($student->status_changed_on))</span>
                         @endif
                     @endif
+                    @if ($currentEnrollment)
+                        <span class="current-class ms-1"><i class="fa-solid fa-chalkboard" aria-hidden="true"></i> {{ $currentEnrollment->section->label }} · {{ __('academics.roll_no') }} @fa($currentEnrollment->roll_no)</span>
+                    @elseif ($currentYear && ! $student->trashed())
+                        <span class="small text-warning-emphasis ms-1">{{ __('academics.not_enrolled') }}</span>
+                    @endif
                 </div>
             </div>
             <div class="d-flex flex-wrap gap-2">
@@ -108,7 +113,56 @@
         @endif
 
         <div class="tab-pane fade" id="history-pane" role="tabpanel">
-            <div class="card card-body text-secondary">{{ __('students.history_soon') }}</div>
+            @can('update', $student)
+                @if ($currentYear)
+                    <div class="d-flex flex-wrap gap-2 mb-2">
+                        @if ($currentEnrollment)
+                            <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#moveModal"><i class="fa-solid fa-right-left" aria-hidden="true"></i> {{ __('academics.move') }}</button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#leaveModal"><i class="fa-solid fa-door-open" aria-hidden="true"></i> {{ __('academics.leave') }}</button>
+                        @elseif (in_array($student->status, [\App\Enums\StudentStatus::Active, \App\Enums\StudentStatus::Transferred, \App\Enums\StudentStatus::Dropped], true)
+                                 && (! $yearEnrollment || in_array($yearEnrollment->status, [\App\Enums\EnrollmentStatus::Transferred, \App\Enums\EnrollmentStatus::Dropped], true)))
+                            <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#enrollModal"><i class="fa-solid fa-user-plus" aria-hidden="true"></i> {{ __('academics.enroll') }}</button>
+                            @if ($yearEnrollment)<span class="form-text align-self-center">{{ __('academics.reenroll_hint') }}</span>@endif
+                        @endif
+                    </div>
+                @endif
+            @endcan
+            <div class="card">
+                <div class="table-responsive">
+                    <table class="table align-middle mb-0">
+                        <thead>
+                        <tr>
+                            <th>{{ __('academics.year') }}</th>
+                            <th>{{ __('academics.grade') }}</th>
+                            <th>{{ __('academics.section') }}</th>
+                            <th>{{ __('academics.roll_no') }}</th>
+                            <th>{{ __('students.status') }}</th>
+                            <th>{{ __('academics.date') }}</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @forelse ($student->enrollments as $enrollment)
+                            <tr @class(['table-active' => $currentEnrollment && $enrollment->id === $currentEnrollment->id])>
+                                <td class="fw-medium">@fa($enrollment->academicYear->name)</td>
+                                <td>{{ $enrollment->section->gradeLevel->name }}</td>
+                                <td>{{ $enrollment->section->name }} ({{ $enrollment->section->shift->label() }})</td>
+                                <td>@fa($enrollment->roll_no)</td>
+                                <td>
+                                    <span class="badge {{ $enrollment->status->badgeClass() }}">{{ $enrollment->status->label() }}</span>
+                                    @if ($enrollment->leave_reason)<div class="small text-secondary">{{ $enrollment->leave_reason }}</div>@endif
+                                </td>
+                                <td class="small">
+                                    @jdate($enrollment->enrolled_on)
+                                    @if ($enrollment->left_on) ← @jdate($enrollment->left_on)@endif
+                                </td>
+                            </tr>
+                        @empty
+                            <tr><td colspan="6" class="text-center text-secondary py-3">{{ __('academics.no_history') }}</td></tr>
+                        @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -123,6 +177,27 @@
             <x-form.textarea name="reason" :label="__('students.reason')" rows="2" :required="! $activating" maxlength="500" :use-old="old('_modal') === 'statusModal'" />
             <x-jalali-date name="date" :label="__('students.status_date')" :value="now()" />
         </x-modal-form>
+    @endcan
+    @can('update', $student)
+        @if ($currentYear)
+            @php($sectionOptions = $yearSections->mapWithKeys(fn ($s) => [$s->id => $s->label])->all())
+            @if ($currentEnrollment)
+                <x-modal-form id="moveModal" :title="__('academics.move_title')" :action="route('students.enrollment.move', $student)" method="PATCH" :submit="__('academics.move')">
+                    <x-form.select name="section_id" :label="__('academics.section')" :options="$sectionOptions" :value="$currentEnrollment->section_id" required />
+                    <x-form.textarea name="reason" :label="__('academics.leave_reason')" rows="2" maxlength="500" :use-old="old('_modal') === 'moveModal'" />
+                </x-modal-form>
+                <x-modal-form id="leaveModal" :title="__('academics.leave_title')" :action="route('students.enrollment.leave', $student)" method="PATCH" :submit="__('app.save')" submit-class="btn-secondary">
+                    <x-form.select name="status" :label="__('academics.leave_type')" :options="['transferred' => __('academics.leave_transfer'), 'dropped' => __('academics.leave_drop')]" required />
+                    <x-form.textarea name="reason" :label="__('academics.leave_reason')" rows="2" required maxlength="500" :placeholder="__('academics.leave_reason_ph')" :use-old="old('_modal') === 'leaveModal'" />
+                    <x-jalali-date name="date" :label="__('academics.date')" :value="now()" :use-old="old('_modal') === 'leaveModal'" />
+                </x-modal-form>
+            @else
+                <x-modal-form id="enrollModal" :title="__('academics.enroll_title', ['year' => \App\Support\Digits::toPersian($currentYear->name)])" :action="route('students.enrollment.store', $student)" :submit="__('academics.enroll')">
+                    <x-form.select name="section_id" :label="__('academics.section')" :options="$sectionOptions" :placeholder="__('academics.choose_section')" required />
+                    <x-jalali-date name="date" :label="__('academics.date')" :value="now()" :use-old="old('_modal') === 'enrollModal'" />
+                </x-modal-form>
+            @endif
+        @endif
     @endcan
     @can('delete', $student)
         <x-modal-form id="deleteModal" :title="__('students.delete_title')" :action="route('students.destroy', $student)" method="DELETE"

@@ -1,6 +1,12 @@
 <aside class="side" id="side-menu">
     <div class="brand">
-        <span class="brand-logo" aria-hidden="true"><i class="fa-solid fa-graduation-cap"></i></span>
+        <span class="brand-logo" aria-hidden="true">
+            @if (\App\Models\Setting::get('logo_path'))
+                <img src="{{ route('school.logo') }}" alt="">
+            @else
+                <i class="fa-solid fa-graduation-cap"></i>
+            @endif
+        </span>
         <span class="brand-text">
             {{ \App\Models\Setting::get('school_name') }}
             <small>{{ __('app.name') }}</small>

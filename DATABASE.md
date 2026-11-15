@@ -138,7 +138,7 @@ erDiagram
 
 **grade_levels** — `name` (صنف اول … دوازدهم یا هر نام دیگر), `sort_order`, `is_active`. تعداد محدود نیست؛ `sort_order` صنف بعدی را برای ارتقا مشخص می‌کند.
 
-**sections** — `academic_year_id`, `grade_level_id`, `name` (الف/ب/ج), `shift` (morning/afternoon), `class_teacher_id` (→ staff، اختیاری), `room`, `capacity`. یکتا: (`academic_year_id`, `grade_level_id`, `name`, `shift`). تعداد دانش‌آموزان ذخیره نمی‌شود؛ از `enrollments` شمرده می‌شود.
+**sections** — `academic_year_id`, `grade_level_id`, `name` (الف/ب/ج), `shift` (morning/afternoon), `class_teacher_id` (→ staff، اختیاری), `room`, `capacity`. بخشی که شمولیت (حتی سابق) دارد حذف نمی‌شود. یکتا: (`academic_year_id`, `grade_level_id`, `name`, `shift`). تعداد دانش‌آموزان ذخیره نمی‌شود؛ از `enrollments` شمرده می‌شود.
 
 **subjects** — `name`, `code` (اختیاری), `is_active`
 **grade_level_subject** — `grade_level_id`, `subject_id`, `sort_order` (ترتیب در کارنامه)

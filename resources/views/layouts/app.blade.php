@@ -9,7 +9,12 @@
 
     <main class="main">
         <div class="topbar">
-            <span class="topbar-date"><i class="fa-regular fa-calendar" aria-hidden="true"></i> @jdate(now(), 'full')</span>
+            <span class="topbar-date">
+                <i class="fa-regular fa-calendar" aria-hidden="true"></i> @jdate(now(), 'full')
+                @if ($currentYear = \App\Models\AcademicYear::current())
+                    <span class="current-class ms-2"><i class="fa-solid fa-school" aria-hidden="true"></i> {{ __('academics.year') }} @fa($currentYear->name)</span>
+                @endif
+            </span>
             <div class="topbar-user dropdown">
                 <button class="btn btn-sm btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                     <i class="fa-solid fa-circle-user" aria-hidden="true"></i>

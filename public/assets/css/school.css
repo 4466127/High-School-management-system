@@ -224,6 +224,35 @@ code { color: #9b3b5a; }
 }
 .auth-title { color: var(--sc-navy); }
 
+/* ---------- بخش‌ها (صنف‌ها) ---------- */
+.section-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+.section-card {
+    display: flex; flex-direction: column; gap: 6px; padding: 14px 16px;
+    background: #fff; border: 1px solid var(--hk-line); border-radius: var(--bs-border-radius-lg);
+    box-shadow: var(--sc-shadow); color: var(--bs-body-color); text-decoration: none;
+    transition: transform .15s, box-shadow .15s, border-color .15s;
+}
+.section-card:hover, .section-card:focus-visible { transform: translateY(-2px); box-shadow: var(--sc-shadow-hover); border-color: #bccfee; color: var(--bs-body-color); }
+.section-card-head { display: flex; align-items: center; justify-content: space-between; }
+.section-card-count { font-weight: 700; color: var(--sc-navy); }
+.section-card-count i, .section-card .fa-user-tie { color: var(--hk-accent); }
+.section-badge {
+    min-width: 40px; height: 40px; padding: 0 10px; border-radius: 12px;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: linear-gradient(145deg, #ffd166, var(--sc-gold)); color: var(--sc-navy);
+    font-weight: 700; font-size: 1.05rem;
+}
+.section-badge-lg { min-width: 64px; height: 64px; border-radius: 18px; font-size: 1.6rem; }
+.enroll-list { max-height: 60vh; overflow-y: auto; }
+.decision-group .btn { min-width: 64px; }
+.current-class {
+    display: inline-flex; align-items: center; gap: .4rem;
+    background: var(--sc-gold-soft); color: var(--sc-gold-dark);
+    border: 1px solid #f5d98a; border-radius: 20px; padding: .1rem .7rem; font-size: .85rem; font-weight: 500;
+}
+.brand-logo img { width: 100%; height: 100%; object-fit: contain; border-radius: 12px; background: #fff; }
+.auth-logo img { width: 100%; height: 100%; object-fit: contain; border-radius: 20px; background: #fff; }
+
 /* ---------- عکس کوچک و پرونده ---------- */
 .avatar { flex: none; border: 2px solid #fff; box-shadow: 0 1px 4px rgba(23, 43, 77, .15); }
 .avatar-empty { display: inline-flex; align-items: center; justify-content: center; background: var(--hk-accent-soft); color: var(--hk-accent); font-size: 1.1em; }

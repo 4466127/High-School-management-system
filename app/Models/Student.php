@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\EnrollmentStatus;
 use App\Enums\Gender;
 use App\Enums\StudentStatus;
 use App\Support\PersianText;
@@ -13,6 +14,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
@@ -53,6 +55,30 @@ class Student extends Model
     public function documents(): HasMany
     {
         return $this->hasMany(StudentDocument::class)->latest();
+    }
+
+    /** سوابق تحصیلی: یک سطر برای هر سال */
+    public function enrollments(): HasMany
+    {
+        return $this->hasMany(Enrollment::class);
+    }
+
+    /** شمولیت فعال در سال جاری (اگر هست) */
+    public function currentEnrollment(): HasOne
+    {
+        $year = AcademicYear::current();
+
+        return $this->hasOne(Enrollment::class)
+            ->where('academic_year_id', $year?->id ?? 0)
+            ->where('status', EnrollmentStatus::Active);
+    }
+
+    /** دانش‌آموزانی که در یکی از این بخش‌ها شمولیت فعال دارند (محدوده‌ی معلم) */
+    public function scopeInSections(Builder $query, array $sectionIds): Builder
+    {
+        return $query->whereHas('enrollments', fn (Builder $q) => $q
+            ->whereIn('section_id', $sectionIds ?: [0])
+            ->where('status', EnrollmentStatus::Active));
     }
 
     protected function fullName(): Attribute

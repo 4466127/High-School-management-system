@@ -28,6 +28,22 @@ return [
         'dropped' => 'ترک تحصیل',
         'graduated' => 'فارغ',
     ],
+    'shift' => [
+        'morning' => 'صبح',
+        'afternoon' => 'بعدازظهر',
+    ],
+    'enrollment_status' => [
+        'active' => 'جاری',
+        'promoted' => 'ارتقا',
+        'repeated' => 'تکرار صنف',
+        'graduated' => 'فارغ',
+        'transferred' => 'منتقل‌شده',
+        'dropped' => 'ترک تحصیل',
+    ],
+    'school_type' => [
+        'government' => 'دولتی',
+        'private' => 'خصوصی',
+    ],
     'staff_type' => [
         'teacher' => 'معلم',
         'admin' => 'کارمند اداری',

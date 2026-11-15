@@ -8,8 +8,13 @@
     <div class="card auth-card shadow-sm">
         <div class="card-body p-4">
             <div class="text-center mb-3">
-                {{-- لوگوی مکتب همراه صفحه‌ی تنظیمات مکتب اضافه می‌شود --}}
-                <div class="auth-logo" aria-hidden="true"><i class="fa-solid fa-graduation-cap"></i></div>
+                <div class="auth-logo" aria-hidden="true">
+                    @if (\App\Models\Setting::get('logo_path'))
+                        <img src="{{ route('school.logo') }}" alt="">
+                    @else
+                        <i class="fa-solid fa-graduation-cap"></i>
+                    @endif
+                </div>
                 <h1 class="h5 fw-bold mb-0 auth-title">{{ \App\Models\Setting::get('school_name') }}</h1>
                 <div class="text-secondary small">{{ __('app.name') }}</div>
             </div>

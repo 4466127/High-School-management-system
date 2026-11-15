@@ -22,6 +22,8 @@ class User extends Authenticatable
     /** کلیدهای مجوز کاربر (از نقش‌ها + مجوزهای اضافی)؛ در هر درخواست یک بار خوانده می‌شود. */
     private ?array $permissionKeysCache = null;
 
+    private ?array $taughtSectionIdsCache = null;
+
     protected function casts(): array
     {
         return [
@@ -90,9 +92,40 @@ class User extends Authenticatable
         return $this->permissionKeysCache;
     }
 
+    /**
+     * بخش‌های سال جاری که این کاربر (از راه کارمند وصل‌شده) در آن‌ها نگران صنف یا معلم مضمون است.
+     * محدوده‌ی معلم برای دیدن دانش‌آموزان، حاضری و نمرات.
+     *
+     * @return list<int>
+     */
+    public function taughtSectionIds(): array
+    {
+        if ($this->taughtSectionIdsCache !== null) {
+            return $this->taughtSectionIdsCache;
+        }
+
+        $year = AcademicYear::current();
+        if (! $this->staff_id || ! $year) {
+            return $this->taughtSectionIdsCache = [];
+        }
+
+        $asClassTeacher = Section::query()
+            ->where('academic_year_id', $year->id)
+            ->where('class_teacher_id', $this->staff_id)
+            ->pluck('id');
+
+        $asSubjectTeacher = TeacherAssignment::query()
+            ->where('staff_id', $this->staff_id)
+            ->whereHas('section', fn ($q) => $q->where('academic_year_id', $year->id))
+            ->pluck('section_id');
+
+        return $this->taughtSectionIdsCache = $asClassTeacher->merge($asSubjectTeacher)->unique()->values()->all();
+    }
+
     /** بعد از تغییر نقش یا مجوز همین شیء صدا شود. */
     public function flushPermissionCache(): void
     {
+        $this->taughtSectionIdsCache = null;
         $this->permissionKeysCache = null;
         $this->unsetRelation('roles');
         $this->unsetRelation('permissions');

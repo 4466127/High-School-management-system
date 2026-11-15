@@ -12,7 +12,18 @@
 
     <form method="GET" class="card card-body mb-3">
         <div class="row g-2 align-items-end">
-            <div class="col-md-5">
+            @if ($sections->isNotEmpty())
+                <div class="col-md-3">
+                    <label for="section" class="form-label">{{ __('academics.section') }}</label>
+                    <select id="section" name="section" class="form-select">
+                        <option value="">{{ __('app.all') }}</option>
+                        @foreach ($sections as $s)
+                            <option value="{{ $s->id }}" @selected($sectionId === $s->id)>{{ $s->label }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            @endif
+            <div class="col-md-{{ $sections->isNotEmpty() ? 3 : 5 }}">
                 <label for="q" class="form-label">{{ __('app.search') }}</label>
                 <input type="search" id="q" name="q" value="{{ request('q') }}" class="form-control" placeholder="{{ __('students.search_placeholder') }}" autofocus>
             </div>
@@ -28,7 +39,7 @@
                     @endif
                 </select>
             </div>
-            <div class="col-6 col-md-2">
+            <div class="col-6 col-md-2 {{ $sections->isNotEmpty() ? 'd-none d-xl-block' : '' }}">
                 <label for="gender" class="form-label">{{ __('students.gender') }}</label>
                 <select id="gender" name="gender" class="form-select">
                     <option value="">{{ __('students.all_genders') }}</option>
@@ -44,6 +55,10 @@
         </div>
     </form>
 
+    @if ($noTeacherLink)
+        <div class="alert alert-warning small">{{ __('academics.teacher_not_linked') }}</div>
+    @endif
+
     <div class="small text-secondary mb-2">{{ __('students.count', ['count' => \App\Support\Digits::toPersian($students->total())]) }}</div>
 
     <div class="card">
@@ -55,7 +70,7 @@
                     <th>{{ __('students.admission_no') }}</th>
                     <th>{{ __('students.full_name') }}</th>
                     <th>{{ __('students.father_name') }}</th>
-                    <th>{{ __('students.gender') }}</th>
+                    <th>{{ __('academics.current_class') }}</th>
                     @if ($canManage)
                         <th>{{ __('students.phone') }}</th>
                     @endif
@@ -70,7 +85,13 @@
                         <td>@fa($student->admission_no)</td>
                         <td><a href="{{ route('students.show', $student) }}" class="fw-medium text-decoration-none">{{ $student->full_name }}</a></td>
                         <td>{{ $student->father_name }}</td>
-                        <td>{{ $student->gender->studentLabel() }}</td>
+                        <td class="small">
+                            @if ($student->currentEnrollment)
+                                {{ $student->currentEnrollment->section->short_label }}
+                            @else
+                                <span class="text-secondary">—</span>
+                            @endif
+                        </td>
                         @if ($canManage)
                             <td dir="ltr" class="text-end small">{{ $student->phone }}</td>
                         @endif

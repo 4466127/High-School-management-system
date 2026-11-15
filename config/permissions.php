@@ -21,6 +21,7 @@ return [
         'dashboard.view' => 'general',
 
         'students.view' => 'students',
+        'students.view_all' => 'students',
         'students.manage' => 'students',
 
         'staff.manage' => 'staff',
@@ -54,7 +55,7 @@ return [
     'grants' => [
         'principal' => [
             'dashboard.view',
-            'students.view', 'students.manage',
+            'students.view', 'students.view_all', 'students.manage',
             'staff.manage',
             'academics.view', 'academics.manage',
             'attendance.take', 'attendance.edit',
@@ -67,7 +68,7 @@ return [
 
         'office' => [
             'dashboard.view',
-            'students.view', 'students.manage',
+            'students.view', 'students.view_all', 'students.manage',
             'staff.manage',
             'academics.view', 'academics.manage',
             'attendance.take', 'attendance.edit',
@@ -88,7 +89,7 @@ return [
 
         'accountant' => [
             'dashboard.view',
-            'students.view',
+            'students.view', 'students.view_all',
             'finance.view', 'finance.manage',
             'courses.ledger',
             'reports.finance',
@@ -96,7 +97,7 @@ return [
 
         'course_manager' => [
             'dashboard.view',
-            'students.view',
+            'students.view', 'students.view_all',
             'courses.manage', 'courses.attendance', 'courses.ledger',
             'reports.finance',
         ],

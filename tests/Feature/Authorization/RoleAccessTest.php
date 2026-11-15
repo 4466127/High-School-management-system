@@ -51,7 +51,7 @@ class RoleAccessTest extends TestCase
         $this->assertNotSame('', $sidebar);
 
         foreach (array_keys(__('menu')) as $key) {
-            if (in_array($key, ['school', 'users', 'activity_logs', 'backups'], true)) {
+            if (in_array($key, ['school', 'users', 'activity_logs', 'backups', 'sections', 'years', 'grades', 'promotion'], true)) {
                 continue;
             }
             in_array($key, $menuKeys, true)

@@ -46,6 +46,17 @@ class Staff extends Model
         return $this->hasMany(StaffWorkHistory::class)->orderByDesc('from_date');
     }
 
+    public function assignments(): HasMany
+    {
+        return $this->hasMany(TeacherAssignment::class, 'staff_id');
+    }
+
+    /** بخش‌هایی که این کارمند نگران صنف آن‌هاست */
+    public function classSections(): HasMany
+    {
+        return $this->hasMany(Section::class, 'class_teacher_id');
+    }
+
     /** حساب کاربری وصل‌شده (اختیاری) */
     public function user(): HasOne
     {

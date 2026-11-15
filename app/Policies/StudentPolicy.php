@@ -6,9 +6,10 @@ use App\Models\Student;
 use App\Models\User;
 
 /**
- * دیدن دانش‌آموز: students.view (معلم، حسابدار، مسئول کورس فقط مشخصات پایه).
- * تماس، آدرس، تذکره، سرپرستان و اسناد: فقط students.manage (مدیر، اداری).
- * محدود شدن معلم به «صنف خودش» در مرحله‌ی ۴ (پس از ساخت enrollments) به view اضافه می‌شود.
+ * دیدن دانش‌آموزان:
+ *  - students.manage یا students.view_all (مدیر، اداره، حسابدار، مسئول کورس): همه، با مشخصات پایه؛
+ *  - فقط students.view (معلم): دانش‌آموزان بخش‌هایی که نگران صنف یا معلم مضمون آن است (سال جاری).
+ * تماس، آدرس، تذکره، سرپرستان و اسناد: فقط students.manage.
  */
 class StudentPolicy
 {
@@ -17,13 +18,23 @@ class StudentPolicy
         return $user->hasPermission('students.view');
     }
 
+    /** همه‌ی دانش‌آموزان را می‌بیند (بدون محدوده‌ی بخش)؟ */
+    public function viewAll(User $user): bool
+    {
+        return $user->hasPermission('students.manage') || $user->hasPermission('students.view_all');
+    }
+
     public function view(User $user, Student $student): bool
     {
         if ($student->trashed()) {
             return $user->hasPermission('students.manage');
         }
+        if ($this->viewAll($user)) {
+            return true;
+        }
 
-        return $user->hasPermission('students.view');
+        return $user->hasPermission('students.view')
+            && Student::whereKey($student->id)->inSections($user->taughtSectionIds())->exists();
     }
 
     public function viewSensitive(User $user): bool

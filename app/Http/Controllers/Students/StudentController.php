@@ -8,6 +8,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\DeleteWithReasonRequest;
 use App\Http\Requests\Students\StudentRequest;
 use App\Http\Requests\Students\StudentStatusRequest;
+use App\Models\AcademicYear;
+use App\Models\Section;
 use App\Models\Student;
 use App\Services\StudentService;
 use App\Support\PrivateFiles;
@@ -26,9 +28,24 @@ class StudentController extends Controller
         Gate::authorize('viewAny', Student::class);
 
         $status = (string) $request->query('status', 'active');
-        $canManage = $request->user()->can('viewSensitive', Student::class);
+        $user = $request->user();
+        $canManage = $user->can('viewSensitive', Student::class);
+        $seesAll = $user->can('viewAll', Student::class);
+        $year = AcademicYear::current();
 
-        $query = Student::query()->search($request->query('q'));
+        $query = Student::query()
+            ->with('currentEnrollment.section.gradeLevel')
+            ->search($request->query('q'));
+
+        // معلم: فقط دانش‌آموزان بخش‌های خودش
+        if (! $seesAll) {
+            $query->inSections($user->taughtSectionIds());
+        }
+
+        $sectionId = $request->integer('section') ?: null;
+        if ($sectionId) {
+            $query->inSections([$sectionId]);
+        }
 
         if ($status === 'deleted' && $canManage) {
             $query->onlyTrashed();
@@ -40,10 +57,20 @@ class StudentController extends Controller
             $query->where('gender', $gender);
         }
 
+        $sections = $year
+            ? Section::query()->with('gradeLevel')->where('academic_year_id', $year->id)
+                ->when(! $seesAll, fn ($q) => $q->whereIn('sections.id', $user->taughtSectionIds() ?: [0]))
+                ->ordered()->get()
+            : collect();
+
         return view('students.index', [
             'students' => $query->orderBy('first_name')->orderBy('last_name')->paginate(25)->withQueryString(),
             'status' => $status,
             'canManage' => $canManage,
+            'seesAll' => $seesAll,
+            'sections' => $sections,
+            'sectionId' => $sectionId,
+            'noTeacherLink' => ! $seesAll && ! $user->staff_id,
         ]);
     }
 
@@ -73,8 +100,24 @@ class StudentController extends Controller
         if ($sensitive) {
             $student->load(['guardians', 'documents.uploader']);
         }
+        $student->load(['enrollments' => fn ($q) => $q->with(['academicYear', 'section.gradeLevel'])
+            ->join('academic_years', 'academic_years.id', '=', 'enrollments.academic_year_id')
+            ->orderByDesc('academic_years.start_date')
+            ->select('enrollments.*')]);
 
-        return view('students.show', ['student' => $student, 'sensitive' => $sensitive]);
+        $year = AcademicYear::current();
+        $current = $year ? $student->enrollments->first(fn ($e) => $e->academic_year_id === $year->id) : null;
+
+        return view('students.show', [
+            'student' => $student,
+            'sensitive' => $sensitive,
+            'currentYear' => $year,
+            'currentEnrollment' => $current?->isActive() ? $current : null,
+            'yearEnrollment' => $current,
+            'yearSections' => $year && $request->user()->can('update', $student)
+                ? Section::query()->with('gradeLevel')->where('academic_year_id', $year->id)->ordered()->get()
+                : collect(),
+        ]);
     }
 
     public function edit(Student $student): View

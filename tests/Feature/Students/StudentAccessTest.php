@@ -21,7 +21,13 @@ class StudentAccessTest extends TestCase
         ];
     }
 
-    #[DataProvider('viewOnlyRoles')]
+    /** نقش‌هایی که همه‌ی دانش‌آموزان را با مشخصات پایه می‌بینند (students.view_all) */
+    public static function rolesSeeingAllStudents(): array
+    {
+        return ['accountant' => [Role::Accountant], 'course manager' => [Role::CourseManager]];
+    }
+
+    #[DataProvider('rolesSeeingAllStudents')]
     public function test_view_only_roles_see_basic_info_but_not_sensitive_data(Role $role): void
     {
         $student = Student::factory()->create(['first_name' => 'فرهاد', 'phone' => '0799555444', 'tazkira_no' => 'SECRET-1', 'address' => 'آدرس محرمانه']);
@@ -84,7 +90,9 @@ class StudentAccessTest extends TestCase
         $student = Student::factory()->create(['photo_path' => UploadedFile::fake()->image('p.jpg')->store('students/photos', 'local')]);
 
         $this->get("/students/{$student->id}/photo")->assertRedirect('/login');
-        $this->actingAs($this->userWithRole(Role::Teacher))->get("/students/{$student->id}/photo")->assertOk();
+        $this->actingAs($this->userWithRole(Role::Accountant))->get("/students/{$student->id}/photo")->assertOk();
+        // معلمی که این دانش‌آموز در صنف‌هایش نیست
+        $this->actingAs($this->userWithRole(Role::Teacher))->get("/students/{$student->id}/photo")->assertForbidden();
 
         // کاربری بدون students.view (مثلاً نقشی ساختگی بدون مجوز)
         $this->actingAs(User::factory()->create())->get("/students/{$student->id}/photo")->assertForbidden();
