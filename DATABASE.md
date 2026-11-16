@@ -160,11 +160,17 @@ erDiagram
 **staff_work_history** — `staff_id`, `title`, `organization`, `from_date`, `to_date`, `notes`
 
 ### حاضری
-**attendance_sessions** — `section_id`, `date`, `taken_by` (→ users), `taken_at`. یکتا: (`section_id`, `date`) ← جلوگیری از ثبت دوباره‌ی حاضری یک بخش در یک روز.
+**attendance_sessions** — `section_id`, `date`, `taken_by` (→ users), `taken_at`, `updated_by` (آخرین اصلاح). یکتا: (`section_id`, `date`) ← جلوگیری از ثبت دوباره‌ی حاضری یک بخش در یک روز.
 
-**attendance_records** — `attendance_session_id`, `enrollment_id`, `status` (present / late / absent / excused / unexcused), `note`, `updated_by`. یکتا: (`attendance_session_id`, `enrollment_id`). هر اصلاح با مقدار قبلی در `activity_logs` ثبت می‌شود.
+**attendance_records** — `attendance_session_id`, `enrollment_id`, `status`, `note`, `updated_by`. یکتا: (`attendance_session_id`, `enrollment_id`). هر اصلاح با مقدار قبلی در `activity_logs` ثبت می‌شود.
 
 **staff_attendance** — `staff_id`, `date`, `status`, `note`, `recorded_by`. یکتا: (`staff_id`, `date`).
+
+وضعیت‌ها (`App\Enums\AttendanceStatus`، برای دانش‌آموز و کارمند): `present` حاضر (ح)، `late` تأخیر (ت)، `absent` غیرحاضر بی‌اجازه (غ)، `excused` رخصت (ر)، `sick` مریض (م).
+- «تأخیر» در فیصدی حاضری، حاضر حساب می‌شود.
+- فهرست «غیابت زیاد» و حد «محروم» فقط `absent` را می‌شمارد؛ رخصت و مریضی غیابت موجه‌اند و جدا نشان داده می‌شوند.
+- هیچ سطر حاضری حذف نمی‌شود (کلیدهای خارجی `restrict`).
+- دانش‌آموزان یک ورق: کسانی که در آن روز شامل بخش بودند (`enrolled_on` ≤ روز، و اگر رفته، `left_on` > روز)، به‌علاوه‌ی هر کسی که در همان ورق سطر دارد.
 
 ### امتحانات
 **exam_types** — `name` (ماهوار، چهارونیم‌ماهه، سالانه، …), `default_max_mark`, `default_weight`, `counts_in_final`, `sort_order`, `is_active`

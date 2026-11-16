@@ -253,6 +253,53 @@ code { color: #9b3b5a; }
 .brand-logo img { width: 100%; height: 100%; object-fit: contain; border-radius: 12px; background: #fff; }
 .auth-logo img { width: 100%; height: 100%; object-fit: contain; border-radius: 20px; background: #fff; }
 
+/* ---------- حاضری ---------- */
+.date-bar { padding: 10px 12px; }
+.date-bar-input { width: 9.5rem; text-align: center; }
+.att-card {
+    display: flex; flex-direction: column; gap: 8px; padding: 14px 16px;
+    background: #fff; border: 1px solid var(--hk-line); border-inline-start: 4px solid #cfd6e2;
+    border-radius: var(--bs-border-radius-lg); box-shadow: var(--sc-shadow);
+}
+.att-card.is-taken { border-inline-start-color: #2e9e5b; }
+.att-counts { display: flex; flex-wrap: wrap; gap: 4px; }
+.att-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; padding: 10px 14px; }
+.att-row:nth-child(even) { background: #fafbfe; }
+.att-who { display: flex; align-items: center; gap: 10px; flex: 1 1 220px; min-width: 0; }
+.min-w-0 { min-width: 0; }
+.att-roll {
+    flex: none; width: 34px; height: 34px; border-radius: 10px;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: var(--hk-accent-soft); color: var(--hk-accent); font-weight: 700;
+}
+.att-choices { display: flex; gap: 4px; flex-wrap: nowrap; }
+.att-choices .btn { min-width: 44px; min-height: 40px; padding: .3rem .6rem; font-weight: 500; }
+.att-note { flex: 1 1 160px; max-width: 260px; }
+.att-savebar {
+    position: sticky; bottom: 0; z-index: 5;
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px;
+    margin-top: 12px; padding: 10px 14px;
+    background: rgba(255, 255, 255, .96); border: 1px solid var(--hk-line); border-radius: var(--bs-border-radius-lg);
+    box-shadow: 0 -4px 18px rgba(23, 43, 77, .08);
+}
+@media (max-width: 575px) {
+    .att-choices { width: 100%; }
+    .att-choices .btn { flex: 1; min-width: 0; }
+    .att-note { max-width: none; }
+}
+.att-grid { font-size: .82rem; }
+.att-grid th, .att-grid td { padding: .25rem .2rem; min-width: 1.6rem; }
+.att-grid .att-grid-name { min-width: 9rem; white-space: nowrap; }
+.att-grid th.att-taken { color: var(--hk-accent); }
+.att-grid .att-holiday { background: #eef0f4 !important; }
+.att-grid .att-total { background: #f6f8fc; }
+.att-mark-absent { color: #c0392b; font-weight: 700; }
+.att-mark-excused { color: #9a6b00; font-weight: 700; }
+.att-mark-sick { color: #5c6577; font-weight: 700; }
+.att-mark-late { color: #1b7f9c; font-weight: 700; }
+.att-mark-present { color: #2e7d4f; }
+.att-holiday-swatch { display: inline-block; width: 12px; height: 12px; background: #eef0f4; border: 1px solid #cfd6e2; vertical-align: middle; }
+
 /* ---------- عکس کوچک و پرونده ---------- */
 .avatar { flex: none; border: 2px solid #fff; box-shadow: 0 1px 4px rgba(23, 43, 77, .15); }
 .avatar-empty { display: inline-flex; align-items: center; justify-content: center; background: var(--hk-accent-soft); color: var(--hk-accent); font-size: 1.1em; }
@@ -287,6 +334,10 @@ code { color: #9b3b5a; }
 .signatures > div { flex: 1; text-align: center; border-top: 1px solid #000; padding-top: 6px; }
 
 @page { size: A4; margin: 10mm; }
+/* جدول ماهوار حاضری: صفحه‌ی افقی */
+@page landscape { size: A4 landscape; margin: 8mm; }
+.print-landscape { page: landscape; }
+.print-body .att-grid { font-size: 9pt; }
 @media print {
     .print-tools, .noprint { display: none !important; }
     .print-page { padding: 0; max-width: none; }

@@ -11,6 +11,7 @@ use App\Http\Requests\Students\StudentStatusRequest;
 use App\Models\AcademicYear;
 use App\Models\Section;
 use App\Models\Student;
+use App\Services\AttendanceService;
 use App\Services\StudentService;
 use App\Support\PrivateFiles;
 use Illuminate\Http\RedirectResponse;
@@ -21,7 +22,10 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class StudentController extends Controller
 {
-    public function __construct(private readonly StudentService $students) {}
+    public function __construct(
+        private readonly StudentService $students,
+        private readonly AttendanceService $attendance,
+    ) {}
 
     public function index(Request $request): View
     {
@@ -114,6 +118,7 @@ class StudentController extends Controller
             'currentYear' => $year,
             'currentEnrollment' => $current?->isActive() ? $current : null,
             'yearEnrollment' => $current,
+            'attendance' => $current ? $this->attendance->enrollmentHistory($current) : null,
             'yearSections' => $year && $request->user()->can('update', $student)
                 ? Section::query()->with('gradeLevel')->where('academic_year_id', $year->id)->ordered()->get()
                 : collect(),

@@ -23,6 +23,7 @@ class SchoolSettingsTest extends TestCase
             'pass_percent' => '50',
             'conditional_max_failed_subjects' => '3',
             'deprivation_absence_days' => '30',
+            'absence_alert_days' => '8',
             'weekly_holidays' => ['thursday', 'friday'],
         ], $overrides);
     }
@@ -39,6 +40,7 @@ class SchoolSettingsTest extends TestCase
         $this->assertTrue(Setting::enabled('fees_enabled'));
         $this->assertFalse(Setting::enabled('school_ledger_enabled'));
         $this->assertSame('thursday,friday', Setting::get('weekly_holidays'));
+        $this->assertSame('8', Setting::get('absence_alert_days'));
 
         $log = ActivityLog::where('action', 'settings.updated')->latest('id')->firstOrFail();
         $this->assertSame('40', $log->old_values['pass_percent']);
@@ -52,7 +54,8 @@ class SchoolSettingsTest extends TestCase
     {
         $this->actingAs($this->userWithRole(Role::Principal))->put('/settings/school', $this->payload([
             'pass_percent' => '120', 'conditional_max_failed_subjects' => '-1', 'school_type' => 'x', 'weekly_holidays' => ['someday'],
-        ]))->assertSessionHasErrors(['pass_percent', 'conditional_max_failed_subjects', 'school_type', 'weekly_holidays.0']);
+            'absence_alert_days' => '0',
+        ]))->assertSessionHasErrors(['pass_percent', 'conditional_max_failed_subjects', 'school_type', 'weekly_holidays.0', 'absence_alert_days']);
     }
 
     public function test_logo_upload_is_public_and_replaceable(): void

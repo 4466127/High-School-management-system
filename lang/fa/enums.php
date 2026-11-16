@@ -50,6 +50,20 @@ return [
         'service' => 'کارمند خدماتی',
         'course_teacher' => 'معلم کورس',
     ],
+    'attendance_status' => [
+        'present' => 'حاضر',
+        'late' => 'تأخیر',
+        'absent' => 'غیرحاضر',
+        'excused' => 'رخصت',
+        'sick' => 'مریض',
+    ],
+    'attendance_status_code' => [
+        'present' => 'ح',
+        'late' => 'ت',
+        'absent' => 'غ',
+        'excused' => 'ر',
+        'sick' => 'م',
+    ],
     'employment_status' => [
         'active' => 'برسر وظیفه',
         'on_leave' => 'رخصتی',

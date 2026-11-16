@@ -38,6 +38,21 @@ class RoleAccessTest extends TestCase
         $this->assertSame($settingsKeys, $settings ? array_column($settings['children'], 'key') : []);
     }
 
+    public function test_attendance_submenu_per_role(): void
+    {
+        $expected = [
+            'admin' => [Role::Admin, ['attendance_daily', 'attendance_monthly', 'attendance_absentees', 'attendance_staff']],
+            'principal' => [Role::Principal, ['attendance_daily', 'attendance_monthly', 'attendance_absentees', 'attendance_staff']],
+            'office' => [Role::Office, ['attendance_daily', 'attendance_monthly', 'attendance_absentees', 'attendance_staff']],
+            'teacher' => [Role::Teacher, ['attendance_daily', 'attendance_monthly', 'attendance_absentees']],
+        ];
+
+        foreach ($expected as $name => [$role, $keys]) {
+            $attendance = collect(app(Menu::class)->for($this->userWithRole($role)))->firstWhere('key', 'attendance');
+            $this->assertSame($keys, array_column($attendance['children'], 'key'), $name);
+        }
+    }
+
     #[DataProvider('expectedMenus')]
     public function test_each_role_reaches_dashboard_and_sees_its_menu_labels(Role $role, array $menuKeys, array $settingsKeys): void
     {
@@ -51,7 +66,8 @@ class RoleAccessTest extends TestCase
         $this->assertNotSame('', $sidebar);
 
         foreach (array_keys(__('menu')) as $key) {
-            if (in_array($key, ['school', 'users', 'activity_logs', 'backups', 'sections', 'years', 'grades', 'promotion'], true)) {
+            if (in_array($key, ['school', 'users', 'activity_logs', 'backups', 'sections', 'years', 'grades', 'promotion',
+                'attendance_daily', 'attendance_monthly', 'attendance_absentees', 'attendance_staff'], true)) {
                 continue;
             }
             in_array($key, $menuKeys, true)

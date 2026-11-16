@@ -125,6 +125,30 @@ final class JalaliDate
         return __('dates.months')[$month - 1] ?? (string) $month;
     }
 
+    /** @return array{0:CarbonImmutable,1:CarbonImmutable} اولین و آخرین روز یک ماه شمسی (میلادی) */
+    public static function monthRange(int $year, int $month): array
+    {
+        return [self::toGregorian($year, $month, 1), self::toGregorian($year, $month, self::daysInMonth($year, $month))];
+    }
+
+    /**
+     * ماه‌های شمسی میان دو تاریخ (برای انتخاب ماه در گزارش ماهوار).
+     *
+     * @return list<array{0:int,1:int}> [[سال، ماه], …]
+     */
+    public static function monthsBetween(DateTimeInterface|string $from, DateTimeInterface|string $to): array
+    {
+        [$y, $m] = self::fromGregorian($from);
+        [$toY, $toM] = self::fromGregorian($to);
+        $months = [];
+        while (($y < $toY || ($y === $toY && $m <= $toM)) && count($months) < 36) {
+            $months[] = [$y, $m];
+            [$y, $m] = $m === 12 ? [$y + 1, 1] : [$y, $m + 1];
+        }
+
+        return $months;
+    }
+
     private static function weekdayName(DateTimeInterface|string $date): string
     {
         // ISO: ۱ = دوشنبه … ۷ = یکشنبه

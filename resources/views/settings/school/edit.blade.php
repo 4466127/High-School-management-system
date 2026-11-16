@@ -66,6 +66,9 @@
         <div class="card form-section mb-3">
             <div class="card-header"><i class="fa-solid fa-calendar-week" aria-hidden="true"></i> {{ __('school.section_calendar') }}</div>
             <div class="card-body">
+                <div class="row">
+                    <x-form.input class="col-md-4 mb-3" name="absence_alert_days" type="number" min="1" max="365" :label="__('school.absence_alert')" :value="$values['absence_alert_days']" required :help="__('school.absence_alert_hint')" />
+                </div>
                 <div class="form-label">{{ __('school.weekly_holidays') }}</div>
                 @php($holidays = old('weekly_holidays', $values['weekly_holidays']))
                 <div class="d-flex flex-wrap gap-3">

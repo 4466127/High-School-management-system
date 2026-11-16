@@ -34,8 +34,11 @@
 
 | مسیر | محتوا | مرحله |
 |---|---|---|
+| `/attendance/export?date=` | غیرحاضران، رخصت‌ها، مریض‌ها و تأخیرهای یک روز (بخش‌های در محدوده‌ی کاربر) | ۵ ✅ |
+| `/attendance/monthly/export?month=1405-08&section=` | جدول ماهوار یک بخش؛ بدون `section`: خلاصه‌ی صنف‌ها | ۵ ✅ |
+| `/attendance/absentees/export?min=&section=` | دانش‌آموزان با غیابت زیاد در سال جاری | ۵ ✅ |
+| `/attendance/staff/monthly/export?month=` | خلاصه‌ی ماهوار حاضری کارکنان | ۵ ✅ |
 | `/reports/students/export` | فهرست دانش‌آموزان با فیلتر | ۹ |
-| `/reports/attendance/monthly/export` | حاضری ماهوار بخش | ۹ |
 | `/reports/results/export` | نتایج امتحان | ۹ |
 | `/reports/finance/debtors/export` | بدهکاران | ۹ |
 | `/reports/finance/transactions/export` | درآمد و مصرف | ۹ |

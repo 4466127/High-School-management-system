@@ -21,6 +21,7 @@ return [
         'grade' => 'صنف‌ها',
         'subject' => 'مضامین',
         'settings' => 'تنظیمات',
+        'attendance' => 'حاضری',
     ],
     'actions' => [
         'auth' => [
@@ -83,6 +84,12 @@ return [
         ],
         'settings' => [
             'updated' => 'تغییر مشخصات مکتب',
+        ],
+        'attendance' => [
+            'taken' => 'ثبت حاضری بخش',
+            'corrected' => 'اصلاح حاضری بخش',
+            'staff_taken' => 'ثبت حاضری کارکنان',
+            'staff_corrected' => 'اصلاح حاضری کارکنان',
         ],
         'staff' => [
             'created' => 'ثبت کارمند',
@@ -162,6 +169,7 @@ return [
         'pass_percent' => 'فیصدی کامیابی',
         'conditional_max_failed_subjects' => 'حد مشروط',
         'deprivation_absence_days' => 'حد محروم',
+        'absence_alert_days' => 'حد غیابت زیاد',
         'weekly_holidays' => 'رخصتی هفته',
         'logo' => 'لوگو',
         'code' => 'کود',

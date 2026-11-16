@@ -5,7 +5,7 @@ return [
     'section_identity' => 'مشخصات عمومی',
     'section_finance' => 'مالی',
     'section_grading' => 'نمره‌دهی و نتیجه',
-    'section_calendar' => 'تقویم',
+    'section_calendar' => 'تقویم و حاضری',
     'school_name' => 'نام مکتب',
     'school_name_ph' => 'مثلاً لیسه‌ی عالی ابن سینا',
     'school_type' => 'نوع مکتب',
@@ -32,6 +32,8 @@ return [
     'deprivation' => 'حد غیابت برای «محروم» (روز)',
     'deprivation_hint' => 'غیابت بیشتر از این تعداد روز ← «محروم» از امتحان. صفر = غیرفعال.',
     'weekly_holidays' => 'رخصتی هفته',
+    'absence_alert' => 'حد «غیابت زیاد» (روز)',
+    'absence_alert_hint' => 'دانش‌آموزی که در سال این تعداد روز یا بیشتر «غیرحاضر» باشد، در فهرست غیابت زیاد می‌آید.',
     'weekdays' => [
         'saturday' => 'شنبه',
         'sunday' => 'یکشنبه',
@@ -54,6 +56,7 @@ return [
         'pass_percent' => 'حداقل فیصدی کامیابی',
         'conditional_max_failed_subjects' => 'حد مضامین مشروط',
         'deprivation_absence_days' => 'حد غیابت محروم',
+        'absence_alert_days' => 'حد غیابت زیاد',
         'weekly_holidays' => 'رخصتی هفته',
     ],
 ];

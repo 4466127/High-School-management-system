@@ -14,6 +14,10 @@
                 <div class="mt-1"><span class="badge text-bg-primary">{{ __('academics.students_count', ['count' => \App\Support\Digits::toPersian($enrollments->count())]) }}</span></div>
             </div>
             <div class="d-flex flex-wrap gap-2">
+                @if ($section->academicYear->is_current && auth()->user()->can('viewSection', [\App\Models\AttendanceSession::class, $section]))
+                    <a href="{{ route('attendance.daily.show', $section) }}" class="btn btn-success"><i class="fa-solid fa-clipboard-check" aria-hidden="true"></i> {{ __('attendance.today_link') }}</a>
+                    <a href="{{ route('attendance.monthly.index', ['section' => $section->id]) }}" class="btn btn-outline-secondary"><i class="fa-solid fa-calendar-days" aria-hidden="true"></i> {{ __('attendance.monthly_link') }}</a>
+                @endif
                 @if ($canManage)
                     <a href="{{ route('academics.sections.enroll', $section) }}" class="btn btn-primary"><i class="fa-solid fa-user-plus" aria-hidden="true"></i> {{ __('academics.enroll_students') }}</a>
                     <a href="{{ route('academics.sections.edit', $section) }}" class="btn btn-outline-primary"><i class="fa-solid fa-pen" aria-hidden="true"></i> {{ __('app.edit') }}</a>

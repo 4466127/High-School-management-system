@@ -45,6 +45,11 @@ class Section extends Model
         return $this->hasMany(Enrollment::class)->where('enrollments.status', EnrollmentStatus::Active);
     }
 
+    public function attendanceSessions(): HasMany
+    {
+        return $this->hasMany(AttendanceSession::class);
+    }
+
     public function assignments(): HasMany
     {
         return $this->hasMany(TeacherAssignment::class);

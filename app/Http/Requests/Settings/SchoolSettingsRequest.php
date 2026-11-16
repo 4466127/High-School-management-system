@@ -38,6 +38,7 @@ class SchoolSettingsRequest extends FormRequest
             'pass_percent' => ['required', 'numeric', 'min:1', 'max:100'],
             'conditional_max_failed_subjects' => ['required', 'integer', 'min:0', 'max:10'],
             'deprivation_absence_days' => ['required', 'integer', 'min:0', 'max:365'],
+            'absence_alert_days' => ['required', 'integer', 'min:1', 'max:365'],
             'weekly_holidays' => ['array'],
             'weekly_holidays.*' => [Rule::in(self::WEEKDAYS)],
         ];

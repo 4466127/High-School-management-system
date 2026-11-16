@@ -76,6 +76,12 @@
         <li class="nav-item" role="presentation">
             <button class="nav-link" data-bs-toggle="tab" data-bs-target="#history-pane" type="button" role="tab">{{ __('students.tab_history') }}</button>
         </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#attendance-pane" type="button" role="tab">
+                {{ __('attendance.tab') }}
+                @if ($attendance && $attendance['totals']['absent'] > 0)<span class="badge text-bg-danger">@fa($attendance['totals']['absent'])</span>@endif
+            </button>
+        </li>
     </ul>
 
     <div class="tab-content">
@@ -163,6 +169,11 @@
                     </table>
                 </div>
             </div>
+        </div>
+
+        {{-- حاضری سال جاری --}}
+        <div class="tab-pane fade" id="attendance-pane" role="tabpanel">
+            @include('students.partials.attendance')
         </div>
     </div>
 

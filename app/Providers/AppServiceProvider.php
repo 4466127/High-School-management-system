@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use App\Models\AttendanceSession;
 use App\Models\User;
+use App\Policies\AttendancePolicy;
 use App\Support\Menu;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Blade;
@@ -24,6 +26,9 @@ class AppServiceProvider extends ServiceProvider
         foreach (array_keys(config('permissions.permissions', [])) as $permission) {
             Gate::define($permission, fn (User $user) => $user->hasPermission($permission));
         }
+
+        // حاضری: Gate::authorize('record', [AttendanceSession::class, $section, $date])
+        Gate::policy(AttendanceSession::class, AttendancePolicy::class);
 
         // شناسه‌ی همه‌ی مدل‌ها در آدرس فقط عدد است (تا students/create با students/{student} قاطی نشود)
         foreach (['student', 'staff', 'user', 'guardian', 'document', 'history', 'section', 'year', 'term', 'grade', 'subject'] as $parameter) {

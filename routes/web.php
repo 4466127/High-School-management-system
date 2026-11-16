@@ -4,6 +4,9 @@ use App\Http\Controllers\Academics\AcademicYearController;
 use App\Http\Controllers\Academics\GradeSubjectController;
 use App\Http\Controllers\Academics\PromotionController;
 use App\Http\Controllers\Academics\SectionController;
+use App\Http\Controllers\Attendance\AttendanceReportController;
+use App\Http\Controllers\Attendance\DailyAttendanceController;
+use App\Http\Controllers\Attendance\StaffAttendanceController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\DashboardController;
@@ -115,6 +118,24 @@ Route::middleware(['auth', 'active'])->group(function () {
                 Route::get('/promotion', [PromotionController::class, 'create'])->name('promotion.create');
                 Route::post('/promotion', [PromotionController::class, 'store'])->name('promotion.store');
             });
+        });
+
+        // ---------- حاضری (مجوز دقیق در AttendancePolicy) ----------
+        Route::prefix('attendance')->name('attendance.')->group(function () {
+            Route::get('/', [DailyAttendanceController::class, 'index'])->name('daily.index');
+            Route::get('/export', [DailyAttendanceController::class, 'export'])->name('daily.export');
+            Route::get('/sections/{section}', [DailyAttendanceController::class, 'show'])->name('daily.show');
+            Route::post('/sections/{section}', [DailyAttendanceController::class, 'store'])->name('daily.store');
+
+            Route::get('/monthly', [AttendanceReportController::class, 'monthly'])->name('monthly.index');
+            Route::get('/monthly/export', [AttendanceReportController::class, 'monthlyExport'])->name('monthly.export');
+            Route::get('/absentees', [AttendanceReportController::class, 'absentees'])->name('absentees.index');
+            Route::get('/absentees/export', [AttendanceReportController::class, 'absenteesExport'])->name('absentees.export');
+
+            Route::get('/staff', [StaffAttendanceController::class, 'index'])->name('staff.index');
+            Route::post('/staff', [StaffAttendanceController::class, 'store'])->name('staff.store');
+            Route::get('/staff/monthly', [StaffAttendanceController::class, 'monthly'])->name('staff.monthly');
+            Route::get('/staff/monthly/export', [StaffAttendanceController::class, 'monthlyExport'])->name('staff.monthly.export');
         });
 
         // ---------- تنظیمات ----------

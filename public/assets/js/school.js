@@ -16,6 +16,29 @@
         label.classList.toggle('has-file', !!(input.files && input.files.length));
     });
 
+    /* ورق حاضری: «همه حاضر» و شمار زنده‌ی هر وضعیت (form[data-att-form]) */
+    document.querySelectorAll('form[data-att-form]').forEach(function (form) {
+        function refreshCounts() {
+            var counts = {};
+            form.querySelectorAll('input[type=radio][name^="status["]:checked').forEach(function (r) {
+                counts[r.value] = (counts[r.value] || 0) + 1;
+            });
+            form.querySelectorAll('[data-att-count]').forEach(function (el) {
+                var n = String(counts[el.getAttribute('data-att-count')] || 0);
+                el.textContent = n.replace(/\d/g, function (d) { return '۰۱۲۳۴۵۶۷۸۹'.charAt(+d); });
+            });
+        }
+        form.addEventListener('change', refreshCounts);
+        form.querySelectorAll('[data-att-all]').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                var value = btn.getAttribute('data-att-all');
+                form.querySelectorAll('input[type=radio][name^="status["][value="' + value + '"]').forEach(function (r) { r.checked = true; });
+                refreshCounts();
+            });
+        });
+        refreshCounts();
+    });
+
     if (!window.bootstrap) { return; }
 
     function showTabFromHash() {

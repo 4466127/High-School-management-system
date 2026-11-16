@@ -57,6 +57,11 @@ class Staff extends Model
         return $this->hasMany(Section::class, 'class_teacher_id');
     }
 
+    public function attendance(): HasMany
+    {
+        return $this->hasMany(StaffAttendance::class);
+    }
+
     /** حساب کاربری وصل‌شده (اختیاری) */
     public function user(): HasOne
     {

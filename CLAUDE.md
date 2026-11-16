@@ -12,7 +12,7 @@
 - [API.md](API.md) — مسیرهای داخلی JSON و خروجی CSV
 
 ## وضعیت فعلی
-مرحله‌های ۰ تا ۳ تأیید شده. مرحله‌ی ۴ (سال تحصیلی، صنف، بخش، مضمون، شمولیت، ارتقا، مشخصات مکتب) ساخته، آزمایش و push شده است. بعدی: مرحله‌ی ۵ (حاضری).
+مرحله‌های ۰ تا ۴ تأیید شده. مرحله‌ی ۵ (حاضری روزانه، اصلاح با ردپا، گزارش‌ها، حاضری کارکنان) ساخته، آزمایش و push شده و منتظر آزمایش صاحب پروژه است. بعدی: مرحله‌ی ۶ (امتحانات، نمرات، کارنامه).
 وضعیت دقیق همیشه در ROADMAP.md است؛ تغییرات در CHANGELOG.md.
 
 ## قواعد سخت (استثنا ندارد)
@@ -78,6 +78,13 @@ php artisan school:backup       # نسخه‌ی پشتیبان (مرحله‌ی 
 - `Section::ordered()` ستون‌ها را فقط اگر خالی باشد `sections.*` می‌گذارد (تا `withCount` از بین نرود).
 - Form Requestی که مسیرش با middleware مجوز بسته نیست، باید `authorize()` داشته باشد (مجوز پیش از اعتبارسنجی).
 - تست‌ها: `makeYear()` و `makeSection()` در `Tests\TestCase`.
+
+## نکته‌های پیاده‌سازی مرحله‌ی ۵
+- ثبت و اصلاح حاضری فقط از راه `AttendanceService::saveSection` / `saveStaff` (transaction، `createOrFirst` روی کلید یکتا، ثبت رویداد).
+- مجوز: `Gate::authorize('viewSection'|'record'|'manageStaff', [AttendanceSession::class, …])` (`AttendancePolicy`، ثبت‌شده در `AppServiceProvider`). محدوده‌ی همه یا بخش‌های خود: `AttendanceService::scopedSectionIds()`.
+- «امروز» همیشه `AttendanceService::today()` (کابل). تاریخ در آدرس: `?date=Y-m-d` یا شمسی؛ ماه: `?month=1405-08` (`ResolvesDates`).
+- گزارش چاپی: همان view با `?print=1` (`@extends($print ? 'layouts.print' : 'layouts.app')`). CSV: `App\Support\Csv::download`.
+- در تست‌ها تاریخ را با `Carbon::setTestNow` و `CarbonImmutable::setTestNow` ثابت کنید.
 
 ## Git و GitHub
 - بعد از تمام شدن هر مرحله: commit و push به `origin main` (صاحب پروژه این را خواسته است).

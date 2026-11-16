@@ -20,7 +20,12 @@ return [
         ['key' => 'grades', 'icon' => 'fa-book-open', 'route' => 'academics.grades.index', 'can' => ['academics.manage']],
         ['key' => 'promotion', 'icon' => 'fa-arrow-up-wide-short', 'route' => 'academics.promotion.create', 'can' => ['students.manage']],
     ]],
-    ['key' => 'attendance', 'icon' => 'fa-clipboard-check', 'route' => null, 'can' => ['attendance.take', 'attendance.edit']],
+    ['key' => 'attendance', 'icon' => 'fa-clipboard-check', 'route' => null, 'can' => ['attendance.take', 'attendance.edit', 'reports.academic', 'staff.manage'], 'children' => [
+        ['key' => 'attendance_daily', 'icon' => 'fa-clipboard-check', 'route' => 'attendance.daily.index', 'can' => ['attendance.take', 'attendance.edit', 'reports.academic']],
+        ['key' => 'attendance_monthly', 'icon' => 'fa-calendar-days', 'route' => 'attendance.monthly.index', 'can' => ['attendance.take', 'attendance.edit', 'reports.academic']],
+        ['key' => 'attendance_absentees', 'icon' => 'fa-user-clock', 'route' => 'attendance.absentees.index', 'can' => ['attendance.take', 'attendance.edit', 'reports.academic']],
+        ['key' => 'attendance_staff', 'icon' => 'fa-id-badge', 'route' => 'attendance.staff.index', 'can' => ['staff.manage']],
+    ]],
     ['key' => 'exams', 'icon' => 'fa-file-pen', 'route' => null, 'can' => ['marks.enter', 'exams.manage', 'reportcards.print']],
     ['key' => 'finance', 'icon' => 'fa-coins', 'route' => null, 'can' => ['finance.view', 'finance.manage'], 'feature' => 'finance'],
     ['key' => 'courses', 'icon' => 'fa-people-group', 'route' => null, 'can' => ['courses.manage', 'courses.attendance', 'courses.ledger']],

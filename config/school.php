@@ -31,6 +31,9 @@ return [
         'conditional_max_failed_subjects' => '2',   // حداکثر مضامین ناکام برای «مشروط»؛ ۰ = غیرفعال
         'deprivation_absence_days' => '0',          // غیابت بیشتر از این ← «محروم»؛ ۰ = غیرفعال
 
+        // حاضری (مرحله‌ی ۵): حد پیش‌فرض فهرست «غیابت زیاد» (روزهای غیرحاضر بی‌اجازه در سال)
+        'absence_alert_days' => '10',
+
         // تقویم
         'weekly_holidays' => 'friday',
     ],

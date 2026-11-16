@@ -6,6 +6,7 @@ use App\Enums\EnrollmentStatus;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * شمولیت سالانه‌ی یک دانش‌آموز در یک بخش (یک سطر برای هر سال).
@@ -40,6 +41,11 @@ class Enrollment extends Model
     public function section(): BelongsTo
     {
         return $this->belongsTo(Section::class);
+    }
+
+    public function attendanceRecords(): HasMany
+    {
+        return $this->hasMany(AttendanceRecord::class);
     }
 
     public function isActive(): bool

@@ -18,7 +18,7 @@ class SchoolSettingController extends Controller
     public const KEYS = [
         'school_name', 'school_type', 'province', 'district', 'address', 'phone', 'principal_name',
         'fees_enabled', 'school_ledger_enabled',
-        'pass_percent', 'conditional_max_failed_subjects', 'deprivation_absence_days', 'weekly_holidays',
+        'pass_percent', 'conditional_max_failed_subjects', 'deprivation_absence_days', 'absence_alert_days', 'weekly_holidays',
     ];
 
     public function __construct(private readonly ActivityLogger $logger) {}

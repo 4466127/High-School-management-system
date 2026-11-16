@@ -75,7 +75,8 @@ php artisan db:seed
 - نقش‌ها و مجوزها را با `config/permissions.php` هماهنگ می‌کند؛
 - تنظیمات پیش‌فرض را فقط برای کلیدهای نبوده می‌نویسد؛
 - اگر هیچ «مدیر سیستم» نباشد، کاربر `admin` با **رمز تصادفی** می‌سازد و رمز را یک بار در خروجی نشان می‌دهد (در اولین ورود باید عوض شود)؛
-- فقط وقتی `APP_ENV=local` است، شش کاربر آزمایشی: `demo.admin`، `demo.principal`، `demo.office`، `demo.teacher`، `demo.accountant`، `demo.course-manager` با رمز `password`، و دانش‌آموزان و کارکنان ساختگی (`DemoSchoolSeeder`؛ فقط وقتی هیچ دانش‌آموز و کارمندی نیست). روی سرور مکتب (`APP_ENV=production`) ساخته نمی‌شوند.
+- صنف‌های اول تا دوازدهم و ۱۹ مضمون آغازین (`GradeLevelSeeder`، `SubjectSeeder`؛ فقط وقتی جدول خالی است).
+- فقط وقتی `APP_ENV=local` است: شش کاربر آزمایشی `demo.admin`، `demo.principal`، `demo.office`، `demo.teacher`، `demo.accountant`، `demo.course-manager` با رمز `password`؛ دانش‌آموزان و کارکنان ساختگی (`DemoSchoolSeeder`)؛ سال ۱۴۰۵ با بخش‌ها، معلمان مضامین و شمولیت (`DemoAcademicSeeder`)؛ و حاضری ساختگی ۴ هفته‌ی گذشته برای بخش‌ها و کارکنان، بدون امروز (`DemoAttendanceSeeder`). هر کدام فقط وقتی داده‌ی مربوط نیست اجرا می‌شوند. روی سرور مکتب (`APP_ENV=production`) ساخته نمی‌شوند.
 
 ### فایل‌های آپلودی
 عکس‌ها و اسناد در `storage/app/private/` (بیرون از `public`) ذخیره می‌شوند و فقط از راه برنامه، پس از بررسی مجوز، نمایش داده می‌شوند. `php artisan storage:link` لازم نیست و نباید اجرا شود. این پوشه در git نیست و باید در نسخه‌ی پشتیبان باشد.
