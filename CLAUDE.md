@@ -12,7 +12,7 @@
 - [API.md](API.md) — مسیرهای داخلی JSON و خروجی CSV
 
 ## وضعیت فعلی
-مرحله‌های ۰ تا ۴ تأیید شده. مرحله‌ی ۵ (حاضری روزانه، اصلاح با ردپا، گزارش‌ها، حاضری کارکنان) ساخته، آزمایش و push شده و منتظر آزمایش صاحب پروژه است. بعدی: مرحله‌ی ۶ (امتحانات، نمرات، کارنامه).
+مرحله‌های ۰ تا ۵ تأیید شده. مرحله‌ی ۶ (امتحانات، نمرات، نتیجه، کارنامه) ساخته، آزمایش و push شده و منتظر آزمایش صاحب پروژه است. بعدی: مرحله‌ی ۷ (مالی مکتب، اختیاری).
 وضعیت دقیق همیشه در ROADMAP.md است؛ تغییرات در CHANGELOG.md.
 
 ## قواعد سخت (استثنا ندارد)
@@ -85,6 +85,13 @@ php artisan school:backup       # نسخه‌ی پشتیبان (مرحله‌ی 
 - «امروز» همیشه `AttendanceService::today()` (کابل). تاریخ در آدرس: `?date=Y-m-d` یا شمسی؛ ماه: `?month=1405-08` (`ResolvesDates`).
 - گزارش چاپی: همان view با `?print=1` (`@extends($print ? 'layouts.print' : 'layouts.app')`). CSV: `App\Support\Csv::download`.
 - در تست‌ها تاریخ را با `Carbon::setTestNow` و `CarbonImmutable::setTestNow` ثابت کنید.
+
+## نکته‌های پیاده‌سازی مرحله‌ی ۶
+- فورمول فقط در `ResultCalculator` (بدون پایگاه داده). نمره و نتیجه فقط از راه `MarkService` و `ResultService`.
+- نمایش نتیجه‌ی نهایی و کارنامه همیشه از `ResultService::reportCards()`: نهایی‌شده ← `final_snapshot`، در غیر آن زنده با `provisional`. ستون‌های `final_*` فقط با `finalize()`/`unfinalize()` نوشته می‌شوند.
+- مجوز: `Gate::authorize('enterMarks', [$exam, $section, $subject])`، `viewMarks`/`viewResults` با `[Exam::class, …]`، `manage` با `Exam::class`.
+- در یک فایل Blade، `@php(...)` یک‌خطی را پیش از بلوک `@php … @endphp` ننویسید (Blade کل متن میان آن دو را یک بلوک می‌خواند).
+- تست‌های امتحانات از `Tests\Feature\Exams\ExamTestCase` (بخش، دو مضمون، معلم، سه دانش‌آموز، دو امتحان).
 
 ## Git و GitHub
 - بعد از تمام شدن هر مرحله: commit و push به `origin main` (صاحب پروژه این را خواسته است).

@@ -300,6 +300,20 @@ code { color: #9b3b5a; }
 .att-mark-present { color: #2e7d4f; }
 .att-holiday-swatch { display: inline-block; width: 12px; height: 12px; background: #eef0f4; border: 1px solid #cfd6e2; vertical-align: middle; }
 
+/* ---------- نمرات و کارنامه ---------- */
+.mark-input { max-width: 120px; text-align: center; font-weight: 600; }
+.mark-absent { width: 1.4em; height: 1.4em; }
+.results-table { font-size: .86rem; }
+.results-table .results-subject { min-width: 3.5rem; font-size: .78rem; }
+.report-card { break-inside: avoid; }
+.report-card + .report-card { break-before: page; page-break-before: always; padding-top: 4mm; }
+.report-card-title { font-size: 1.15rem; font-weight: 700; text-align: center; margin: 0 0 10px; }
+.report-card-provisional { display: inline-block; margin-inline-start: 8px; padding: 0 8px; border: 1px dashed #b26a00; color: #b26a00; font-size: .8rem; border-radius: 6px; }
+.report-card-info, .report-card-summary { width: 100%; border-collapse: collapse; margin-bottom: 10px; font-size: .9rem; }
+.report-card-info th, .report-card-info td, .report-card-summary th, .report-card-summary td { border: 1px solid #9aa4b5; padding: 4px 8px; }
+.report-card-info th, .report-card-summary th { background: #f1f4fa; font-weight: 600; white-space: nowrap; }
+.report-card-marks { font-size: .88rem; }
+
 /* ---------- عکس کوچک و پرونده ---------- */
 .avatar { flex: none; border: 2px solid #fff; box-shadow: 0 1px 4px rgba(23, 43, 77, .15); }
 .avatar-empty { display: inline-flex; align-items: center; justify-content: center; background: var(--hk-accent-soft); color: var(--hk-accent); font-size: 1.1em; }

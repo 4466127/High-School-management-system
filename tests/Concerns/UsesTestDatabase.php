@@ -2,6 +2,7 @@
 
 namespace Tests\Concerns;
 
+use Database\Seeders\ExamTypeSeeder;
 use Database\Seeders\GradeLevelSeeder;
 use Database\Seeders\RolePermissionSeeder;
 use Database\Seeders\SettingsSeeder;
@@ -44,7 +45,7 @@ trait UsesTestDatabase
         }
 
         Artisan::call('migrate', ['--force' => true]);
-        $this->seed([RolePermissionSeeder::class, SettingsSeeder::class, GradeLevelSeeder::class, SubjectSeeder::class]);
+        $this->seed([RolePermissionSeeder::class, SettingsSeeder::class, GradeLevelSeeder::class, SubjectSeeder::class, ExamTypeSeeder::class]);
 
         self::$testDatabasePrepared = true;
     }

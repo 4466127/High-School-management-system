@@ -17,11 +17,12 @@ class DatabaseSeeder extends Seeder
             SettingsSeeder::class,
             GradeLevelSeeder::class,
             SubjectSeeder::class,
+            ExamTypeSeeder::class,
             AdminUserSeeder::class,
         ]);
 
         if (app()->environment('local')) {
-            $this->call([DemoUserSeeder::class, DemoSchoolSeeder::class, DemoAcademicSeeder::class, DemoAttendanceSeeder::class]);
+            $this->call([DemoUserSeeder::class, DemoSchoolSeeder::class, DemoAcademicSeeder::class, DemoAttendanceSeeder::class, DemoExamSeeder::class]);
         }
     }
 }

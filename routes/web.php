@@ -10,6 +10,10 @@ use App\Http\Controllers\Attendance\StaffAttendanceController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Exams\ExamController;
+use App\Http\Controllers\Exams\MarkController;
+use App\Http\Controllers\Exams\ReportCardController;
+use App\Http\Controllers\Exams\ResultController;
 use App\Http\Controllers\Settings\ActivityLogController;
 use App\Http\Controllers\Settings\SchoolSettingController;
 use App\Http\Controllers\Settings\UserController;
@@ -136,6 +140,35 @@ Route::middleware(['auth', 'active'])->group(function () {
             Route::post('/staff', [StaffAttendanceController::class, 'store'])->name('staff.store');
             Route::get('/staff/monthly', [StaffAttendanceController::class, 'monthly'])->name('staff.monthly');
             Route::get('/staff/monthly/export', [StaffAttendanceController::class, 'monthlyExport'])->name('staff.monthly.export');
+        });
+
+        // ---------- امتحانات، نمرات، کارنامه (مجوز دقیق در ExamPolicy) ----------
+        Route::prefix('exams')->name('exams.')->group(function () {
+            Route::middleware('can:exams.manage')->group(function () {
+                Route::get('/manage', [ExamController::class, 'index'])->name('manage.index');
+                Route::post('/manage', [ExamController::class, 'store'])->name('manage.store');
+                Route::get('/manage/{exam}/edit', [ExamController::class, 'edit'])->name('manage.edit');
+                Route::put('/manage/{exam}', [ExamController::class, 'update'])->name('manage.update');
+                Route::patch('/manage/{exam}/status', [ExamController::class, 'status'])->name('manage.status');
+                Route::delete('/manage/{exam}', [ExamController::class, 'destroy'])->name('manage.destroy');
+                Route::post('/types', [ExamController::class, 'storeType'])->name('manage.types.store');
+                Route::put('/types/{type}', [ExamController::class, 'updateType'])->name('manage.types.update');
+
+                Route::post('/results/{section}/finalize', [ResultController::class, 'finalize'])->name('results.finalize');
+                Route::post('/results/{section}/unfinalize', [ResultController::class, 'unfinalize'])->name('results.unfinalize');
+            });
+
+            Route::middleware('can:marks.enter')->group(function () {
+                Route::get('/marks', [MarkController::class, 'index'])->name('marks.index');
+                Route::get('/marks/{exam}/{section}/{subject}', [MarkController::class, 'show'])->name('marks.show');
+                Route::post('/marks/{exam}/{section}/{subject}', [MarkController::class, 'store'])->name('marks.store');
+            });
+
+            Route::get('/results', [ResultController::class, 'index'])->name('results.index');
+            Route::get('/results/export', [ResultController::class, 'export'])->name('results.export');
+            Route::get('/report-cards', [ReportCardController::class, 'index'])->name('reportcards.index');
+            Route::get('/report-cards/student/{enrollment}', [ReportCardController::class, 'show'])->name('reportcards.show');
+            Route::get('/report-cards/section/{section}', [ReportCardController::class, 'section'])->name('reportcards.section');
         });
 
         // ---------- تنظیمات ----------

@@ -82,6 +82,11 @@
                 @if ($attendance && $attendance['totals']['absent'] > 0)<span class="badge text-bg-danger">@fa($attendance['totals']['absent'])</span>@endif
             </button>
         </li>
+        @if ($canSeeMarks)
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#marks-pane" type="button" role="tab">{{ __('exams.tab') }}</button>
+            </li>
+        @endif
     </ul>
 
     <div class="tab-content">
@@ -175,6 +180,12 @@
         <div class="tab-pane fade" id="attendance-pane" role="tabpanel">
             @include('students.partials.attendance')
         </div>
+
+        @if ($canSeeMarks)
+            <div class="tab-pane fade" id="marks-pane" role="tabpanel">
+                @include('students.partials.marks')
+            </div>
+        @endif
     </div>
 
     {{-- پنجره‌ها --}}

@@ -26,7 +26,12 @@ return [
         ['key' => 'attendance_absentees', 'icon' => 'fa-user-clock', 'route' => 'attendance.absentees.index', 'can' => ['attendance.take', 'attendance.edit', 'reports.academic']],
         ['key' => 'attendance_staff', 'icon' => 'fa-id-badge', 'route' => 'attendance.staff.index', 'can' => ['staff.manage']],
     ]],
-    ['key' => 'exams', 'icon' => 'fa-file-pen', 'route' => null, 'can' => ['marks.enter', 'exams.manage', 'reportcards.print']],
+    ['key' => 'exams', 'icon' => 'fa-file-pen', 'route' => null, 'can' => ['marks.enter', 'exams.manage', 'reportcards.print'], 'children' => [
+        ['key' => 'exams_marks', 'icon' => 'fa-pen-to-square', 'route' => 'exams.marks.index', 'can' => ['marks.enter']],
+        ['key' => 'exams_results', 'icon' => 'fa-table-list', 'route' => 'exams.results.index', 'can' => ['exams.manage', 'reportcards.print']],
+        ['key' => 'exams_reportcards', 'icon' => 'fa-id-card', 'route' => 'exams.reportcards.index', 'can' => ['exams.manage', 'reportcards.print']],
+        ['key' => 'exams_manage', 'icon' => 'fa-list-check', 'route' => 'exams.manage.index', 'can' => ['exams.manage']],
+    ]],
     ['key' => 'finance', 'icon' => 'fa-coins', 'route' => null, 'can' => ['finance.view', 'finance.manage'], 'feature' => 'finance'],
     ['key' => 'courses', 'icon' => 'fa-people-group', 'route' => null, 'can' => ['courses.manage', 'courses.attendance', 'courses.ledger']],
     ['key' => 'reports', 'icon' => 'fa-chart-column', 'route' => null, 'can' => ['reports.academic', 'reports.finance']],

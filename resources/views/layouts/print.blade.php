@@ -10,6 +10,7 @@
 </div>
 
 <div class="print-page">
+    @unless ($noHeader ?? false)
     <header class="print-head">
         <div>
             <div class="print-school">{{ \App\Models\Setting::get('school_name') }}</div>
@@ -19,6 +20,7 @@
             {{ __('app.printed_on') }}: @jdate(now())
         </div>
     </header>
+    @endunless
 
     @yield('content')
 </div>

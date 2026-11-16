@@ -64,6 +64,17 @@ return [
         'excused' => 'ر',
         'sick' => 'م',
     ],
+    'exam_status' => [
+        'draft' => 'پیش‌نویس',
+        'open' => 'باز (ثبت نمره)',
+        'locked' => 'قفل',
+    ],
+    'final_result' => [
+        'passed' => 'کامیاب',
+        'conditional' => 'مشروط',
+        'failed' => 'ناکام',
+        'deprived' => 'محروم',
+    ],
     'employment_status' => [
         'active' => 'برسر وظیفه',
         'on_leave' => 'رخصتی',

@@ -15,7 +15,7 @@ use Illuminate\View\View;
 /**
  * ارتقای گروهی یک بخش به سال تازه (مجوز: students.manage).
  * گام ۱: انتخاب بخش و سال مقصد؛ گام ۲: تصمیم برای هر دانش‌آموز و بخش‌های مقصد.
- * نتیجه‌ی امتحانات (مرحله‌ی ۶) بعداً تصمیم پیش‌فرض را پیشنهاد می‌کند.
+ * اگر نتایج بخش نهایی شده باشد، تصمیم پیش‌فرض از نتیجه می‌آید (ResultService::promotionSuggestion).
  */
 class PromotionController extends Controller
 {

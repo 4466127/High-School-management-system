@@ -38,6 +38,7 @@
 | `/attendance/monthly/export?month=1405-08&section=` | جدول ماهوار یک بخش؛ بدون `section`: خلاصه‌ی صنف‌ها | ۵ ✅ |
 | `/attendance/absentees/export?min=&section=` | دانش‌آموزان با غیابت زیاد در سال جاری | ۵ ✅ |
 | `/attendance/staff/monthly/export?month=` | خلاصه‌ی ماهوار حاضری کارکنان | ۵ ✅ |
+| `/exams/results/export?section=&exam=` | نمره‌های یک امتحان بخش؛ بدون `exam`: نتیجه‌ی نهایی (نمره‌ی نهایی هر مضمون، مجموع، اوسط، نتیجه، درجه) | ۶ ✅ |
 | `/reports/students/export` | فهرست دانش‌آموزان با فیلتر | ۹ |
 | `/reports/results/export` | نتایج امتحان | ۹ |
 | `/reports/finance/debtors/export` | بدهکاران | ۹ |

@@ -91,17 +91,25 @@
                                 <th style="width: 60px">{{ __('academics.roll_no') }}</th>
                                 <th>{{ __('students.full_name') }}</th>
                                 <th>{{ __('students.father_name') }}</th>
+                                <th>{{ __('exams.result') }}</th>
                                 <th>{{ __('academics.decision') }}</th>
                             </tr>
                             </thead>
                             <tbody>
                             @php($default = $nextGrade ? 'promote' : 'graduate')
                             @forelse ($enrollments as $enrollment)
-                                @php($choice = old('decisions.'.$enrollment->id, $default))
+                                @php($choice = old('decisions.'.$enrollment->id, \App\Services\ResultService::promotionSuggestion($enrollment->final_result, $nextGrade === null) ?? $default))
                                 <tr>
                                     <td>@fa($enrollment->roll_no)</td>
                                     <td class="fw-medium">{{ $enrollment->student->full_name }}</td>
                                     <td>{{ $enrollment->student->father_name }}</td>
+                                    <td>
+                                        @if ($enrollment->final_result)
+                                            <span class="badge {{ $enrollment->final_result->badgeClass() }}">{{ $enrollment->final_result->label() }}</span>
+                                        @else
+                                            <span class="small text-secondary">{{ __('academics.not_finalized') }}</span>
+                                        @endif
+                                    </td>
                                     <td>
                                         <div class="btn-group btn-group-sm decision-group" role="group">
                                             @foreach (array_filter(['promote' => $nextGrade !== null, 'graduate' => $nextGrade === null, 'repeat' => true, 'skip' => true]) as $value => $show)
@@ -112,7 +120,7 @@
                                     </td>
                                 </tr>
                             @empty
-                                <tr><td colspan="4" class="text-center text-secondary py-3">{{ __('academics.no_students_in_section') }}</td></tr>
+                                <tr><td colspan="5" class="text-center text-secondary py-3">{{ __('academics.no_students_in_section') }}</td></tr>
                             @endforelse
                             </tbody>
                         </table>

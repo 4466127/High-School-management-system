@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\EnrollmentStatus;
+use App\Enums\FinalResult;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -24,7 +25,9 @@ class Enrollment extends Model
             'left_on' => 'date',
             'final_total' => 'decimal:2',
             'final_average' => 'decimal:2',
+            'final_result' => FinalResult::class,
             'finalized_at' => 'datetime',
+            'final_snapshot' => 'array',
         ];
     }
 
@@ -46,6 +49,16 @@ class Enrollment extends Model
     public function attendanceRecords(): HasMany
     {
         return $this->hasMany(AttendanceRecord::class);
+    }
+
+    public function marks(): HasMany
+    {
+        return $this->hasMany(Mark::class);
+    }
+
+    public function isFinalized(): bool
+    {
+        return $this->finalized_at !== null;
     }
 
     public function isActive(): bool

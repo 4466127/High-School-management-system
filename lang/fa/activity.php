@@ -22,6 +22,10 @@ return [
         'subject' => 'مضامین',
         'settings' => 'تنظیمات',
         'attendance' => 'حاضری',
+        'exam' => 'امتحانات',
+        'exam_type' => 'انواع امتحان',
+        'marks' => 'نمرات',
+        'results' => 'نتایج',
     ],
     'actions' => [
         'auth' => [
@@ -90,6 +94,24 @@ return [
             'corrected' => 'اصلاح حاضری بخش',
             'staff_taken' => 'ثبت حاضری کارکنان',
             'staff_corrected' => 'اصلاح حاضری کارکنان',
+        ],
+        'exam' => [
+            'created' => 'تعریف امتحان',
+            'updated' => 'ویرایش امتحان',
+            'status_changed' => 'تغییر وضعیت امتحان',
+            'deleted' => 'حذف امتحان',
+        ],
+        'exam_type' => [
+            'created' => 'افزودن نوع امتحان',
+            'updated' => 'ویرایش نوع امتحان',
+        ],
+        'marks' => [
+            'entered' => 'ثبت نمره',
+            'updated' => 'اصلاح نمره',
+        ],
+        'results' => [
+            'finalized' => 'نهایی‌کردن نتایج',
+            'unfinalized' => 'لغو نهایی‌کردن نتایج',
         ],
         'staff' => [
             'created' => 'ثبت کارمند',
@@ -170,6 +192,13 @@ return [
         'conditional_max_failed_subjects' => 'حد مشروط',
         'deprivation_absence_days' => 'حد محروم',
         'absence_alert_days' => 'حد غیابت زیاد',
+        'max_mark' => 'نمره‌ی کامل',
+        'weight' => 'وزن',
+        'counts_in_final' => 'در نتیجه حساب شود',
+        'exam_type_id' => 'نوع امتحان',
+        'academic_term_id' => 'دوره',
+        'default_max_mark' => 'نمره‌ی کامل پیش‌فرض',
+        'default_weight' => 'وزن پیش‌فرض',
         'weekly_holidays' => 'رخصتی هفته',
         'logo' => 'لوگو',
         'code' => 'کود',
