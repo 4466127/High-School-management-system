@@ -9,6 +9,10 @@ use App\Http\Controllers\Attendance\DailyAttendanceController;
 use App\Http\Controllers\Attendance\StaffAttendanceController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\PasswordController;
+use App\Http\Controllers\Courses\CourseAttendanceController;
+use App\Http\Controllers\Courses\CourseController;
+use App\Http\Controllers\Courses\CourseLedgerController;
+use App\Http\Controllers\Courses\ParticipantController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Exams\ExamController;
 use App\Http\Controllers\Exams\MarkController;
@@ -181,6 +185,31 @@ Route::middleware(['auth', 'active'])->group(function () {
             Route::get('/report-cards', [ReportCardController::class, 'index'])->name('reportcards.index');
             Route::get('/report-cards/student/{enrollment}', [ReportCardController::class, 'show'])->name('reportcards.show');
             Route::get('/report-cards/section/{section}', [ReportCardController::class, 'section'])->name('reportcards.section');
+        });
+
+        // ---------- کورس‌های تقویتی (مجوز دقیق در CoursePolicy) ----------
+        Route::prefix('courses')->name('courses.')->group(function () {
+            Route::get('/', [CourseController::class, 'index'])->name('list.index');
+            Route::get('/create', [CourseController::class, 'create'])->name('list.create');
+            Route::post('/', [CourseController::class, 'store'])->name('list.store');
+            Route::get('/{course}', [CourseController::class, 'show'])->whereNumber('course')->name('list.show');
+            Route::get('/{course}/edit', [CourseController::class, 'edit'])->name('list.edit');
+            Route::put('/{course}', [CourseController::class, 'update'])->name('list.update');
+            Route::post('/{course}/groups', [CourseController::class, 'storeGroup'])->name('list.groups.store');
+            Route::put('/groups/{group}', [CourseController::class, 'updateGroup'])->name('list.groups.update');
+            Route::post('/{course}/participants/students', [ParticipantController::class, 'storeStudents'])->name('list.participants.students');
+            Route::post('/{course}/participants/external', [ParticipantController::class, 'storeExternal'])->name('list.participants.external');
+            Route::put('/participants/{participant}', [ParticipantController::class, 'update'])->name('list.participants.update');
+
+            Route::get('/attendance', [CourseAttendanceController::class, 'index'])->name('attendance.index');
+            Route::get('/attendance/{group}', [CourseAttendanceController::class, 'show'])->name('attendance.show');
+            Route::post('/attendance/{group}', [CourseAttendanceController::class, 'store'])->name('attendance.store');
+
+            Route::get('/finance', [CourseLedgerController::class, 'index'])->name('ledger.index');
+            Route::get('/finance/{course}', [CourseLedgerController::class, 'show'])->name('ledger.show');
+            Route::get('/finance/{course}/export', [CourseLedgerController::class, 'export'])->name('ledger.export');
+            Route::post('/finance/{course}', [CourseLedgerController::class, 'store'])->name('ledger.store');
+            Route::patch('/finance/entries/{entry}/void', [CourseLedgerController::class, 'void'])->name('ledger.void');
         });
 
         // ---------- مالی مکتب (اختیاری؛ فیس: feature:fees، دفتر درآمد و مصرف: feature:ledger) ----------

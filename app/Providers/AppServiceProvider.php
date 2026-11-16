@@ -3,9 +3,11 @@
 namespace App\Providers;
 
 use App\Models\AttendanceSession;
+use App\Models\Course;
 use App\Models\Exam;
 use App\Models\User;
 use App\Policies\AttendancePolicy;
+use App\Policies\CoursePolicy;
 use App\Policies\ExamPolicy;
 use App\Support\Menu;
 use Illuminate\Pagination\Paginator;
@@ -33,6 +35,7 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(AttendanceSession::class, AttendancePolicy::class);
         // امتحانات: Gate::authorize('enterMarks', [$exam, $section, $subject])، Gate::authorize('viewResults', [Exam::class, $section])
         Gate::policy(Exam::class, ExamPolicy::class);
+        Gate::policy(Course::class, CoursePolicy::class);
 
         // شناسه‌ی همه‌ی مدل‌ها در آدرس فقط عدد است (تا students/create با students/{student} قاطی نشود)
         foreach (['student', 'staff', 'user', 'guardian', 'document', 'history', 'section', 'year', 'term', 'grade', 'subject', 'exam', 'type', 'enrollment', 'feeType', 'invoice', 'payment', 'transaction', 'category'] as $parameter) {

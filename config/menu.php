@@ -40,7 +40,11 @@ return [
         ['key' => 'finance_ledger', 'icon' => 'fa-scale-balanced', 'route' => 'finance.ledger.index', 'can' => ['finance.view', 'finance.manage'], 'feature' => 'ledger'],
         ['key' => 'finance_setup', 'icon' => 'fa-sliders', 'route' => 'finance.setup.index', 'can' => ['finance.manage'], 'feature' => 'fees'],
     ]],
-    ['key' => 'courses', 'icon' => 'fa-people-group', 'route' => null, 'can' => ['courses.manage', 'courses.attendance', 'courses.ledger']],
+    ['key' => 'courses', 'icon' => 'fa-people-group', 'route' => null, 'can' => ['courses.manage', 'courses.attendance', 'courses.ledger'], 'children' => [
+        ['key' => 'courses_list', 'icon' => 'fa-chalkboard-user', 'route' => 'courses.list.index', 'can' => ['courses.manage', 'courses.attendance', 'courses.ledger']],
+        ['key' => 'courses_attendance', 'icon' => 'fa-clipboard-user', 'route' => 'courses.attendance.index', 'can' => ['courses.manage', 'courses.attendance']],
+        ['key' => 'courses_ledger', 'icon' => 'fa-hand-holding-heart', 'route' => 'courses.ledger.index', 'can' => ['courses.ledger']],
+    ]],
     ['key' => 'reports', 'icon' => 'fa-chart-column', 'route' => null, 'can' => ['reports.academic', 'reports.finance']],
     ['key' => 'settings', 'icon' => 'fa-gear', 'route' => null, 'can' => ['settings.manage', 'users.manage', 'activity_logs.view', 'backups.manage', 'students.manage', 'staff.manage'], 'children' => [
         ['key' => 'school', 'icon' => 'fa-building-columns', 'route' => 'settings.school.edit', 'can' => ['settings.manage']],

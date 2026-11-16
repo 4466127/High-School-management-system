@@ -27,6 +27,7 @@ return [
         'marks' => 'نمرات',
         'results' => 'نتایج',
         'reexam' => 'امتحان مشروطی',
+        'course' => 'کورس‌ها',
         'import' => 'ورود از Excel',
         'invoice' => 'بل‌ها',
         'payment' => 'رسیدها',
@@ -150,6 +151,18 @@ return [
             'finalized' => 'نهایی‌کردن نتایج',
             'unfinalized' => 'لغو نهایی‌کردن نتایج',
         ],
+        'course' => [
+            'created' => 'ثبت کورس',
+            'updated' => 'ویرایش کورس',
+            'group_created' => 'افزودن گروه کورس',
+            'group_updated' => 'ویرایش گروه کورس',
+            'participants_added' => 'شامل کردن در کورس',
+            'participant_updated' => 'تغییر اشتراک‌کننده‌ی کورس',
+            'attendance_taken' => 'ثبت حاضری کورس',
+            'attendance_corrected' => 'اصلاح حاضری کورس',
+            'ledger_recorded' => 'ثبت در دفتر مالی کورس',
+            'ledger_voided' => 'باطل کردن سطر مالی کورس',
+        ],
         'reexam' => [
             'marks_saved' => 'ثبت نمره‌ی مشروطی',
             'finalized' => 'نهایی‌کردن نتیجه‌ی مشروطی',
@@ -168,6 +181,10 @@ return [
 
     // نام فارسی فیلدها در ستون «تغییرات»
     'fields' => [
+        'field' => 'رشته',
+        'season' => 'دوره',
+        'schedule' => 'زمان درس',
+        'course_group_id' => 'گروه کورس',
         'name' => 'نام',
         'username' => 'نام کاربری',
         'is_active' => 'فعال',

@@ -68,6 +68,22 @@ class RoleAccessTest extends TestCase
         }
     }
 
+    public function test_courses_submenu_per_role(): void
+    {
+        $expected = [
+            'admin' => [Role::Admin, ['courses_list', 'courses_attendance', 'courses_ledger']],
+            'principal' => [Role::Principal, ['courses_list', 'courses_attendance', 'courses_ledger']],
+            'teacher' => [Role::Teacher, ['courses_list', 'courses_attendance']],
+            'accountant' => [Role::Accountant, ['courses_list', 'courses_ledger']],
+            'course_manager' => [Role::CourseManager, ['courses_list', 'courses_attendance', 'courses_ledger']],
+        ];
+
+        foreach ($expected as $name => [$role, $keys]) {
+            $courses = collect(app(Menu::class)->for($this->userWithRole($role)))->firstWhere('key', 'courses');
+            $this->assertSame($keys, array_column($courses['children'], 'key'), $name);
+        }
+    }
+
     #[DataProvider('expectedMenus')]
     public function test_each_role_reaches_dashboard_and_sees_its_menu_labels(Role $role, array $menuKeys, array $settingsKeys): void
     {
@@ -79,11 +95,14 @@ class RoleAccessTest extends TestCase
         preg_match('~<aside class="side".*?</aside>~s', $response->getContent(), $m);
         $sidebar = $m[0] ?? '';
         $this->assertNotSame('', $sidebar);
+        // فقط برچسب‌های سطح اول (زیرمنوها مثل «حاضری کورس» واژه‌ی گروه‌های دیگر را دارند و جدا تست می‌شوند)
+        $sidebar = preg_replace('~<ul class="nav-sub.*?</ul>~s', '', $sidebar);
 
         foreach (array_keys(__('menu')) as $key) {
             if (in_array($key, ['school', 'users', 'activity_logs', 'backups', 'import', 'sections', 'years', 'grades', 'promotion',
                 'attendance_daily', 'attendance_monthly', 'attendance_absentees', 'attendance_staff',
-                'exams_marks', 'exams_results', 'exams_reportcards', 'exams_reexam', 'exams_manage'], true)) {
+                'exams_marks', 'exams_results', 'exams_reportcards', 'exams_reexam', 'exams_manage',
+                'courses_list', 'courses_attendance', 'courses_ledger'], true)) {
                 continue;
             }
             in_array($key, $menuKeys, true)

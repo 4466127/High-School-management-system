@@ -44,7 +44,7 @@
 | `/finance/debtors/export?section=` | بدهکاران سال جاری | ۷ ✅ |
 | `/finance/payments/export?from=&to=&q=` | رسیدها | ۷ ✅ |
 | `/finance/ledger/export?type=&category=&from=&to=` | درآمد و مصرف مکتب | ۷ ✅ |
-| `/reports/courses/{course}/ledger/export` | دفتر مالی کورس | ۹ |
+| `/courses/finance/{course}/export?type=&voided=` | دفتر مالی یک کورس (کمک، معاش، مصرف) | ۸ ✅ |
 
 ## اگر در آینده API واقعی لازم شد
 - مسیرها در `routes/api.php` با نسخه (`/api/v1`)، احراز هویت با Laravel Sanctum.

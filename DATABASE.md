@@ -21,7 +21,7 @@
 | حاضری | `attendance_sessions`, `attendance_records`, `staff_attendance` |
 | امتحانات | `exam_types`, `exams`, `marks`, `reexam_marks` |
 | مالی مکتب | `fee_types`, `fee_rates`, `student_invoices`, `payments`, `payment_allocations`, `finance_categories`, `school_transactions` |
-| کورس‌ها | `courses`, `course_participants`, `course_sessions`, `course_attendance`, `course_ledger_entries` |
+| کورس‌ها | `courses`, `course_groups`, `course_participants`, `course_sessions`, `course_attendance`, `course_ledger_entries` |
 | داخلی Laravel | `sessions`, `cache`, `cache_locks`, `migrations` |
 
 ### تفاوت با فهرست اولیه
@@ -92,10 +92,11 @@ erDiagram
 ### کورس‌ها
 ```mermaid
 erDiagram
-    staff |o--o{ courses : "معلم کورس"
-    courses ||--o{ course_participants : ""
+    courses ||--o{ course_groups : ""
+    staff |o--o{ course_groups : "معلم گروه"
+    course_groups ||--o{ course_participants : ""
     students |o--o{ course_participants : "اختیاری"
-    courses ||--o{ course_sessions : ""
+    course_groups ||--o{ course_sessions : ""
     course_sessions ||--o{ course_attendance : ""
     course_participants ||--o{ course_attendance : ""
     courses ||--o{ course_ledger_entries : "دفتر مالی مستقل"
@@ -204,21 +205,25 @@ erDiagram
 
 **school_transactions** — `type` (income / expense), `finance_category_id`, `amount`, `date`, `party_name` (کمک‌کننده یا گیرنده، اختیاری), `description`, `recorded_by`, `voided_at`, `voided_by`, `void_reason`
 
-### کورس‌ها
-**courses** — `name`, `description`, `teacher_id` (→ staff، اختیاری), `start_date`, `end_date`, `schedule_text` (روزها و ساعت), `status` (planned / active / finished / cancelled), `funding_type` (donation / fee / mixed / free), `agreed_salary` (اختیاری), `notes`
+### کورس‌ها (مرحله‌ی ۸ — ساخته شد)
+کورس‌های تقویتی با کمک مردم (کامپیوتر، انگلیسی، ساینس، …)؛ زمستانی یا در جریان سال؛ گروه‌های قبل و بعد از ظهر. وابسته به سال تحصیلی نیست.
 
-**course_participants** — `course_id`, `student_id` (اختیاری), `name`, `father_name`, `phone` (برای کسانی که دانش‌آموز مکتب نیستند), `joined_on`, `status` (active / left / completed). تعداد اشتراک‌کنندگان شمرده می‌شود، ذخیره نمی‌شود.
+**courses** — `name`, `field` (رشته), `season` (winter / school_year / summer), `start_date`, `end_date` (اختیاری), `status` (planned / active / finished / cancelled), `description`, `created_by`
 
-**course_sessions** — `course_id`, `date`, `taken_by`. یکتا: (`course_id`, `date`).
-**course_attendance** — `course_session_id`, `course_participant_id`, `status`. یکتا روی هر دو.
+**course_groups** — `course_id`, `name` (یکتا در کورس), `shift` (morning / afternoon), `staff_id` (→ staff، معلم گروه، اختیاری), `schedule` (روزها و ساعت), `is_active`
 
-**course_ledger_entries** — `course_id`, `entry_type` (donation / teacher_salary / expense), `channel` (cashbox / direct_to_teacher), `amount`, `date`, `donor_name` (اختیاری), `is_anonymous`, `description`, `recorded_by`, `voided_at`, `voided_by`, `void_reason`
+**course_participants** — `course_group_id`, `student_id` (اختیاری؛ دانش‌آموز مکتب), `name`, `father_name`, `phone`, `gender` (برای فرد بیرونی), `joined_on`, `status` (active / left / completed), `note`. یکتا: (`course_group_id`, `student_id`)؛ یک دانش‌آموز در یک کورس فقط یک بار (در Service).
+
+**course_sessions** — `course_group_id`, `date`, `taken_by`, `updated_by`. یکتا: (`course_group_id`, `date`).
+**course_attendance** — `course_session_id`, `course_participant_id`, `status` (همان وضعیت‌های حاضری مکتب), `note`. یکتا روی هر دو.
+
+**course_ledger_entries** — `course_id`, `entry_type` (donation / teacher_salary / expense), `channel` (cashbox / direct_to_teacher), `staff_id` (معلم: برای معاش و کمک مستقیم), `amount`, `date`, `donor_name` (خالی = بی‌نام), `description`, `recorded_by`, `voided_at`, `voided_by`, `void_reason`
 
 قواعد:
-- `direct_to_teacher` فقط با `donation` مجاز است.
-- مانده‌ی صندوق کورس = Σ donation(cashbox) − Σ teacher_salary − Σ expense (سطرهای باطل‌نشده).
+- `direct_to_teacher` فقط با `donation`؛ معاش و کمک مستقیم باید معلم یکی از گروه‌های همان کورس را داشته باشد.
+- مانده‌ی صندوق کورس = Σ donation(cashbox) − Σ teacher_salary − Σ expense (سطرهای باطل‌نشده). معاش/مصرف بیشتر از مانده، و باطل کردن کمکی که مانده را منفی کند، پذیرفته نمی‌شود.
 - دریافتی معلم = Σ teacher_salary + Σ donation(direct_to_teacher).
-
+- مانده ذخیره نمی‌شود (`CourseLedgerCalculator`). پول کورس با فیس یا دفتر مکتب جمع نمی‌شود.
 ## نمایه‌ها (index) ی مهم
 - `students`: (`last_name`, `first_name`), `father_name`, `status`
 - `enrollments`: (`section_id`, `status`)

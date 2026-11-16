@@ -89,4 +89,29 @@ return [
         'on_leave' => 'رخصتی',
         'left' => 'منفک / رفته',
     ],
+    'course_season' => [
+        'winter' => 'زمستانی (رخصتی مکاتب)',
+        'school_year' => 'در جریان سال تحصیلی',
+        'summer' => 'تابستانی',
+    ],
+    'course_status' => [
+        'planned' => 'در برنامه',
+        'active' => 'جاری',
+        'finished' => 'ختم‌شده',
+        'cancelled' => 'لغوشده',
+    ],
+    'course_entry_type' => [
+        'donation' => 'کمک مردمی',
+        'teacher_salary' => 'معاش معلم',
+        'expense' => 'مصرف کورس',
+    ],
+    'course_channel' => [
+        'cashbox' => 'صندوق کورس',
+        'direct_to_teacher' => 'مستقیم به معلم',
+    ],
+    'participant_status' => [
+        'active' => 'مشغول',
+        'left' => 'رفته',
+        'completed' => 'ختم کرده',
+    ],
 ];
