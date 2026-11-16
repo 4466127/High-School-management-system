@@ -12,7 +12,7 @@
 - [API.md](API.md) — مسیرهای داخلی JSON و خروجی CSV
 
 ## وضعیت فعلی
-مرحله‌های ۰ تا ۶ آزمایش شده (بهبودهای خواسته‌شده‌ی صاحب پروژه هم انجام شد). مرحله‌های ۷ و ۷+ (مالی، مشروطی، درجه‌ی حرفی) تأیید شد. مرحله‌ی ۸ (کورس‌ها) تأیید شد. مرحله‌ی ۹ (داشبورد و گزارش‌ها) ساخته، آزمایش و push شده و منتظر آزمایش صاحب پروژه است. بعدی و آخرین: مرحله‌ی ۱۰ (پشتیبان، پایگاه داده‌ی تازه برای مکتب، راه‌اندازی در شبکه). راهنمای نصب از صفر: README.md.
+مرحله‌های ۰ تا ۶ آزمایش شده (بهبودهای خواسته‌شده‌ی صاحب پروژه هم انجام شد). مرحله‌های ۷ و ۷+ (مالی، مشروطی، درجه‌ی حرفی) تأیید شد. مرحله‌ی ۸ (کورس‌ها) تأیید شد. مرحله‌ی ۹ (داشبورد و گزارش‌ها) تأیید شد. مرحله‌ی ۱۰ (پشتیبان ماهانه، پوشه‌ی `tools`، دکمه‌ی دسکتاپ) ساخته، آزمایش و push شده و منتظر آزمایش صاحب پروژه است. باقی‌مانده فقط کارهای نصب در مکتب است (پاک کردن داده‌ی آزمایشی، شبکه، رمز MariaDB) که هر کدام تأیید صاحب پروژه می‌خواهد. راهنمای نصب از صفر: README.md.
 وضعیت دقیق همیشه در ROADMAP.md است؛ تغییرات در CHANGELOG.md.
 
 ## قواعد سخت (استثنا ندارد)
@@ -55,7 +55,10 @@ php artisan db:seed             # نقش‌ها، تنظیمات، مدیر او
 php artisan test                # تست‌ها روی maktab_test
 php artisan serve               # اجرای توسعه (یا Apache: http://localhost/High%20school%20management%20system/)
 vendor\bin\pint                 # قالب‌بندی کد (با pint.json)
-php artisan school:backup       # نسخه‌ی پشتیبان (مرحله‌ی دهم)
+php artisan school:backup       # پشتیبان (--to=<پوشه>، --if-due = فقط اگر ماهانه وقتش است)
+php artisan school:check        # بررسی حالت سیستم (--fix رفع خودکار)
+php artisan school:restore      # بازیابی (فقط با درخواست صاحب پروژه)
+php artisan school:reset        # پاک کردن داده (هرگز روی maktab بدون تأیید صاحب پروژه)
 ```
 
 ## نکته‌های پیاده‌سازی مرحله‌ی ۲
@@ -109,6 +112,12 @@ php artisan school:backup       # نسخه‌ی پشتیبان (مرحله‌ی 
 ## نکته‌های پیاده‌سازی مرحله‌ی ۹
 - داشبورد فقط از `DashboardService::for($user)`؛ هر کارت null یعنی برای این کاربر نیست. گزارش‌ها فقط خواندن، از `ReportService`؛ محدوده‌ی بخش‌ها همیشه `ResultService::visibleSections`.
 - گزارش تازه: متد در `ReportService` + دو مسیر `reports.<name>.index`/`export` + زیرمنو در `config/menu.php` + view با `reports._filters` و `?print=1`.
+
+## نکته‌های پیاده‌سازی مرحله‌ی ۱۰
+- پشتیبان فقط از راه `BackupService` (zip: `database.sql` + `files/private` + `files/public` + `manifest.json`)؛ پاک کردن داده فقط `ResetService` (همیشه اول پشتیبان)؛ بررسی سلامت `SystemCheckService`.
+- **در MySQL `CHECK TABLE`، `TRUNCATE` و هر DDL transaction باز را commit می‌کند** ← داده‌ی تست در `maktab_test` می‌ماند. چنین دستوری را روی اتصال جدا (`DB::build(...)`) یا فقط بیرون از transaction اجرا کنید.
+- تست‌های پشتیبان: `Tests\Feature\System\SystemTestCase` (پوشه‌ی موقت، `Storage::fake`، `fakeImport()` به جای اجرای واقعی SQL).
+- `tools/*.ps1` باید UTF-8 **با BOM** ذخیره شوند (PowerShell 5.1)؛ `tools/*.bat` با CRLF و کامنت انگلیسی.
 
 ## نکته‌های امتحان مشروطی و درجه‌ی حرفی
 - درجه فقط `ResultCalculator::grade()` (a/b/c/d؛ برچسب در `exams.grades`). حدها `grade_a_min`/`grade_b_min`/`grade_c_min` در تنظیمات و در `final_snapshot.settings`. نسخه‌ی ثابت قدیمی بدون `grade` ← `ResultService::reportCards` آن را حساب می‌کند. `class_rank` دیگر نوشته نمی‌شود.

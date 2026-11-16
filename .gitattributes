@@ -9,3 +9,8 @@
 /.github export-ignore
 CHANGELOG.md export-ignore
 .styleci.yml export-ignore
+
+# ابزارهای Windows (tools/): cmd و PowerShell با پایان خط CRLF
+*.bat text eol=crlf
+*.ps1 text eol=crlf
+*.ico binary

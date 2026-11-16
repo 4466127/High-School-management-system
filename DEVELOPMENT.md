@@ -142,13 +142,17 @@ mysqldump -u root --single-transaction --routines maktab --result-file=backups\m
 7. Apache و MySQL را به‌صورت سرویس Windows نصب کنید تا با روشن‌شدن کامپیوتر خودکار شروع شوند.
 8. کاربران در مرورگر موبایل یا کامپیوتر `http://192.168.1.100` را باز می‌کنند.
 
-## ۷. پشتیبان‌گیری و بازیابی (مرحله‌ی ۱۰)
-- `php artisan school:backup --to="E:\maktab-backup"` یک فایل فشرده می‌سازد: خروجی کامل پایگاه داده (`mysqldump`) + پوشه‌ی `storage/app` (عکس‌ها، اسناد، لوگو).
-- همین کار از صفحه‌ی «تنظیمات ← پشتیبان» هم ممکن است.
-- پشتیبان خودکار روزانه با Windows Task Scheduler؛ نگهداری ۳۰ نسخه‌ی آخر.
-- بازیابی: `php artisan school:restore "E:\maktab-backup\backup-….zip"` — قبل از جایگزینی تأیید می‌خواهد و از وضعیت فعلی یک نسخه می‌گیرد.
-- تعویض کامپیوتر سرور: نصب XAMPP با PHP 8.4 ← کپی پروژه ← `composer install` ← `.env` ← بازیابی آخرین پشتیبان.
-- توصیه: هر هفته یک نسخه روی فلش جدا که بیرون از مکتب نگهداری شود.
+## ۷. پشتیبان‌گیری، بازیابی و ابزارها (مرحله‌ی ۱۰)
+- `php artisan school:backup [--to="E:\maktab-backup"] [--if-due]` ← `backups\maktab-<Y-m-d_His>-<نوع>.zip`: `database.sql` (mysqldump با `--single-transaction`)، `files/private` (دیسک `local`)، `files/public`، `manifest.json`. منطق در `App\Services\BackupService`.
+- پشتیبان خودکار **ماهانه** (تصمیم ۱۶): `tools\start.ps1` (دکمه‌ی دسکتاپ) هر بار `school:backup --if-due` را پنهان اجرا می‌کند؛ گزارش در `storage\logs\auto-backup.log`. Task Scheduler لازم نیست.
+- صفحه‌ی «تنظیمات ← پشتیبان و بازیابی» (`settings.backups.*`، مجوز `backups.manage`): گرفتن و دانلود. بازیابی عمداً فقط از خط فرمان.
+- `php artisan school:restore [file] [--confirm=maktab]` ← بدون مسیر از فهرست انتخاب می‌شود؛ پشتیبان `pre_restore` ← `mysql < database.sql` ← جایگزینی فایل‌ها ← `migrate --force` ← `cache:clear`.
+- `php artisan school:check [--fix]` (`SystemCheckService`)؛ رفع خودکار: پوشه‌ها، migrate (پس از پشتیبان)، seederهای پایه و مدیر سیستم، `optimize:clear` (+ `optimize` در production)، پشتیبان اگر کهنه است.
+- `php artisan school:reset [--data|--full] [--confirm=maktab]` (`ResetService`): همیشه اول پشتیبان `pre_reset`. فهرست جدول‌های «می‌ماند» ثابت است؛ هر جدول تازه خودکار پاک می‌شود. **هرگز روی `maktab` بدون تأیید صاحب پروژه.**
+- تنظیم در `.env`: `BACKUP_PATH`، `BACKUP_KEEP` (۱۲)، `BACKUP_EVERY_DAYS` (۳۰)، `BACKUP_COPY_TO`، `MYSQL_BIN` (`config/school.php` ← `backup`).
+- پوشه‌ی `tools`: فایل‌های `.bat` (کامنت انگلیسی، `chcp 65001`، `_php.bat` مسیر PHP را پیدا می‌کند) و `.ps1` (**UTF-8 با BOM**، وگرنه PowerShell 5.1 متن فارسی را خراب می‌خواند). `repair-mysql.ps1` و `start.ps1` با `-NoUi`/`-NoBrowser` بی پنجره امتحان می‌شوند.
+- تست‌ها: `tests/Feature/System` (پوشه‌ی پشتیبان موقت، `Storage::fake`؛ mysqldump واقعی روی `maktab_test`، import جعلی). **`CHECK TABLE`، `TRUNCATE` و هر DDL در MySQL transaction را commit می‌کند** و داده‌ی تست در `maktab_test` می‌ماند؛ برای همین CHECK روی اتصال جدا (`DB::build`) و reset داخل transaction با `DELETE`.
+- تعویض کامپیوتر سرور: نصب XAMPP با PHP 8.4 ← کپی پروژه ← `composer install` ← `.env` ← `migrate` ← `tools\restore.bat` با آخرین zip.
 
 ## ۸. تاریخ شمسی
 PHP با افزونه‌ی `intl` تبدیل را انجام می‌دهد (تقویم `persian`، محل `fa_AF`). روی همین دستگاه آزمایش شد:

@@ -21,6 +21,7 @@ use App\Models\User;
 use App\Support\Digits;
 use App\Support\JalaliDate;
 use App\Support\Money;
+use Carbon\CarbonImmutable;
 
 /**
  * کارت‌های داشبورد هر کاربر به اندازه‌ی مجوزهایش. هر بخش null یعنی برای این کاربر نشان داده نمی‌شود.
@@ -32,6 +33,7 @@ class DashboardService
         private readonly ResultService $results,
         private readonly ReportService $reports,
         private readonly FinanceService $finance,
+        private readonly BackupService $backups,
     ) {}
 
     public function for(User $user): array
@@ -47,7 +49,19 @@ class DashboardService
             'exams' => $this->exams($user, $year, $today),
             'finance' => $this->financeCard($user, $year, $today),
             'courses' => $this->courses($user, $today),
+            'backup' => $this->backup($user),
         ];
+    }
+
+    /** یادآوری پشتیبان برای مدیر سیستم، فقط وقتی پشتیبان ماهانه کهنه یا هیچ است */
+    private function backup(User $user): ?array
+    {
+        if (! $user->hasPermission('backups.manage') || ! $this->backups->isDue()) {
+            return null;
+        }
+        $latest = $this->backups->latest();
+
+        return ['days' => $latest ? (int) $latest['time']->diffInDays(CarbonImmutable::now(JalaliDate::TIMEZONE)) : null];
     }
 
     private function students(User $user, ?AcademicYear $year): ?array

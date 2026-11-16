@@ -10,6 +10,20 @@
 */
 
 return [
+    /*
+    | پشتیبان (مرحله‌ی ۱۰؛ BackupService). پشتیبان خودکار ماهانه: دکمه‌ی دسکتاپ (tools\start.bat)
+    | هر بار «php artisan school:backup --if-due» را اجرا می‌کند؛ اگر آخرین پشتیبان کهنه‌تر از every_days باشد، تازه می‌گیرد.
+    | keep = شمار نسخه‌های نگه‌داشته از هر نوع (خودکار، دستی، پیش از بازیابی، پیش از پاک‌کردن).
+    | copy_to = پوشه‌ی دوم (مثلاً فلش E:\maktab-backup)؛ اگر وصل باشد، یک کاپی هم آن‌جا می‌رود.
+    */
+    'backup' => [
+        'path' => env('BACKUP_PATH', base_path('backups')),
+        'keep' => (int) env('BACKUP_KEEP', 12),
+        'every_days' => (int) env('BACKUP_EVERY_DAYS', 30),
+        'copy_to' => env('BACKUP_COPY_TO', ''),
+        'mysql_bin' => env('MYSQL_BIN', 'C:\\xampp\\mysql\\bin'),
+    ],
+
     'defaults' => [
         // مشخصات مکتب
         'school_name' => 'مکتب',

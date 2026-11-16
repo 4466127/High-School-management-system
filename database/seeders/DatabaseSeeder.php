@@ -10,17 +10,19 @@ use Illuminate\Database\Seeder;
  */
 class DatabaseSeeder extends Seeder
 {
+    /** ساختار پایه‌ی هر نصب (بدون کاربر و داده‌ی آزمایشی)؛ ResetService هم همین را به کار می‌برد */
+    public const BASE = [
+        RolePermissionSeeder::class,
+        SettingsSeeder::class,
+        GradeLevelSeeder::class,
+        SubjectSeeder::class,
+        ExamTypeSeeder::class,
+        FinanceSeeder::class,
+    ];
+
     public function run(): void
     {
-        $this->call([
-            RolePermissionSeeder::class,
-            SettingsSeeder::class,
-            GradeLevelSeeder::class,
-            SubjectSeeder::class,
-            ExamTypeSeeder::class,
-            FinanceSeeder::class,
-            AdminUserSeeder::class,
-        ]);
+        $this->call([...self::BASE, AdminUserSeeder::class]);
 
         if (app()->environment('local')) {
             $this->call([DemoUserSeeder::class, DemoSchoolSeeder::class, DemoAcademicSeeder::class, DemoAttendanceSeeder::class, DemoExamSeeder::class, DemoFinanceSeeder::class, DemoCourseSeeder::class]);

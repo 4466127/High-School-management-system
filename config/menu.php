@@ -56,6 +56,6 @@ return [
         ['key' => 'users', 'icon' => 'fa-users-gear', 'route' => 'settings.users.index', 'can' => ['users.manage']],
         ['key' => 'activity_logs', 'icon' => 'fa-clock-rotate-left', 'route' => 'settings.activity-logs.index', 'can' => ['activity_logs.view']],
         ['key' => 'import', 'icon' => 'fa-file-excel', 'route' => 'import.index', 'can' => ['students.manage', 'staff.manage']],
-        ['key' => 'backups', 'icon' => 'fa-database', 'route' => null, 'can' => ['backups.manage']],
+        ['key' => 'backups', 'icon' => 'fa-database', 'route' => 'settings.backups.index', 'can' => ['backups.manage']],
     ]],
 ];

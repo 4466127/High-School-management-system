@@ -27,6 +27,7 @@ use App\Http\Controllers\Finance\PaymentController;
 use App\Http\Controllers\ImportController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\Settings\ActivityLogController;
+use App\Http\Controllers\Settings\BackupController;
 use App\Http\Controllers\Settings\SchoolSettingController;
 use App\Http\Controllers\Settings\UserController;
 use App\Http\Controllers\Staff\StaffController;
@@ -283,6 +284,13 @@ Route::middleware(['auth', 'active'])->group(function () {
                 Route::resource('users', UserController::class)->except(['show', 'destroy']);
                 Route::patch('users/{user}/toggle-active', [UserController::class, 'toggleActive'])->name('users.toggle-active');
                 Route::put('users/{user}/password', [UserController::class, 'resetPassword'])->name('users.password');
+            });
+
+            Route::middleware('can:backups.manage')->group(function () {
+                Route::get('backups', [BackupController::class, 'index'])->name('backups.index');
+                Route::post('backups', [BackupController::class, 'store'])->name('backups.store');
+                Route::get('backups/{name}/download', [BackupController::class, 'download'])
+                    ->where('name', '[A-Za-z0-9_.\-]+')->name('backups.download');
             });
 
             Route::get('activity-logs', ActivityLogController::class)

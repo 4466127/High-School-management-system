@@ -19,6 +19,14 @@
         </div>
     </div>
 
+    @if ($backup)
+        <div class="alert alert-warning d-flex flex-wrap align-items-center gap-2 py-2">
+            <i class="fa-solid fa-database" aria-hidden="true"></i>
+            <span class="flex-fill">{{ $backup['days'] === null ? __('backup.dashboard_none') : __('backup.dashboard_due', ['days' => $n($backup['days'])]) }}</span>
+            <a href="{{ route('settings.backups.index') }}" class="btn btn-sm btn-warning">{{ __('backup.create') }}</a>
+        </div>
+    @endif
+
     {{-- آمار یک‌نگاه --}}
     @if ($students || $attendance || $finance || $courses)
         <div class="row g-2 mb-3 dash-stats">
