@@ -14,6 +14,11 @@ use App\Http\Controllers\Exams\ExamController;
 use App\Http\Controllers\Exams\MarkController;
 use App\Http\Controllers\Exams\ReportCardController;
 use App\Http\Controllers\Exams\ResultController;
+use App\Http\Controllers\Finance\DebtorController;
+use App\Http\Controllers\Finance\FeeSetupController;
+use App\Http\Controllers\Finance\InvoiceController;
+use App\Http\Controllers\Finance\LedgerController;
+use App\Http\Controllers\Finance\PaymentController;
 use App\Http\Controllers\ImportController;
 use App\Http\Controllers\Settings\ActivityLogController;
 use App\Http\Controllers\Settings\SchoolSettingController;
@@ -170,6 +175,44 @@ Route::middleware(['auth', 'active'])->group(function () {
             Route::get('/report-cards', [ReportCardController::class, 'index'])->name('reportcards.index');
             Route::get('/report-cards/student/{enrollment}', [ReportCardController::class, 'show'])->name('reportcards.show');
             Route::get('/report-cards/section/{section}', [ReportCardController::class, 'section'])->name('reportcards.section');
+        });
+
+        // ---------- مالی مکتب (اختیاری؛ فیس: feature:fees، دفتر درآمد و مصرف: feature:ledger) ----------
+        Route::prefix('finance')->name('finance.')->middleware('can:finance.view')->group(function () {
+            Route::middleware('feature:fees')->group(function () {
+                Route::get('/payments', [PaymentController::class, 'index'])->name('payments.index');
+                Route::get('/payments/export', [PaymentController::class, 'export'])->name('payments.export');
+                Route::get('/payments/new/{student}', [PaymentController::class, 'create'])->name('payments.create');
+                Route::post('/payments/new/{student}', [PaymentController::class, 'store'])->name('payments.store');
+                Route::get('/payments/{payment}', [PaymentController::class, 'show'])->name('payments.show');
+                Route::patch('/payments/{payment}/void', [PaymentController::class, 'void'])->name('payments.void');
+
+                Route::get('/invoices', [InvoiceController::class, 'index'])->name('invoices.index');
+                Route::get('/invoices/issue', [InvoiceController::class, 'create'])->name('invoices.create');
+                Route::post('/invoices/issue', [InvoiceController::class, 'store'])->name('invoices.store');
+                Route::post('/invoices/student/{student}', [InvoiceController::class, 'storeSingle'])->name('invoices.single');
+                Route::patch('/invoices/{invoice}/discount', [InvoiceController::class, 'discount'])->name('invoices.discount');
+                Route::patch('/invoices/{invoice}/void', [InvoiceController::class, 'void'])->name('invoices.void');
+
+                Route::get('/debtors', [DebtorController::class, 'index'])->name('debtors.index');
+                Route::get('/debtors/export', [DebtorController::class, 'export'])->name('debtors.export');
+
+                Route::middleware('can:finance.manage')->group(function () {
+                    Route::get('/setup', [FeeSetupController::class, 'index'])->name('setup.index');
+                    Route::post('/setup/types', [FeeSetupController::class, 'storeType'])->name('setup.types.store');
+                    Route::put('/setup/types/{feeType}', [FeeSetupController::class, 'updateType'])->name('setup.types.update');
+                    Route::put('/setup/rates', [FeeSetupController::class, 'saveRates'])->name('setup.rates');
+                });
+            });
+
+            Route::middleware('feature:ledger')->group(function () {
+                Route::get('/ledger', [LedgerController::class, 'index'])->name('ledger.index');
+                Route::get('/ledger/export', [LedgerController::class, 'export'])->name('ledger.export');
+                Route::post('/ledger', [LedgerController::class, 'store'])->name('ledger.store');
+                Route::patch('/ledger/{transaction}/void', [LedgerController::class, 'void'])->name('ledger.void');
+                Route::post('/ledger/categories', [LedgerController::class, 'storeCategory'])->name('ledger.categories.store');
+                Route::patch('/ledger/categories/{category}', [LedgerController::class, 'toggleCategory'])->name('ledger.categories.toggle');
+            });
         });
 
         // ---------- ورود گروهی از Excel (مجوز هر نوع در ImportController) ----------

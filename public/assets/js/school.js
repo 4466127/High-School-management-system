@@ -38,6 +38,45 @@
         if (btn) { closeToast(btn.closest('.app-toast')); }
     });
 
+    /* «همه» برای چک‌باکس‌های هم‌نام: <button data-check-all="section_ids[]"> */
+    document.addEventListener('click', function (ev) {
+        var btn = ev.target.closest && ev.target.closest('[data-check-all]');
+        if (!btn) { return; }
+        var boxes = Array.prototype.slice.call(document.querySelectorAll('input[type=checkbox][name="' + btn.getAttribute('data-check-all') + '"]:not(:disabled)'));
+        var allChecked = boxes.every(function (b) { return b.checked; });
+        boxes.forEach(function (b) { b.checked = !allChecked; });
+    });
+
+    /* فهرست وابسته: <select data-filter-target="#x"> فقط گزینه‌های #x با data-type برابر مقدار خودش را نشان می‌دهد */
+    document.querySelectorAll('select[data-filter-target]').forEach(function (source) {
+        var target = document.querySelector(source.getAttribute('data-filter-target'));
+        if (!target) { return; }
+        function apply() {
+            var firstVisible = null;
+            Array.prototype.forEach.call(target.options, function (opt) {
+                var show = !opt.hasAttribute('data-type') || opt.getAttribute('data-type') === source.value;
+                opt.hidden = !show;
+                opt.disabled = !show;
+                if (show && firstVisible === null) { firstVisible = opt; }
+            });
+            if (target.selectedOptions.length === 0 || target.selectedOptions[0].disabled) {
+                if (firstVisible) { firstVisible.selected = true; }
+            }
+            target.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+        source.addEventListener('change', apply);
+        apply();
+    });
+
+    /* مبلغ پیش‌فرض: <select data-amount-target="#amount"> با <option data-amount="1500"> */
+    document.querySelectorAll('select[data-amount-target]').forEach(function (select) {
+        var target = document.querySelector(select.getAttribute('data-amount-target'));
+        select.addEventListener('change', function () {
+            var opt = select.selectedOptions[0];
+            if (target && opt && opt.getAttribute('data-amount') !== null) { target.value = opt.getAttribute('data-amount'); }
+        });
+    });
+
     /* منوی کنار: گروه باز (is-open) برای موبایل تمام عرض می‌شود */
     document.querySelectorAll('.nav-side .nav-sub.collapse').forEach(function (sub) {
         sub.addEventListener('show.bs.collapse', function () { sub.parentNode.classList.add('is-open'); });

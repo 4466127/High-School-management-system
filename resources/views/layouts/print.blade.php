@@ -25,6 +25,8 @@
     @yield('content')
 </div>
 
+@include('layouts.partials.alerts')
 <script src="{{ asset('assets/js/print.js') }}"></script>
+<script src="{{ asset('assets/js/school.js') }}"></script>
 </body>
 </html>

@@ -12,7 +12,7 @@
 - [API.md](API.md) — مسیرهای داخلی JSON و خروجی CSV
 
 ## وضعیت فعلی
-مرحله‌های ۰ تا ۵ تأیید شده. مرحله‌ی ۶ (امتحانات، نمرات، نتیجه، کارنامه) ساخته، آزمایش و push شده و منتظر آزمایش صاحب پروژه است. بعدی: مرحله‌ی ۷ (مالی مکتب، اختیاری).
+مرحله‌های ۰ تا ۶ آزمایش شده (بهبودهای خواسته‌شده‌ی صاحب پروژه هم انجام شد). مرحله‌ی ۷ (مالی مکتب) ساخته، آزمایش و push شده و منتظر آزمایش صاحب پروژه است. بعدی: مرحله‌ی ۸ (کورس‌های جداگانه).
 وضعیت دقیق همیشه در ROADMAP.md است؛ تغییرات در CHANGELOG.md.
 
 ## قواعد سخت (استثنا ندارد)
@@ -92,6 +92,13 @@ php artisan school:backup       # نسخه‌ی پشتیبان (مرحله‌ی 
 - مجوز: `Gate::authorize('enterMarks', [$exam, $section, $subject])`، `viewMarks`/`viewResults` با `[Exam::class, …]`، `manage` با `Exam::class`.
 - در یک فایل Blade، `@php(...)` یک‌خطی را پیش از بلوک `@php … @endphp` ننویسید (Blade کل متن میان آن دو را یک بلوک می‌خواند).
 - تست‌های امتحانات از `Tests\Feature\Exams\ExamTestCase` (بخش، دو مضمون، معلم، سه دانش‌آموز، دو امتحان).
+
+## نکته‌های پیاده‌سازی مرحله‌ی ۷
+- هر عملیات مالی فقط از راه `FinanceService` (transaction + قفل + ثبت رویداد). حساب داخلی به پول (سنت، int) با `Money::toCents/fromCents`؛ هرگز float.
+- مبلغ ورودی کاربر: قاعده‌ی `ValidAmount` + `FinanceService::parseAmount`. نمایش: `Money::format`.
+- `NormalizeInput` ارقام فارسی ورودی را لاتین می‌کند؛ متنی که با ارقام فارسی ذخیره می‌شود (مثل `period_label`) را پیش از مقایسه با `Digits::toPersian` برگردانید.
+- مسیرهای اختیاری با `->middleware('feature:fees')` / `feature:ledger`؛ زیرمنو با `'feature' => 'fees'`.
+- مانده‌ی بل ذخیره نمی‌شود: `StudentInvoice::withPaid()` (رسید باطل حساب نمی‌شود).
 
 ## نکته‌های رابط (پس از مرحله‌ی ۶)
 - پیام کاربر فقط با `->with('success'|'error'|'warning', …)`؛ `layouts/partials/alerts` آن را toast می‌کند (خطای اعتبارسنجی هم خودکار toast سرخ می‌شود). alert تازه‌ی Bootstrap برای flash ننویسید.

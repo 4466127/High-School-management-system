@@ -75,6 +75,15 @@ return [
         'failed' => 'ناکام',
         'deprived' => 'محروم',
     ],
+    'fee_period' => [
+        'monthly' => 'ماهوار',
+        'annual' => 'سالانه',
+        'once' => 'یک‌بار',
+    ],
+    'transaction_type' => [
+        'income' => 'درآمد',
+        'expense' => 'مصرف',
+    ],
     'employment_status' => [
         'active' => 'برسر وظیفه',
         'on_leave' => 'رخصتی',

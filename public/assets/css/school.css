@@ -351,6 +351,13 @@ code { color: #9b3b5a; }
 .report-card-info th, .report-card-summary th { background: #f1f4fa; font-weight: 600; white-space: nowrap; }
 .report-card-marks { font-size: .88rem; }
 
+/* ---------- مالی ---------- */
+.rates-table .rate-input { min-width: 90px; text-align: center; }
+.bill-section { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border: 1px solid var(--hk-line); border-radius: 10px; background: #fff; cursor: pointer; margin: 0; }
+.bill-section:hover { border-color: #bccfee; }
+.bill-section.is-disabled { opacity: .55; cursor: not-allowed; }
+.receipt { max-width: 150mm; margin: 0 auto; }
+
 /* ---------- عکس کوچک و پرونده ---------- */
 .avatar { flex: none; border: 2px solid #fff; box-shadow: 0 1px 4px rgba(23, 43, 77, .15); }
 .avatar-empty { display: inline-flex; align-items: center; justify-content: center; background: var(--hk-accent-soft); color: var(--hk-accent); font-size: 1.1em; }

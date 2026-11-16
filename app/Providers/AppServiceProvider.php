@@ -35,7 +35,7 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Exam::class, ExamPolicy::class);
 
         // شناسه‌ی همه‌ی مدل‌ها در آدرس فقط عدد است (تا students/create با students/{student} قاطی نشود)
-        foreach (['student', 'staff', 'user', 'guardian', 'document', 'history', 'section', 'year', 'term', 'grade', 'subject', 'exam', 'type', 'enrollment'] as $parameter) {
+        foreach (['student', 'staff', 'user', 'guardian', 'document', 'history', 'section', 'year', 'term', 'grade', 'subject', 'exam', 'type', 'enrollment', 'feeType', 'invoice', 'payment', 'transaction', 'category'] as $parameter) {
             Route::pattern($parameter, '[0-9]+');
         }
 

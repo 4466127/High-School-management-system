@@ -32,7 +32,13 @@ return [
         ['key' => 'exams_reportcards', 'icon' => 'fa-id-card', 'route' => 'exams.reportcards.index', 'can' => ['exams.manage', 'reportcards.print']],
         ['key' => 'exams_manage', 'icon' => 'fa-list-check', 'route' => 'exams.manage.index', 'can' => ['exams.manage']],
     ]],
-    ['key' => 'finance', 'icon' => 'fa-coins', 'route' => null, 'can' => ['finance.view', 'finance.manage'], 'feature' => 'finance'],
+    ['key' => 'finance', 'icon' => 'fa-coins', 'route' => null, 'can' => ['finance.view', 'finance.manage'], 'feature' => 'finance', 'children' => [
+        ['key' => 'finance_payments', 'icon' => 'fa-receipt', 'route' => 'finance.payments.index', 'can' => ['finance.view', 'finance.manage'], 'feature' => 'fees'],
+        ['key' => 'finance_invoices', 'icon' => 'fa-file-invoice', 'route' => 'finance.invoices.index', 'can' => ['finance.view', 'finance.manage'], 'feature' => 'fees'],
+        ['key' => 'finance_debtors', 'icon' => 'fa-hand-holding-dollar', 'route' => 'finance.debtors.index', 'can' => ['finance.view', 'finance.manage'], 'feature' => 'fees'],
+        ['key' => 'finance_ledger', 'icon' => 'fa-scale-balanced', 'route' => 'finance.ledger.index', 'can' => ['finance.view', 'finance.manage'], 'feature' => 'ledger'],
+        ['key' => 'finance_setup', 'icon' => 'fa-sliders', 'route' => 'finance.setup.index', 'can' => ['finance.manage'], 'feature' => 'fees'],
+    ]],
     ['key' => 'courses', 'icon' => 'fa-people-group', 'route' => null, 'can' => ['courses.manage', 'courses.attendance', 'courses.ledger']],
     ['key' => 'reports', 'icon' => 'fa-chart-column', 'route' => null, 'can' => ['reports.academic', 'reports.finance']],
     ['key' => 'settings', 'icon' => 'fa-gear', 'route' => null, 'can' => ['settings.manage', 'users.manage', 'activity_logs.view', 'backups.manage', 'students.manage', 'staff.manage'], 'children' => [

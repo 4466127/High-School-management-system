@@ -27,6 +27,12 @@ return [
         'marks' => 'نمرات',
         'results' => 'نتایج',
         'import' => 'ورود از Excel',
+        'invoice' => 'بل‌ها',
+        'payment' => 'رسیدها',
+        'transaction' => 'درآمد و مصرف',
+        'fee_type' => 'انواع فیس',
+        'fee_rate' => 'نرخ فیس',
+        'finance_category' => 'دسته‌های مالی',
     ],
     'actions' => [
         'auth' => [
@@ -109,6 +115,31 @@ return [
         'marks' => [
             'entered' => 'ثبت نمره',
             'updated' => 'اصلاح نمره',
+        ],
+        'invoice' => [
+            'issued' => 'صدور بل',
+            'issued_group' => 'صدور گروهی بل',
+            'discounted' => 'تخفیف بل',
+            'voided' => 'باطل کردن بل',
+        ],
+        'payment' => [
+            'received' => 'ثبت پرداخت و رسید',
+            'voided' => 'باطل کردن رسید',
+        ],
+        'transaction' => [
+            'recorded' => 'ثبت درآمد/مصرف',
+            'voided' => 'باطل کردن درآمد/مصرف',
+        ],
+        'fee_type' => [
+            'created' => 'افزودن نوع فیس',
+            'updated' => 'ویرایش نوع فیس',
+        ],
+        'fee_rate' => [
+            'updated' => 'تغییر نرخ فیس',
+        ],
+        'finance_category' => [
+            'created' => 'افزودن دسته‌ی مالی',
+            'updated' => 'تغییر دسته‌ی مالی',
         ],
         'import' => [
             'students' => 'ورود گروهی دانش‌آموزان',
@@ -198,6 +229,17 @@ return [
         'deprivation_absence_days' => 'حد محروم',
         'absence_alert_days' => 'حد غیابت زیاد',
         'imported' => 'وارد شد',
+        'amount' => 'مبلغ',
+        'discount' => 'تخفیف',
+        'discount_reason' => 'دلیل تخفیف',
+        'void_reason' => 'دلیل باطل',
+        'receipt_no' => 'نمبر رسید',
+        'invoices' => 'بل‌ها',
+        'party_name' => 'کمک‌کننده/گیرنده',
+        'period' => 'دوره',
+        'created' => 'صادر شد',
+        'no_rate' => 'بدون نرخ',
+        'changes' => 'تغییرات',
         'enrolled' => 'شامل بخش',
         'max_mark' => 'نمره‌ی کامل',
         'weight' => 'وزن',

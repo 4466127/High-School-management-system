@@ -65,6 +65,8 @@ class Menu
     {
         return match ($feature) {
             'finance' => Setting::enabled('fees_enabled') || Setting::enabled('school_ledger_enabled'),
+            'fees' => Setting::enabled('fees_enabled'),
+            'ledger' => Setting::enabled('school_ledger_enabled'),
             default => true,
         };
     }

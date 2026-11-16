@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\EnsureFeatureEnabled;
 use App\Http\Middleware\EnsurePasswordIsChanged;
 use App\Http\Middleware\EnsureUserIsActive;
 use App\Http\Middleware\NormalizeInput;
@@ -23,6 +24,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'active' => EnsureUserIsActive::class,
             'password.changed' => EnsurePasswordIsChanged::class,
+            'feature' => EnsureFeatureEnabled::class,
         ]);
 
         $middleware->redirectGuestsTo(fn () => route('login'));

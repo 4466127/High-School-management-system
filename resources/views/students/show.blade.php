@@ -87,6 +87,14 @@
                 <button class="nav-link" data-bs-toggle="tab" data-bs-target="#marks-pane" type="button" role="tab">{{ __('exams.tab') }}</button>
             </li>
         @endif
+        @if ($fees)
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#fees-pane" type="button" role="tab">
+                    {{ __('finance.tab') }}
+                    @if ($fees['remaining'] > 0)<span class="badge text-bg-warning">!</span>@endif
+                </button>
+            </li>
+        @endif
     </ul>
 
     <div class="tab-content">
@@ -184,6 +192,12 @@
         @if ($canSeeMarks)
             <div class="tab-pane fade" id="marks-pane" role="tabpanel">
                 @include('students.partials.marks')
+            </div>
+        @endif
+
+        @if ($fees)
+            <div class="tab-pane fade" id="fees-pane" role="tabpanel">
+                @include('students.partials.fees')
             </div>
         @endif
     </div>

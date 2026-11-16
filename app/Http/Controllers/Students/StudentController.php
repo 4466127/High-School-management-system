@@ -10,9 +10,14 @@ use App\Http\Requests\Students\StudentRequest;
 use App\Http\Requests\Students\StudentStatusRequest;
 use App\Models\AcademicYear;
 use App\Models\Exam;
+use App\Models\FeeRate;
+use App\Models\FeeType;
+use App\Models\Payment;
 use App\Models\Section;
+use App\Models\Setting;
 use App\Models\Student;
 use App\Services\AttendanceService;
+use App\Services\FinanceService;
 use App\Services\ResultService;
 use App\Services\StudentService;
 use App\Support\PrivateFiles;
@@ -28,7 +33,31 @@ class StudentController extends Controller
         private readonly StudentService $students,
         private readonly AttendanceService $attendance,
         private readonly ResultService $results,
+        private readonly FinanceService $finance,
     ) {}
+
+    /** زبانه‌ی فیس: فقط وقتی فیس روشن است و کاربر finance.view دارد */
+    private function feesData(Request $request, Student $student, $yearEnrollment): ?array
+    {
+        if (! Setting::enabled('fees_enabled') || ! $request->user()->hasPermission('finance.view')) {
+            return null;
+        }
+
+        $year = AcademicYear::current();
+        $invoices = $this->finance->invoicesFor($student);
+        $types = FeeType::where('is_active', true)->orderBy('sort_order')->get();
+        $grade = $yearEnrollment?->section?->grade_level_id;
+
+        return [
+            'invoices' => $invoices,
+            'payments' => Payment::where('student_id', $student->id)->orderByDesc('receipt_no')->get(),
+            'remaining' => $invoices->sum('remaining_cents'),
+            'canIssue' => $year && $yearEnrollment?->isActive(),
+            'types' => $types,
+            'periods' => $year ? $types->mapWithKeys(fn ($t) => [$t->id => FinanceService::periodOptions($t, $year)]) : collect(),
+            'rates' => $year && $grade ? FeeRate::where('academic_year_id', $year->id)->where('grade_level_id', $grade)->pluck('amount', 'fee_type_id') : collect(),
+        ];
+    }
 
     public function index(Request $request): View
     {
@@ -124,6 +153,7 @@ class StudentController extends Controller
             'attendance' => $current ? $this->attendance->enrollmentHistory($current) : null,
             'canSeeMarks' => $canSeeMarks = $current && Gate::allows('viewResults', [Exam::class, $current->section]),
             'reportCard' => $canSeeMarks ? $this->results->reportCards($current->section, $current)->first() : null,
+            'fees' => $this->feesData($request, $student, $current),
             'yearSections' => $year && $request->user()->can('update', $student)
                 ? Section::query()->with('gradeLevel')->where('academic_year_id', $year->id)->ordered()->get()
                 : collect(),

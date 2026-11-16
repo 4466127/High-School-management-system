@@ -41,8 +41,9 @@
 | `/exams/results/export?section=&exam=` | نمره‌های یک امتحان بخش؛ بدون `exam`: نتیجه‌ی نهایی (نمره‌ی نهایی هر مضمون، مجموع، اوسط، نتیجه، درجه) | ۶ ✅ |
 | `/reports/students/export` | فهرست دانش‌آموزان با فیلتر | ۹ |
 | `/reports/results/export` | نتایج امتحان | ۹ |
-| `/reports/finance/debtors/export` | بدهکاران | ۹ |
-| `/reports/finance/transactions/export` | درآمد و مصرف | ۹ |
+| `/finance/debtors/export?section=` | بدهکاران سال جاری | ۷ ✅ |
+| `/finance/payments/export?from=&to=&q=` | رسیدها | ۷ ✅ |
+| `/finance/ledger/export?type=&category=&from=&to=` | درآمد و مصرف مکتب | ۷ ✅ |
 | `/reports/courses/{course}/ledger/export` | دفتر مالی کورس | ۹ |
 
 ## اگر در آینده API واقعی لازم شد

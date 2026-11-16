@@ -191,7 +191,7 @@ erDiagram
 
 **fee_rates** — `fee_type_id`, `academic_year_id`, `grade_level_id`, `amount`. یکتا روی هر سه. نرخ هر صنف و هر سال جدا.
 
-**student_invoices** — `enrollment_id`, `fee_type_id`, `period_label` (مثل «حمل ۱۴۰۵»), `amount`, `discount`, `discount_reason`, `due_date`, `created_by`, `voided_at`, `voided_by`, `void_reason`. یکتا: (`enrollment_id`, `fee_type_id`, `period_label`) ← یک بل دو بار صادر نمی‌شود.
+**student_invoices** — `enrollment_id`, `student_id` (برای جست‌وجوی سریع)، `fee_type_id`, `period_label` (مثل «حمل ۱۴۰۵»، با ارقام فارسی), `amount`, `discount`, `discount_reason`, `due_date`, `created_by`, `voided_at`, `voided_by`, `void_reason`، `active_key` (ستون محاسبه‌شده: ۱ برای بل فعال، NULL برای باطل). یکتا: (`enrollment_id`, `fee_type_id`, `period_label`, `active_key`) ← یک بل فعال دو بار صادر نمی‌شود، ولی بعد از باطل کردن دوباره صادر می‌شود.
 
 **payments** — `receipt_no` (یکتا، پشت‌سرهم), `student_id`, `paid_on`, `amount`, `payer_name`, `note`, `received_by`, `voided_at`, `voided_by`, `void_reason`
 
