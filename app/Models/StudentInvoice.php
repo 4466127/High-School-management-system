@@ -77,11 +77,35 @@ class StudentInvoice extends Model
     /** پرداخت‌شده‌ی هر بل در ستون paid (با یک subquery؛ رسید باطل حساب نمی‌شود) */
     public function scopeWithPaid(Builder $query): Builder
     {
-        return $query->addSelect(['paid' => PaymentAllocation::query()
+        return $query->addSelect(['paid' => self::paidSubquery()]);
+    }
+
+    /** بل فعال با مانده (برای فیلتر؛ با WHERE، چون HAVING بدون GROUP BY در حالت strict خطا می‌دهد) */
+    public function scopeOpen(Builder $query): Builder
+    {
+        return $this->compareRemaining($query, '>');
+    }
+
+    /** بل فعال تمام پرداخت‌شده */
+    public function scopeSettled(Builder $query): Builder
+    {
+        return $this->compareRemaining($query, '<=');
+    }
+
+    private function compareRemaining(Builder $query, string $operator): Builder
+    {
+        $paid = self::paidSubquery()->toBase();
+
+        return $query->whereNull('student_invoices.voided_at')
+            ->whereRaw('student_invoices.amount - student_invoices.discount '.$operator.' ('.$paid->toSql().')', $paid->getBindings());
+    }
+
+    private static function paidSubquery(): Builder
+    {
+        return PaymentAllocation::query()
             ->selectRaw('COALESCE(SUM(payment_allocations.amount), 0)')
             ->join('payments', 'payments.id', '=', 'payment_allocations.payment_id')
             ->whereNull('payments.voided_at')
-            ->whereColumn('payment_allocations.student_invoice_id', 'student_invoices.id'),
-        ]);
+            ->whereColumn('payment_allocations.student_invoice_id', 'student_invoices.id');
     }
 }

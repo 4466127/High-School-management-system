@@ -41,8 +41,8 @@ class InvoiceController extends Controller
             ->when($request->filled('q'), fn ($q) => $q->whereHas('student', fn ($s) => $s->search($request->query('q'))));
 
         match ($status) {
-            'open' => $query->whereNull('student_invoices.voided_at')->havingRaw('student_invoices.amount - student_invoices.discount - paid > 0'),
-            'paid' => $query->whereNull('student_invoices.voided_at')->havingRaw('student_invoices.amount - student_invoices.discount - paid <= 0'),
+            'open' => $query->open(),
+            'paid' => $query->settled(),
             'voided' => $query->whereNotNull('student_invoices.voided_at'),
             default => null,
         };

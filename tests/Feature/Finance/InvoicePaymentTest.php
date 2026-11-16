@@ -142,6 +142,21 @@ class InvoicePaymentTest extends FinanceTestCase
             ->assertSessionHas('error', __('finance.invoice_duplicate', ['type' => $this->monthly->name, 'period' => 'قوس ۱۴۰۵']));
     }
 
+    /** فهرست بل‌ها با فیلتر وضعیت (پیش‌تر HAVING بدون GROUP BY در حالت strict خطای ۵۰۰ می‌داد) */
+    public function test_invoice_list_filters_by_status(): void
+    {
+        $this->issue('میزان ۱۴۰۵');
+        $this->pay($this->students[0]->student, '1000');
+        $this->pay($this->students[1]->student, '400');
+        $list = fn (string $status) => $this->actingAs($this->accountant)->get(route('finance.invoices.index', ['status' => $status]))->assertOk();
+
+        $this->actingAs($this->accountant)->get(route('finance.invoices.index'))->assertOk()
+            ->assertSee('شاگرددوم')->assertSee('شاگردسوم')->assertDontSee('شاگرداول');
+        $list('paid')->assertSee('شاگرداول')->assertDontSee('شاگرددوم')->assertDontSee('شاگردسوم');
+        $list('all')->assertSee('شاگرداول')->assertSee('شاگرددوم')->assertSee('شاگردسوم');
+        $list('voided')->assertDontSee('شاگرداول')->assertDontSee('شاگرددوم');
+    }
+
     public function test_debtors_list_and_csv(): void
     {
         $this->issue('میزان ۱۴۰۵');
