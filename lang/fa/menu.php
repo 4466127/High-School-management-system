@@ -26,5 +26,6 @@ return [
     'promotion' => 'ارتقای صنف',
     'users' => 'کاربران و نقش‌ها',
     'activity_logs' => 'ثبت رویدادها',
+    'import' => 'ورود از Excel',
     'backups' => 'پشتیبان و بازیابی',
 ];

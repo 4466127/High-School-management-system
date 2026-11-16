@@ -13,7 +13,7 @@ class ExamManagementTest extends ExamTestCase
 {
     public function test_principal_defines_an_exam_with_defaults_from_its_type(): void
     {
-        $type = ExamType::where('name', 'امتحان سالانه')->firstOrFail();
+        $type = ExamType::create(['name' => 'سالانه‌ی تست', 'default_max_mark' => 50, 'default_weight' => 50, 'counts_in_final' => true, 'sort_order' => 9]);
 
         $this->actingAs($this->principal)->get(route('exams.manage.index'))->assertOk()->assertSee('امتحان چهارونیم‌ماهه');
         $this->actingAs($this->principal)->post(route('exams.manage.store'), [
@@ -21,8 +21,8 @@ class ExamManagementTest extends ExamTestCase
         ])->assertRedirect(route('exams.manage.index'));
 
         $exam = Exam::where('name', 'سالانه‌ی آزمایشی')->sole();
-        $this->assertSame('60.00', $exam->max_mark);
-        $this->assertSame('60.00', $exam->weight);
+        $this->assertSame('50.00', $exam->max_mark);
+        $this->assertSame('50.00', $exam->weight);
         $this->assertTrue($exam->counts_in_final);
         $this->assertSame(ExamStatus::Draft, $exam->status);
         $this->assertSame('2026-12-01', $exam->start_date->format('Y-m-d'));

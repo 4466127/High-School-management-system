@@ -14,6 +14,7 @@ use App\Http\Controllers\Exams\ExamController;
 use App\Http\Controllers\Exams\MarkController;
 use App\Http\Controllers\Exams\ReportCardController;
 use App\Http\Controllers\Exams\ResultController;
+use App\Http\Controllers\ImportController;
 use App\Http\Controllers\Settings\ActivityLogController;
 use App\Http\Controllers\Settings\SchoolSettingController;
 use App\Http\Controllers\Settings\UserController;
@@ -169,6 +170,15 @@ Route::middleware(['auth', 'active'])->group(function () {
             Route::get('/report-cards', [ReportCardController::class, 'index'])->name('reportcards.index');
             Route::get('/report-cards/student/{enrollment}', [ReportCardController::class, 'show'])->name('reportcards.show');
             Route::get('/report-cards/section/{section}', [ReportCardController::class, 'section'])->name('reportcards.section');
+        });
+
+        // ---------- ورود گروهی از Excel (مجوز هر نوع در ImportController) ----------
+        Route::prefix('import')->name('import.')->group(function () {
+            Route::get('/', [ImportController::class, 'index'])->name('index');
+            Route::get('/template/{type}', [ImportController::class, 'template'])->whereIn('type', ['students', 'staff'])->name('template');
+            Route::post('/upload', [ImportController::class, 'upload'])->name('upload');
+            Route::get('/preview', [ImportController::class, 'preview'])->name('preview');
+            Route::post('/store', [ImportController::class, 'store'])->name('store');
         });
 
         // ---------- تنظیمات ----------

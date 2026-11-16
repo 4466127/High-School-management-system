@@ -13,9 +13,10 @@
         </span>
     </div>
 
-    <ul class="nav-side">
+    {{-- گروه‌های دارای زیرمنو بازشونده‌اند (فقط یکی در یک زمان)؛ گروه صفحه‌ی فعلی باز می‌ماند --}}
+    <ul class="nav-side" id="nav-side">
         @foreach ($menu as $item)
-            <li>
+            <li @class(['nav-group-item' => $item['children'] !== [], 'is-open' => $item['children'] !== [] && $item['active']])>
                 @if ($item['url'])
                     <a href="{{ $item['url'] }}" @class(['active' => $item['active']])>
                         <i class="fa-solid {{ $item['icon'] }}" aria-hidden="true"></i> {{ $item['label'] }}
@@ -23,11 +24,17 @@
                 @elseif ($item['children'] === [])
                     <span class="soon"><i class="fa-solid {{ $item['icon'] }}" aria-hidden="true"></i> {{ $item['label'] }} <em>{{ __('app.soon') }}</em></span>
                 @else
-                    <span class="nav-group"><i class="fa-solid {{ $item['icon'] }}" aria-hidden="true"></i> {{ $item['label'] }}</span>
+                    <button type="button" @class(['nav-group', 'collapsed' => ! $item['active'], 'has-active' => $item['active']])
+                            data-bs-toggle="collapse" data-bs-target="#nav-{{ $item['key'] }}"
+                            aria-expanded="{{ $item['active'] ? 'true' : 'false' }}" aria-controls="nav-{{ $item['key'] }}">
+                        <i class="fa-solid {{ $item['icon'] }}" aria-hidden="true"></i>
+                        <span class="nav-group-label">{{ $item['label'] }}</span>
+                        <i class="fa-solid fa-chevron-down nav-caret" aria-hidden="true"></i>
+                    </button>
                 @endif
 
                 @if ($item['children'] !== [])
-                    <ul class="nav-sub">
+                    <ul @class(['nav-sub', 'collapse', 'show' => $item['active']]) id="nav-{{ $item['key'] }}" data-bs-parent="#nav-side">
                         @foreach ($item['children'] as $child)
                             <li>
                                 @if ($child['url'])

@@ -17,9 +17,9 @@ class RoleAccessTest extends TestCase
     public static function expectedMenus(): array
     {
         return [
-            'admin' => [Role::Admin, ['dashboard', 'students', 'staff', 'academics', 'attendance', 'exams', 'courses', 'reports', 'settings'], ['school', 'users', 'activity_logs', 'backups']],
-            'principal' => [Role::Principal, ['dashboard', 'students', 'staff', 'academics', 'attendance', 'exams', 'courses', 'reports', 'settings'], ['school']],
-            'office' => [Role::Office, ['dashboard', 'students', 'staff', 'academics', 'attendance', 'exams', 'reports'], []],
+            'admin' => [Role::Admin, ['dashboard', 'students', 'staff', 'academics', 'attendance', 'exams', 'courses', 'reports', 'settings'], ['school', 'users', 'activity_logs', 'import', 'backups']],
+            'principal' => [Role::Principal, ['dashboard', 'students', 'staff', 'academics', 'attendance', 'exams', 'courses', 'reports', 'settings'], ['school', 'import']],
+            'office' => [Role::Office, ['dashboard', 'students', 'staff', 'academics', 'attendance', 'exams', 'reports', 'settings'], ['import']],
             'teacher' => [Role::Teacher, ['dashboard', 'students', 'academics', 'attendance', 'exams', 'courses', 'reports'], []],
             'accountant' => [Role::Accountant, ['dashboard', 'students', 'courses', 'reports'], []],
             'course_manager' => [Role::CourseManager, ['dashboard', 'students', 'courses', 'reports'], []],
@@ -81,7 +81,7 @@ class RoleAccessTest extends TestCase
         $this->assertNotSame('', $sidebar);
 
         foreach (array_keys(__('menu')) as $key) {
-            if (in_array($key, ['school', 'users', 'activity_logs', 'backups', 'sections', 'years', 'grades', 'promotion',
+            if (in_array($key, ['school', 'users', 'activity_logs', 'backups', 'import', 'sections', 'years', 'grades', 'promotion',
                 'attendance_daily', 'attendance_monthly', 'attendance_absentees', 'attendance_staff',
                 'exams_marks', 'exams_results', 'exams_reportcards', 'exams_manage'], true)) {
                 continue;

@@ -132,21 +132,31 @@ code { color: #9b3b5a; }
 .nav-side a.active i { color: var(--sc-gold); }
 .nav-side a, .nav-side .soon { white-space: nowrap; }
 .nav-side .soon em { background: rgba(255, 255, 255, .1); border-radius: 20px; padding: 0 .45rem; font-size: .66rem; line-height: 1.7; }
+/* گروه بازشونده (صنف‌ها، حاضری، امتحانات، تنظیمات …) */
 .nav-side .nav-group {
-    display: flex; align-items: center; gap: .55rem;
-    padding: 12px 12px 4px; font-size: .78rem; font-weight: 700;
-    letter-spacing: .02em; color: #8ea3c9; text-transform: none;
+    display: flex; align-items: center; gap: .6rem; width: 100%;
+    padding: 9px 12px; margin: 1px 0; border: 0; border-inline-start: 3px solid transparent; border-radius: 8px;
+    background: transparent; color: #d3dcee; font: inherit; text-align: start; cursor: pointer;
 }
-.nav-side .nav-group i { width: 1.3em; text-align: center; color: #8ea3c9; }
+.nav-side .nav-group:hover { background: rgba(255, 255, 255, .07); color: #fff; }
+.nav-side .nav-group:focus-visible { outline: 2px solid var(--sc-gold); outline-offset: -2px; }
+.nav-side .nav-group i { width: 1.3em; text-align: center; color: #9fb3d9; }
+.nav-side .nav-group.has-active { color: #fff; }
+.nav-side .nav-group.has-active > i:first-child { color: var(--sc-gold); }
+.nav-group-label { flex: 1; }
+.nav-side .nav-group .nav-caret { width: auto; font-size: .7rem; opacity: .7; transition: transform .2s; }
+.nav-side .nav-group:not(.collapsed) .nav-caret { transform: rotate(180deg); }
 .nav-sub { list-style: none; margin: 0 0 4px; padding: 0; }
-.nav-sub a, .nav-sub .soon { font-size: .92rem; padding: 7px 12px 7px 12px; padding-inline-start: 22px; }
+.nav-sub a, .nav-sub .soon { font-size: .9rem; padding: 7px 12px; padding-inline-start: 34px; }
 .side-foot { opacity: .7; border-top: 1px solid rgba(255, 255, 255, .08); padding-top: 10px; margin-top: 8px; }
 
 @media (max-width: 900px) {
     .nav-side > li { flex: 0 0 auto; }
-    .nav-sub { display: flex; flex-wrap: wrap; gap: 4px; padding: 0; }
+    .nav-side > li.is-open { flex: 1 1 100%; }
+    .nav-side .nav-group { width: auto; padding: 8px 10px; }
+    .nav-sub { flex-wrap: wrap; gap: 4px; padding: 0 0 6px; }
+    .nav-sub.show { display: flex; }
     .nav-sub a, .nav-sub .soon { padding-inline-start: 10px; }
-    .nav-side .nav-group { display: none; }
     .side-foot { display: none; }
 }
 
@@ -252,6 +262,33 @@ code { color: #9b3b5a; }
 }
 .brand-logo img { width: 100%; height: 100%; object-fit: contain; border-radius: 12px; background: #fff; }
 .auth-logo img { width: 100%; height: 100%; object-fit: contain; border-radius: 20px; background: #fff; }
+
+/* ---------- اعلان‌ها (toast) ---------- */
+.toast-stack {
+    position: fixed; z-index: 1090; top: 16px; inset-inline-start: 50%; transform: translateX(50%);
+    display: flex; flex-direction: column; gap: 10px; width: min(460px, calc(100vw - 24px));
+    pointer-events: none;
+}
+.app-toast {
+    position: relative; overflow: hidden; pointer-events: auto;
+    display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px 14px;
+    border-radius: 12px; color: #fff; box-shadow: 0 10px 30px rgba(8, 18, 38, .25);
+    animation: toast-in .25s ease-out;
+}
+.app-toast-success { background: #1f8a4c; }
+.app-toast-warning { background: #b7791f; }
+.app-toast-danger { background: #c0392b; }
+.app-toast-icon { font-size: 1.25rem; margin-top: 1px; }
+.app-toast-body { flex: 1; min-width: 0; line-height: 1.7; }
+.app-toast-list { margin: 4px 0 0; padding-inline-start: 18px; font-size: .88rem; opacity: .95; }
+.app-toast-close { border: 0; background: transparent; color: #fff; font-size: 1.4rem; line-height: 1; opacity: .8; padding: 0 2px; }
+.app-toast-close:hover, .app-toast-close:focus-visible { opacity: 1; outline: none; }
+.app-toast-bar { position: absolute; bottom: 0; inset-inline: 0; height: 3px; background: rgba(255, 255, 255, .6); transform-origin: right; }
+.app-toast.is-timing .app-toast-bar { animation: toast-bar 10s linear forwards; }
+.app-toast.is-leaving { opacity: 0; transform: translateY(-8px); transition: opacity .3s, transform .3s; }
+@keyframes toast-in { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: none; } }
+@keyframes toast-bar { from { transform: scaleX(1); } to { transform: scaleX(0); } }
+@media print { .toast-stack { display: none !important; } }
 
 /* ---------- حاضری ---------- */
 .date-bar { padding: 10px 12px; }

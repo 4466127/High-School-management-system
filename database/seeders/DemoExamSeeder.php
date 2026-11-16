@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\DB;
 use RuntimeException;
 
 /**
- * فقط برای توسعه: امتحان چهارونیم‌ماهه (قفل، با نمره‌ی همه) و امتحان سالانه (باز).
+ * فقط برای توسعه: فعالیت صنفی و کارخانگی (۲۰، باز)، امتحان چهارونیم‌ماهه (۳۰، قفل) و امتحان سالانه (۵۰، باز).
  * نمره‌ی سالانه برای همه‌ی بخش‌ها به جز بخش اول ثبت می‌شود، تا ثبت نمره و نهایی‌کردن هر دو آزمایش شوند.
  * اگر امتحانی وجود داشته باشد، هیچ کاری نمی‌کند.
  */
@@ -34,19 +34,23 @@ class DemoExamSeeder extends Seeder
         mt_srand(6);
         $admin = User::where('username', 'admin')->value('id');
         $terms = $year->terms()->get();
-        $midType = ExamType::where('default_max_mark', 40)->first() ?? ExamType::first();
-        $finalType = ExamType::where('default_max_mark', 60)->first() ?? ExamType::first();
+        $type = fn (string $name) => ExamType::where('name', $name)->value('id') ?? ExamType::value('id');
 
-        DB::transaction(function () use ($year, $terms, $midType, $finalType, $admin) {
+        DB::transaction(function () use ($year, $terms, $type, $admin) {
+            $activity = Exam::create([
+                'academic_year_id' => $year->id, 'exam_type_id' => $type('فعالیت صنفی و کارخانگی'),
+                'name' => 'فعالیت صنفی و کارخانگی', 'start_date' => $year->start_date, 'end_date' => $year->end_date,
+                'max_mark' => 20, 'weight' => 20, 'counts_in_final' => true, 'status' => 'open',
+            ]);
             $mid = Exam::create([
-                'academic_year_id' => $year->id, 'academic_term_id' => $terms->get(0)?->id, 'exam_type_id' => $midType->id,
+                'academic_year_id' => $year->id, 'academic_term_id' => $terms->get(0)?->id, 'exam_type_id' => $type('امتحان چهارونیم‌ماهه'),
                 'name' => 'امتحان چهارونیم‌ماهه', 'start_date' => '2026-07-20', 'end_date' => '2026-07-30',
-                'max_mark' => 40, 'weight' => 40, 'counts_in_final' => true, 'status' => 'locked',
+                'max_mark' => 30, 'weight' => 30, 'counts_in_final' => true, 'status' => 'locked',
             ]);
             $final = Exam::create([
-                'academic_year_id' => $year->id, 'academic_term_id' => $terms->get(1)?->id, 'exam_type_id' => $finalType->id,
+                'academic_year_id' => $year->id, 'academic_term_id' => $terms->get(1)?->id, 'exam_type_id' => $type('امتحان سالانه'),
                 'name' => 'امتحان سالانه', 'start_date' => '2026-12-01', 'end_date' => '2026-12-15',
-                'max_mark' => 60, 'weight' => 60, 'counts_in_final' => true, 'status' => 'open',
+                'max_mark' => 50, 'weight' => 50, 'counts_in_final' => true, 'status' => 'open',
             ]);
 
             $sections = Section::where('academic_year_id', $year->id)
@@ -60,7 +64,7 @@ class DemoExamSeeder extends Seeder
                 foreach ($section->enrollments as $enrollment) {
                     $ability = mt_rand(30, 95);   // فیصدی تقریبی هر دانش‌آموز
                     foreach ($section->gradeLevel->subjects as $subject) {
-                        foreach ([[$mid, 40], [$final, 60]] as [$exam, $max]) {
+                        foreach ([[$activity, 20], [$mid, 30], [$final, 50]] as [$exam, $max]) {
                             if ($exam->is($final) && $s === 0) {
                                 continue;   // بخش اول: سالانه را خودتان ثبت کنید
                             }

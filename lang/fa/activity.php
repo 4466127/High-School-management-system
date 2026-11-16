@@ -26,6 +26,7 @@ return [
         'exam_type' => 'انواع امتحان',
         'marks' => 'نمرات',
         'results' => 'نتایج',
+        'import' => 'ورود از Excel',
     ],
     'actions' => [
         'auth' => [
@@ -108,6 +109,10 @@ return [
         'marks' => [
             'entered' => 'ثبت نمره',
             'updated' => 'اصلاح نمره',
+        ],
+        'import' => [
+            'students' => 'ورود گروهی دانش‌آموزان',
+            'staff' => 'ورود گروهی کارکنان',
         ],
         'results' => [
             'finalized' => 'نهایی‌کردن نتایج',
@@ -192,6 +197,8 @@ return [
         'conditional_max_failed_subjects' => 'حد مشروط',
         'deprivation_absence_days' => 'حد محروم',
         'absence_alert_days' => 'حد غیابت زیاد',
+        'imported' => 'وارد شد',
+        'enrolled' => 'شامل بخش',
         'max_mark' => 'نمره‌ی کامل',
         'weight' => 'وزن',
         'counts_in_final' => 'در نتیجه حساب شود',

@@ -16,6 +16,34 @@
         label.classList.toggle('has-file', !!(input.files && input.files.length));
     });
 
+    /* اعلان‌ها (toast): بعد از data-toast-ms بسته می‌شوند؛ نگه داشتن موس روی اعلان زمان را متوقف نمی‌کند (ساده) */
+    function closeToast(toast) {
+        if (!toast || toast.classList.contains('is-leaving')) { return; }
+        toast.classList.add('is-leaving');
+        setTimeout(function () {
+            var stack = toast.parentNode;
+            toast.remove();
+            if (stack && !stack.children.length) { stack.remove(); }
+        }, 300);
+    }
+    document.querySelectorAll('.app-toast[data-toast-ms]').forEach(function (toast) {
+        var ms = parseInt(toast.getAttribute('data-toast-ms'), 10) || 10000;
+        var bar = toast.querySelector('.app-toast-bar');
+        if (bar) { bar.style.animationDuration = ms + 'ms'; }
+        toast.classList.add('is-timing');
+        setTimeout(function () { closeToast(toast); }, ms);
+    });
+    document.addEventListener('click', function (ev) {
+        var btn = ev.target.closest && ev.target.closest('[data-toast-close]');
+        if (btn) { closeToast(btn.closest('.app-toast')); }
+    });
+
+    /* منوی کنار: گروه باز (is-open) برای موبایل تمام عرض می‌شود */
+    document.querySelectorAll('.nav-side .nav-sub.collapse').forEach(function (sub) {
+        sub.addEventListener('show.bs.collapse', function () { sub.parentNode.classList.add('is-open'); });
+        sub.addEventListener('hide.bs.collapse', function () { sub.parentNode.classList.remove('is-open'); });
+    });
+
     /* ورق حاضری: «همه حاضر» و شمار زنده‌ی هر وضعیت (form[data-att-form]) */
     document.querySelectorAll('form[data-att-form]').forEach(function (form) {
         function refreshCounts() {

@@ -93,6 +93,11 @@ php artisan school:backup       # نسخه‌ی پشتیبان (مرحله‌ی 
 - در یک فایل Blade، `@php(...)` یک‌خطی را پیش از بلوک `@php … @endphp` ننویسید (Blade کل متن میان آن دو را یک بلوک می‌خواند).
 - تست‌های امتحانات از `Tests\Feature\Exams\ExamTestCase` (بخش، دو مضمون، معلم، سه دانش‌آموز، دو امتحان).
 
+## نکته‌های رابط (پس از مرحله‌ی ۶)
+- پیام کاربر فقط با `->with('success'|'error'|'warning', …)`؛ `layouts/partials/alerts` آن را toast می‌کند (خطای اعتبارسنجی هم خودکار toast سرخ می‌شود). alert تازه‌ی Bootstrap برای flash ننویسید.
+- منو: هر ماژول چندصفحه‌ای در `config/menu.php` با `children`؛ نام مسیرها `module.page.index` تا فقط همان زیرمنو فعال شود (`Menu::routePattern`).
+- ورود گروهی: ستون‌ها در `lang/fa/import.php` (کلید ← [سربرگ، اجباری، مثال، توضیح])؛ بررسی و ذخیره در `ImportService`؛ فایل xlsx با `App\Support\Xlsx` (بدون بسته).
+
 ## Git و GitHub
 - بعد از تمام شدن هر مرحله: commit و push به `origin main` (صاحب پروژه این را خواسته است).
 - commitها فقط به نام صاحب پروژه (`4466127 <4466127@users.noreply.github.com>`). **هیچ خط `Co-Authored-By` یا نام Claude/AI در پیام commit نباشد.**

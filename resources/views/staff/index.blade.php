@@ -3,9 +3,12 @@
 @section('content')
     <div class="page-head">
         <h1 class="page-title mb-0">{{ __('staff.title') }}</h1>
-        <a href="{{ route('staff.create') }}" class="btn btn-primary">
-            <i class="fa-solid fa-user-plus" aria-hidden="true"></i> {{ __('staff.create') }}
-        </a>
+        <div class="d-flex flex-wrap gap-2">
+            <a href="{{ route('import.index', ['type' => 'staff']) }}" class="btn btn-outline-success"><i class="fa-solid fa-file-excel" aria-hidden="true"></i> {{ __('import.title') }}</a>
+            <a href="{{ route('staff.create') }}" class="btn btn-primary">
+                <i class="fa-solid fa-user-plus" aria-hidden="true"></i> {{ __('staff.create') }}
+            </a>
+        </div>
     </div>
 
     <form method="GET" class="card card-body mb-3">

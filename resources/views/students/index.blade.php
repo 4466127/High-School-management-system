@@ -4,9 +4,14 @@
     <div class="page-head">
         <h1 class="page-title mb-0">{{ __('students.title') }}</h1>
         @can('create', \App\Models\Student::class)
-            <a href="{{ route('students.create') }}" class="btn btn-primary">
-                <i class="fa-solid fa-user-plus" aria-hidden="true"></i> {{ __('students.create') }}
-            </a>
+            <div class="d-flex flex-wrap gap-2">
+                @can('students.manage')
+                    <a href="{{ route('import.index', ['type' => 'students']) }}" class="btn btn-outline-success"><i class="fa-solid fa-file-excel" aria-hidden="true"></i> {{ __('import.title') }}</a>
+                @endcan
+                <a href="{{ route('students.create') }}" class="btn btn-primary">
+                    <i class="fa-solid fa-user-plus" aria-hidden="true"></i> {{ __('students.create') }}
+                </a>
+            </div>
         @endcan
     </div>
 
