@@ -39,8 +39,10 @@
 | `/attendance/absentees/export?min=&section=` | دانش‌آموزان با غیابت زیاد در سال جاری | ۵ ✅ |
 | `/attendance/staff/monthly/export?month=` | خلاصه‌ی ماهوار حاضری کارکنان | ۵ ✅ |
 | `/exams/results/export?section=&exam=` | نمره‌های یک امتحان بخش؛ بدون `exam`: نتیجه‌ی نهایی (نمره‌ی نهایی هر مضمون، مجموع، اوسط، نتیجه، درجه) | ۶ ✅ |
-| `/reports/students/export` | فهرست دانش‌آموزان با فیلتر | ۹ |
-| `/reports/results/export` | نتایج امتحان | ۹ |
+| `/reports/students/export?section=&gender=` | فهرست دانش‌آموزان شامل با فیلتر | ۹ ✅ |
+| `/reports/attendance/export?section=&from=&to=` | حاضری هر بخش در بازه (شمار وضعیت‌ها، فیصدی) | ۹ ✅ |
+| `/reports/results/export?section=` | ناکام، مشروط و محروم با مضامین ناکام | ۹ ✅ |
+| `/reports/finance/export?from=&to=` | خلاصه‌ی مالی مکتب و کورس‌ها (جدا) | ۹ ✅ |
 | `/finance/debtors/export?section=` | بدهکاران سال جاری | ۷ ✅ |
 | `/finance/payments/export?from=&to=&q=` | رسیدها | ۷ ✅ |
 | `/finance/ledger/export?type=&category=&from=&to=` | درآمد و مصرف مکتب | ۷ ✅ |

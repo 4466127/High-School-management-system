@@ -25,6 +25,7 @@ use App\Http\Controllers\Finance\InvoiceController;
 use App\Http\Controllers\Finance\LedgerController;
 use App\Http\Controllers\Finance\PaymentController;
 use App\Http\Controllers\ImportController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\Settings\ActivityLogController;
 use App\Http\Controllers\Settings\SchoolSettingController;
 use App\Http\Controllers\Settings\UserController;
@@ -185,6 +186,18 @@ Route::middleware(['auth', 'active'])->group(function () {
             Route::get('/report-cards', [ReportCardController::class, 'index'])->name('reportcards.index');
             Route::get('/report-cards/student/{enrollment}', [ReportCardController::class, 'show'])->name('reportcards.show');
             Route::get('/report-cards/section/{section}', [ReportCardController::class, 'section'])->name('reportcards.section');
+        });
+
+        // ---------- گزارش‌ها (مجوز reports.academic / reports.finance در ReportController) ----------
+        Route::prefix('reports')->name('reports.')->group(function () {
+            Route::get('/students', [ReportController::class, 'students'])->name('students.index');
+            Route::get('/students/export', [ReportController::class, 'studentsExport'])->name('students.export');
+            Route::get('/attendance', [ReportController::class, 'attendance'])->name('attendance.index');
+            Route::get('/attendance/export', [ReportController::class, 'attendanceExport'])->name('attendance.export');
+            Route::get('/results', [ReportController::class, 'results'])->name('results.index');
+            Route::get('/results/export', [ReportController::class, 'resultsExport'])->name('results.export');
+            Route::get('/finance', [ReportController::class, 'finance'])->name('finance.index');
+            Route::get('/finance/export', [ReportController::class, 'financeExport'])->name('finance.export');
         });
 
         // ---------- کورس‌های تقویتی (مجوز دقیق در CoursePolicy) ----------

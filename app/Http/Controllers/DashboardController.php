@@ -2,14 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\DashboardService;
 use App\Support\Menu;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
-/** داشبورد مرحله‌ی ۲: خوش‌آمد و دسترسی سریع به بخش‌های مجاز. آمار در مرحله‌ی ۹ اضافه می‌شود. */
+/** داشبورد هر نقش: آمار و کارهای امروز به اندازه‌ی مجوزهای کاربر، و دسترسی سریع. */
 class DashboardController extends Controller
 {
-    public function __invoke(Request $request, Menu $menu): View
+    public function __invoke(Request $request, Menu $menu, DashboardService $dashboard): View
     {
         $user = $request->user()->loadMissing('roles');
 
@@ -18,6 +19,6 @@ class DashboardController extends Controller
             ->reject(fn (array $item) => $item['key'] === 'dashboard')
             ->values();
 
-        return view('dashboard', ['user' => $user, 'tiles' => $tiles]);
+        return view('dashboard', ['user' => $user, 'tiles' => $tiles] + $dashboard->for($user));
     }
 }

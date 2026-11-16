@@ -12,7 +12,7 @@
 - [API.md](API.md) — مسیرهای داخلی JSON و خروجی CSV
 
 ## وضعیت فعلی
-مرحله‌های ۰ تا ۶ آزمایش شده (بهبودهای خواسته‌شده‌ی صاحب پروژه هم انجام شد). مرحله‌های ۷ و ۷+ (مالی، مشروطی، درجه‌ی حرفی) تأیید شد. مرحله‌ی ۸ (کورس‌های تقویتی) ساخته، آزمایش و push شده و منتظر آزمایش صاحب پروژه است. بعدی: مرحله‌ی ۹ (داشبورد و گزارش‌ها). راهنمای نصب از صفر: README.md.
+مرحله‌های ۰ تا ۶ آزمایش شده (بهبودهای خواسته‌شده‌ی صاحب پروژه هم انجام شد). مرحله‌های ۷ و ۷+ (مالی، مشروطی، درجه‌ی حرفی) تأیید شد. مرحله‌ی ۸ (کورس‌ها) تأیید شد. مرحله‌ی ۹ (داشبورد و گزارش‌ها) ساخته، آزمایش و push شده و منتظر آزمایش صاحب پروژه است. بعدی و آخرین: مرحله‌ی ۱۰ (پشتیبان، پایگاه داده‌ی تازه برای مکتب، راه‌اندازی در شبکه). راهنمای نصب از صفر: README.md.
 وضعیت دقیق همیشه در ROADMAP.md است؛ تغییرات در CHANGELOG.md.
 
 ## قواعد سخت (استثنا ندارد)
@@ -105,6 +105,10 @@ php artisan school:backup       # نسخه‌ی پشتیبان (مرحله‌ی 
 - مجوز: `Gate::authorize('view'|'manage'|'ledger', …)` و `viewAttendance`/`recordAttendance` با `[Course::class, $group, $date]` (`CoursePolicy`؛ `attendanceBlock()` دلیل بسته بودن را می‌دهد).
 - حاضری و نمره‌ی مکتب به `enrollment_id` وصل است؛ حاضری کورس به `course_participant_id` (کورس وابسته به سال تحصیلی نیست).
 - نام مسیرها: `courses.list.*`، `courses.attendance.*`، `courses.ledger.*` (زیرمنوی جدا).
+
+## نکته‌های پیاده‌سازی مرحله‌ی ۹
+- داشبورد فقط از `DashboardService::for($user)`؛ هر کارت null یعنی برای این کاربر نیست. گزارش‌ها فقط خواندن، از `ReportService`؛ محدوده‌ی بخش‌ها همیشه `ResultService::visibleSections`.
+- گزارش تازه: متد در `ReportService` + دو مسیر `reports.<name>.index`/`export` + زیرمنو در `config/menu.php` + view با `reports._filters` و `?print=1`.
 
 ## نکته‌های امتحان مشروطی و درجه‌ی حرفی
 - درجه فقط `ResultCalculator::grade()` (a/b/c/d؛ برچسب در `exams.grades`). حدها `grade_a_min`/`grade_b_min`/`grade_c_min` در تنظیمات و در `final_snapshot.settings`. نسخه‌ی ثابت قدیمی بدون `grade` ← `ResultService::reportCards` آن را حساب می‌کند. `class_rank` دیگر نوشته نمی‌شود.
