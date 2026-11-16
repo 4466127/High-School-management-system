@@ -24,6 +24,9 @@ class SchoolSettingsTest extends TestCase
             'conditional_max_failed_subjects' => '3',
             'deprivation_absence_days' => '30',
             'absence_alert_days' => '8',
+            'grade_a_min' => '90',
+            'grade_b_min' => '80',
+            'grade_c_min' => '65',
             'weekly_holidays' => ['thursday', 'friday'],
         ], $overrides);
     }
@@ -56,6 +59,16 @@ class SchoolSettingsTest extends TestCase
             'pass_percent' => '120', 'conditional_max_failed_subjects' => '-1', 'school_type' => 'x', 'weekly_holidays' => ['someday'],
             'absence_alert_days' => '0',
         ]))->assertSessionHasErrors(['pass_percent', 'conditional_max_failed_subjects', 'school_type', 'weekly_holidays.0', 'absence_alert_days']);
+    }
+
+    public function test_grade_boundaries_must_descend_above_pass_percent(): void
+    {
+        $principal = $this->userWithRole(Role::Principal);
+        $this->actingAs($principal)->put('/settings/school', $this->payload(['grade_a_min' => '70', 'grade_b_min' => '80', 'grade_c_min' => '45']))
+            ->assertSessionHasErrors(['grade_a_min', 'grade_c_min']);
+
+        $this->actingAs($principal)->put('/settings/school', $this->payload())->assertSessionHasNoErrors();
+        $this->assertSame('80', Setting::get('grade_b_min'));
     }
 
     public function test_logo_upload_is_public_and_replaceable(): void

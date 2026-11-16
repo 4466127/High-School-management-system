@@ -14,7 +14,7 @@ use Carbon\CarbonImmutable;
 /** جدول نتایج، نهایی‌کردن، کارنامه و پیشنهاد ارتقا. */
 class ResultsTest extends ExamTestCase
 {
-    public function test_results_table_computes_finals_results_and_rank(): void
+    public function test_results_table_computes_finals_results_and_grade(): void
     {
         $this->enterAllMarks();
 
@@ -67,11 +67,11 @@ class ResultsTest extends ExamTestCase
         $this->assertSame(FinalResult::Passed, $first->final_result);
         $this->assertSame('84.00', $first->final_average);
         $this->assertSame('168.00', $first->final_total);
-        $this->assertSame(1, $first->class_rank);
+        $this->assertSame('b', $first->final_grade);  // اوسط ۸۴ ← ب
         $this->assertSame(40.0, (float) $first->final_snapshot['settings']['pass_percent']);
         $this->assertSame(FinalResult::Conditional, $this->students[1]->fresh()->final_result);
         $this->assertSame(FinalResult::Failed, $this->students[2]->fresh()->final_result);
-        $this->assertNull($this->students[2]->fresh()->class_rank);
+        $this->assertNull($this->students[2]->fresh()->final_grade);
         $this->assertTrue(ActivityLog::where('action', 'results.finalized')->exists());
 
         // تغییر تنظیمات و نمره‌ی کامل بعد از نهایی‌کردن، نتیجه‌ی ذخیره‌شده و کارنامه را عوض نمی‌کند
@@ -150,7 +150,7 @@ class ResultsTest extends ExamTestCase
         $csv = $this->actingAs($this->principal)->get(route('exams.results.export', ['section' => $this->section->id]))->assertOk()->streamedContent();
         $this->assertStringStartsWith("\xEF\xBB\xBF", $csv);
         $this->assertStringContainsString('ریاضی', $csv);
-        $this->assertStringContainsString(',90,78,168,84,کامیاب,1', $csv);
+        $this->assertStringContainsString(',90,78,168,84,کامیاب,ب', $csv);
     }
 
     public function test_promotion_suggests_decisions_from_final_results(): void

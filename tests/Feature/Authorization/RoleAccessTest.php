@@ -56,8 +56,8 @@ class RoleAccessTest extends TestCase
     public function test_exams_submenu_per_role(): void
     {
         $expected = [
-            'admin' => [Role::Admin, ['exams_marks', 'exams_results', 'exams_reportcards', 'exams_manage']],
-            'principal' => [Role::Principal, ['exams_marks', 'exams_results', 'exams_reportcards', 'exams_manage']],
+            'admin' => [Role::Admin, ['exams_marks', 'exams_results', 'exams_reportcards', 'exams_reexam', 'exams_manage']],
+            'principal' => [Role::Principal, ['exams_marks', 'exams_results', 'exams_reportcards', 'exams_reexam', 'exams_manage']],
             'office' => [Role::Office, ['exams_results', 'exams_reportcards']],
             'teacher' => [Role::Teacher, ['exams_marks', 'exams_results', 'exams_reportcards']],
         ];
@@ -83,7 +83,7 @@ class RoleAccessTest extends TestCase
         foreach (array_keys(__('menu')) as $key) {
             if (in_array($key, ['school', 'users', 'activity_logs', 'backups', 'import', 'sections', 'years', 'grades', 'promotion',
                 'attendance_daily', 'attendance_monthly', 'attendance_absentees', 'attendance_staff',
-                'exams_marks', 'exams_results', 'exams_reportcards', 'exams_manage'], true)) {
+                'exams_marks', 'exams_results', 'exams_reportcards', 'exams_reexam', 'exams_manage'], true)) {
                 continue;
             }
             in_array($key, $menuKeys, true)

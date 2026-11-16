@@ -9,6 +9,7 @@
         <div class="report-card">
             @php($student = $card['enrollment']->student)
             @php($result = $card['result'] ? \App\Enums\FinalResult::from($card['result']) : null)
+            @php($hasReexam = ! empty($card['reexam']))
             <header class="print-head">
                 <div class="d-flex align-items-center gap-2">
                     @if (\App\Models\Setting::get('logo_path'))<img src="{{ route('school.logo') }}" alt="" width="56" height="56" class="object-fit-contain">@endif
@@ -44,6 +45,7 @@
                         <th>{{ $exam['name'] }}<div class="small fw-normal">({{ $fmt($exam['max_mark']) }})</div></th>
                     @endforeach
                     <th>{{ __('exams.final_mark') }}<div class="small fw-normal">(۱۰۰)</div></th>
+                    @if ($hasReexam)<th>{{ __('exams.reexam_column') }}<div class="small fw-normal">(۱۰۰)</div></th>@endif
                     <th>{{ __('exams.subject_result') }}</th>
                 </tr>
                 </thead>
@@ -57,6 +59,7 @@
                             <td>{{ $m ? ($m['absent'] ? __('exams.absent_short') : $fmt($m['mark'])) : '' }}</td>
                         @endforeach
                         <td class="fw-bold">{{ $subject['final'] !== null ? $fmt($subject['final']) : '…' }}</td>
+                        @if ($hasReexam)<td class="fw-bold">{{ isset($subject['reexam']) ? $fmt($subject['reexam']) : '' }}</td>@endif
                         <td>
                             @if ($subject['passed'] === true) {{ __('enums.final_result.passed') }}
                             @elseif ($subject['passed'] === false) <b>{{ __('enums.final_result.failed') }}</b>
@@ -71,8 +74,8 @@
                 <tr>
                     <th>{{ __('exams.total') }}</th><td>{{ $fmt($card['total']) }}</td>
                     <th>{{ __('exams.average') }}</th><td>{{ $fmt($card['average']) }}</td>
-                    <th>{{ __('exams.result') }}</th><td class="fw-bold">{{ $result?->label() ?? __('exams.incomplete') }}</td>
-                    <th>{{ __('exams.rank') }}</th><td>{{ $card['rank'] ? \App\Support\Digits::toPersian((string) $card['rank']) : '—' }}</td>
+                    <th>{{ __('exams.result') }}</th><td class="fw-bold">{{ $result?->label() ?? __('exams.incomplete') }}@if ($hasReexam) <span class="small fw-normal">({{ __('exams.after_reexam') }})</span>@endif</td>
+                    <th>{{ __('exams.grade') }}</th><td class="fw-bold">{{ ! empty($card['grade']) ? __('exams.grades.'.$card['grade']) : '—' }}</td>
                 </tr>
                 <tr>
                     <th>{{ __('exams.attendance_days') }}</th>
@@ -85,7 +88,12 @@
                 </tr>
             </table>
             <div class="small text-secondary">
-                {{ __('exams.card_rules', ['pass' => $fmt($card['settings']['pass_percent'])]) }}
+                {{ __('exams.card_rules', [
+                    'pass' => $fmt($card['settings']['pass_percent']),
+                    'a' => $fmt($card['settings']['grade_a_min'] ?? \App\Models\Setting::get('grade_a_min', 90)),
+                    'b' => $fmt($card['settings']['grade_b_min'] ?? \App\Models\Setting::get('grade_b_min', 75)),
+                    'c' => $fmt($card['settings']['grade_c_min'] ?? \App\Models\Setting::get('grade_c_min', 60)),
+                ]) }}
             </div>
 
             <div class="signatures">

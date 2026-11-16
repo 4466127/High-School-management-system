@@ -12,14 +12,20 @@ use App\Models\Setting;
  * غایب در امتحان = صفر. اگر نمره‌ی یک امتحان حساب‌شونده ثبت نشده باشد، مضمون «ناقص» است (null).
  * کامیابی مضمون: نمره‌ی نهایی ≥ pass_percent.
  * نتیجه: محروم (غیرحاضر بیشتر از حد) ← ناقص (null) ← کامیاب (هیچ ناکام) ← مشروط (ناکام‌ها ≤ حد) ← ناکام.
- * درجه: رتبه‌ی دانش‌آموزان کامیاب بخش به ترتیب اوسط (برابرها یک درجه: ۱، ۱، ۳).
+ * درجه‌ی حرفی (فقط کامیاب‌ها) از اوسط: الف ≥ grade_a_min، ب ≥ grade_b_min، ج ≥ grade_c_min، د = بقیه‌ی کامیاب‌ها.
+ * مشروطی: نمره‌ی مشروطی (از ۱۰۰) جای نمره‌ی نهایی مضمون ناکام را می‌گیرد؛ همه‌ی مضامین ناکام کامیاب ← کامیاب، در غیر آن ← ناکام.
  */
 final class ResultCalculator
 {
+    public const GRADES = ['a', 'b', 'c', 'd'];
+
     public function __construct(
         public readonly float $passPercent = 40,
         public readonly int $conditionalMaxFailed = 2,
         public readonly int $deprivationDays = 0,
+        public readonly float $gradeAMin = 90,
+        public readonly float $gradeBMin = 75,
+        public readonly float $gradeCMin = 60,
     ) {}
 
     public static function fromSettings(): self
@@ -28,16 +34,37 @@ final class ResultCalculator
             (float) Setting::get('pass_percent', 40),
             (int) Setting::get('conditional_max_failed_subjects', 2),
             (int) Setting::get('deprivation_absence_days', 0),
+            (float) Setting::get('grade_a_min', 90),
+            (float) Setting::get('grade_b_min', 75),
+            (float) Setting::get('grade_c_min', 60),
         );
     }
 
-    /** @return array{pass_percent: float, conditional_max_failed_subjects: int, deprivation_absence_days: int} */
+    /** همان قاعده‌هایی که در نسخه‌ی ثابت ذخیره شده بود (کلیدهای نبوده ← تنظیمات فعلی) */
+    public static function fromSnapshot(array $settings): self
+    {
+        $current = self::fromSettings();
+
+        return new self(
+            (float) ($settings['pass_percent'] ?? $current->passPercent),
+            (int) ($settings['conditional_max_failed_subjects'] ?? $current->conditionalMaxFailed),
+            (int) ($settings['deprivation_absence_days'] ?? $current->deprivationDays),
+            (float) ($settings['grade_a_min'] ?? $current->gradeAMin),
+            (float) ($settings['grade_b_min'] ?? $current->gradeBMin),
+            (float) ($settings['grade_c_min'] ?? $current->gradeCMin),
+        );
+    }
+
+    /** @return array{pass_percent: float, conditional_max_failed_subjects: int, deprivation_absence_days: int, grade_a_min: float, grade_b_min: float, grade_c_min: float} */
     public function settings(): array
     {
         return [
             'pass_percent' => $this->passPercent,
             'conditional_max_failed_subjects' => $this->conditionalMaxFailed,
             'deprivation_absence_days' => $this->deprivationDays,
+            'grade_a_min' => $this->gradeAMin,
+            'grade_b_min' => $this->gradeBMin,
+            'grade_c_min' => $this->gradeCMin,
         ];
     }
 
@@ -71,7 +98,7 @@ final class ResultCalculator
      * @param  list<int>  $subjectIds  مضامین صنف
      * @param  list<array{id: int, max_mark: float, weight: float}>  $exams
      * @param  array<int, array<int, array{mark: ?float, absent: bool}>>  $marks  subject_id => exam_id => نمره
-     * @return array{subjects: array<int, array{final: ?float, passed: ?bool}>, total: float, average: ?float, failed: int, incomplete: bool, result: ?FinalResult, absent_days: int}
+     * @return array{subjects: array<int, array{final: ?float, passed: ?bool}>, total: float, average: ?float, failed: int, incomplete: bool, result: ?FinalResult, grade: ?string, absent_days: int}
      */
     public function result(array $subjectIds, array $exams, array $marks, int $absentDays = 0): array
     {
@@ -102,42 +129,85 @@ final class ResultCalculator
             $this->conditionalMaxFailed > 0 && $failed <= $this->conditionalMaxFailed => FinalResult::Conditional,
             default => FinalResult::Failed,
         };
+        $average = $incomplete ? null : round($total / count($subjectIds), 2);
 
         return [
             'subjects' => $subjects,
             'total' => round($total, 2),
-            'average' => $incomplete ? null : round($total / count($subjectIds), 2),
+            'average' => $average,
             'failed' => $failed,
             'incomplete' => $incomplete,
             'result' => $result,
+            'grade' => $this->grade($result, $average),
             'absent_days' => $absentDays,
         ];
     }
 
-    /**
-     * درجه (رتبه) دانش‌آموزان کامیاب به ترتیب اوسط.
-     *
-     * @param  array<int, array{result: ?FinalResult, average: ?float}>  $results  enrollment_id => نتیجه
-     * @return array<int, int> enrollment_id => درجه
-     */
-    public static function ranks(array $results): array
+    /** درجه‌ی حرفی (a, b, c, d) فقط برای کامیاب‌ها */
+    public function grade(?FinalResult $result, ?float $average): ?string
     {
-        $passed = array_filter($results, fn ($r) => $r['result'] === FinalResult::Passed && $r['average'] !== null);
-        uasort($passed, fn ($a, $b) => $b['average'] <=> $a['average']);
-
-        $ranks = [];
-        $position = 0;
-        $previous = null;
-        $rank = 0;
-        foreach ($passed as $id => $r) {
-            $position++;
-            if ($previous === null || $r['average'] < $previous) {
-                $rank = $position;
-            }
-            $ranks[$id] = $rank;
-            $previous = $r['average'];
+        if ($result !== FinalResult::Passed || $average === null) {
+            return null;
         }
 
-        return $ranks;
+        return match (true) {
+            $average >= $this->gradeAMin => 'a',
+            $average >= $this->gradeBMin => 'b',
+            $average >= $this->gradeCMin => 'c',
+            default => 'd',
+        };
+    }
+
+    /**
+     * نتیجه‌ی بعد از امتحان مشروطی.
+     *
+     * @param  list<array{id: int, final: ?float, passed: ?bool}>  $subjects  مضامین نتیجه‌ی نهایی‌شده
+     * @param  array<int, array{mark: ?float, absent: bool}>  $reexam  subject_id => نمره‌ی مشروطی (فقط مضامین ناکام)
+     * @return array{subjects: array<int, array{final: ?float, reexam: ?float, passed: ?bool}>, total: float, average: ?float, failed: int, incomplete: bool, result: ?FinalResult, grade: ?string}
+     */
+    public function reexamResult(array $subjects, array $reexam): array
+    {
+        $out = [];
+        $total = 0.0;
+        $failed = 0;
+        $incomplete = $subjects === [];
+
+        foreach ($subjects as $subject) {
+            $id = $subject['id'];
+            $row = ['final' => $subject['final'], 'reexam' => null, 'passed' => $subject['passed']];
+
+            if ($subject['passed'] === false) {
+                $mark = $reexam[$id] ?? null;
+                if ($mark === null || (! $mark['absent'] && $mark['mark'] === null)) {
+                    $incomplete = true;
+                    $row['passed'] = null;
+                } else {
+                    $row['reexam'] = $mark['absent'] ? 0.0 : round((float) $mark['mark'], 2);
+                    $row['passed'] = $row['reexam'] >= $this->passPercent;
+                }
+            }
+
+            $counted = $row['reexam'] ?? $row['final'];
+            if ($counted === null) {
+                $incomplete = true;
+            } else {
+                $total += $counted;
+            }
+            $failed += $row['passed'] === false ? 1 : 0;
+            $out[$id] = $row;
+        }
+
+        $result = $incomplete ? null : ($failed === 0 ? FinalResult::Passed : FinalResult::Failed);
+        $average = $incomplete ? null : round($total / count($subjects), 2);
+
+        return [
+            'subjects' => $out,
+            'total' => round($total, 2),
+            'average' => $average,
+            'failed' => $failed,
+            'incomplete' => $incomplete,
+            'result' => $result,
+            'grade' => $this->grade($result, $average),
+        ];
     }
 }

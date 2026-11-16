@@ -1,21 +1,414 @@
 # سیستم مدیریت مکتب
 
-نرم‌افزار مدیریت مکتب برای مکاتب دولتی و خصوصی افغانستان؛ فارسی دری، راست‌به‌چپ، تاریخ هجری شمسی، و کاملاً محلی (شبکه‌ی داخلی مکتب، بدون اینترنت).
+نرم‌افزار مدیریت مکتب برای مکاتب دولتی و خصوصی افغانستان؛ فارسی دری، راست‌به‌چپ، تاریخ هجری شمسی (حمل، ثور، …)، و **کاملاً محلی**: یک کامپیوتر در مکتب سرور است و معلمان و اداره با مرورگر موبایل یا کامپیوتر از راه Wi-Fi داخلی وصل می‌شوند. اینترنت لازم نیست و هیچ داده‌ای بیرون از مکتب نمی‌رود.
 
-Laravel 13 · PHP 8.4 · MariaDB · Blade · Bootstrap 5 RTL
+این سند راهنمای کامل انتقال و نصب سیستم روی یک کامپیوتر تازه است، از صفر تا آماده‌ی کار.
+
+---
+
+## فهرست
+
+1. [سیستم چه کارهایی می‌کند](#۱-سیستم-چه-کارهایی-میکند)
+2. [وضعیت پروژه: کارهای انجام‌شده و باقی‌مانده](#۲-وضعیت-پروژه-کارهای-انجامشده-و-باقیمانده)
+3. [فناوری‌های استفاده‌شده](#۳-فناوریهای-استفادهشده)
+4. [نرم‌افزارهای لازم با لینک دانلود](#۴-نرمافزارهای-لازم-با-لینک-دانلود)
+5. [نصب از صفر روی کامپیوتر تازه (قدم‌به‌قدم)](#۵-نصب-از-صفر-روی-کامپیوتر-تازه-قدمبهقدم)
+6. [اولین ورود و آماده‌سازی مکتب](#۶-اولین-ورود-و-آمادهسازی-مکتب)
+7. [نصب بدون اینترنت (در مکتب)](#۷-نصب-بدون-اینترنت-در-مکتب)
+8. [راه‌اندازی در شبکه‌ی داخلی مکتب](#۸-راهاندازی-در-شبکهی-داخلی-مکتب)
+9. [پشتیبان‌گیری و انتقال به کامپیوتر دیگر](#۹-پشتیبانگیری-و-انتقال-به-کامپیوتر-دیگر)
+10. [به‌روزرسانی سیستم از GitHub](#۱۰-بهروزرسانی-سیستم-از-github)
+11. [رفع مشکلات رایج](#۱۱-رفع-مشکلات-رایج)
+12. [دستورهای روزانه](#۱۲-دستورهای-روزانه)
+13. [امنیت و قواعد مهم](#۱۳-امنیت-و-قواعد-مهم)
+14. [اسناد دیگر](#۱۴-اسناد-دیگر)
+
+---
+
+## ۱. سیستم چه کارهایی می‌کند
+
+| بخش | کارها |
+|---|---|
+| **ورود و نقش‌ها** | ورود با نام کاربری؛ شش نقش (مدیر سیستم، مدیر مکتب، مسئول اداری، معلم، حسابدار، مسئول کورس‌ها)؛ معلم فقط صنف و مضمون خودش را می‌بیند؛ ثبت همه‌ی رویدادها |
+| **دانش‌آموزان و کارکنان** | پرونده با عکس و اسناد، سرپرستان، نمبر اساس، وضعیت (فعال، منتقل، ترک، فارغ)؛ پرونده‌ی معلمان و کارکنان |
+| **ورود از Excel** | فایل نمونه‌ی Excel؛ ثبت گروهی صدها دانش‌آموز یا کارمند یک‌جا با بررسی پیش از ذخیره |
+| **ساختار آموزشی** | سال تحصیلی و دوره‌ها، صنف اول تا دوازدهم، بخش‌ها (الف، ب، …) با نوبت، مضامین هر صنف، نگران صنف و معلم هر مضمون، شمولیت و ارتقای گروهی صنف |
+| **حاضری** | حاضری روزانه‌ی هر بخش (حاضر، تأخیر، غیرحاضر، رخصت، مریض)، اصلاح با ردپا، گزارش روزانه و ماهوار، فهرست غیابت زیاد، حاضری کارکنان |
+| **امتحانات و نمرات** | انواع امتحان با وزن (فعالیت صنفی ۲۰ + چهارونیم‌ماهه ۳۰ + سالانه ۵۰)، ورق نمره، جدول نتایج، نهایی‌کردن نتایج، کارنامه‌ی چاپی با درجه‌ی حرفی (الف، ب، ج، د)، **امتحان مشروطی** |
+| **مالی (اختیاری)** | برای مکاتب خصوصی: انواع فیس و نرخ هر صنف، بل، پرداخت و رسید چاپی، بدهکاران؛ دفتر درآمد و مصرف مکتب. هر دو از تنظیمات روشن یا خاموش می‌شوند |
+| **چاپ و خروجی** | همه‌ی گزارش‌ها چاپ A4 با سربرگ و لوگوی مکتب، و خروجی CSV که در Excel باز می‌شود |
+
+---
+
+## ۲. وضعیت پروژه: کارهای انجام‌شده و باقی‌مانده
+
+| مرحله | موضوع | وضعیت |
+|---|---|---|
+| ۰ | بررسی محیط | ✅ |
+| ۱ | طراحی معماری، پایگاه داده و رابط | ✅ |
+| ۲ | هسته‌ی Laravel، ورود، نقش‌ها و مجوزها | ✅ |
+| ۳ | دانش‌آموزان، معلمان، کارکنان | ✅ |
+| ۴ | سال تحصیلی، صنف، بخش، مضمون، شمولیت، ارتقا | ✅ |
+| ۵ | حاضری روزانه و گزارش‌ها، حاضری کارکنان | ✅ |
+| ۶ | امتحانات، نمرات، نتیجه، کارنامه + ورود از Excel، اعلان‌ها، منوی بازشونده | ✅ |
+| ۷ | مالی مکتب (فیس، رسید، بدهکاران، درآمد و مصرف) | ✅ منتظر آزمایش صاحب پروژه |
+| ۷+ | امتحان مشروطی، درجه‌ی حرفی کارنامه، این راهنما | ✅ منتظر آزمایش صاحب پروژه |
+| ۸ | **کورس‌های تقویتی** (کامپیوتر، انگلیسی، ساینس؛ زمستانی و در جریان سال؛ قبل و بعد از ظهر) و کمک‌های مردمی با دفتر مالی جدا | ⏭️ بعدی |
+| ۹ | داشبورد هر نقش و گزارش‌های کلی | ⬜ |
+| ۱۰ | دستور پشتیبان و بازیابی خودکار، راه‌اندازی نهایی در شبکه‌ی مکتب | ⬜ |
+
+۲۳۸ تست خودکار همه سبز است. جزئیات هر مرحله، تصمیم‌های تأییدشده و پرسش‌های باز در [ROADMAP.md](ROADMAP.md)، و فهرست تغییرات در [CHANGELOG.md](CHANGELOG.md) است.
+
+---
+
+## ۳. فناوری‌های استفاده‌شده
+
+| لایه | فناوری | نسخه |
+|---|---|---|
+| زبان سرور | PHP | 8.4 (Thread Safe، x64) |
+| چارچوب | Laravel | 13 |
+| پایگاه داده | MariaDB (همراه XAMPP) | 10.4 |
+| وب‌سرور | Apache (همراه XAMPP) | 2.4 |
+| بسته‌ی سرور | XAMPP برای Windows | 8.2.12 (PHP آن با 8.4 جایگزین می‌شود) |
+| مدیریت بسته‌های PHP | Composer | 2.x |
+| صفحه‌ها | Blade (قالب خود Laravel) | — |
+| ظاهر | Bootstrap RTL | 5.3.6 |
+| آیکون‌ها | Font Awesome | 6.7.2 |
+| فونت | وزیرمتن (Vazirmatn) | محلی |
+| جاوااسکریپت | JavaScript ساده (بدون React/Vue/jQuery) | — |
+| تست | PHPUnit (همراه Laravel) | — |
+
+**عمداً بدون این‌ها ساخته شده:** Node.js و npm، CDN، Google Fonts، Docker، بسته‌ی PDF. همه‌ی CSS، JS، فونت و آیکون داخل `public/assets` است؛ تاریخ شمسی با افزونه‌ی `intl` خود PHP؛ چاپ با صفحه‌ی چاپ مرورگر؛ Excel با خواندن مستقیم فایل xlsx (zip) بدون بسته‌ی اضافی.
+
+---
+
+## ۴. نرم‌افزارهای لازم با لینک دانلود
+
+| # | نرم‌افزار | چرا | لینک |
+|---|---|---|---|
+| 1 | **Visual C++ Redistributable 2015–2022 (x64)** | PHP 8.4 بدون آن اجرا نمی‌شود | https://aka.ms/vs/17/release/vc_redist.x64.exe |
+| 2 | **XAMPP 8.2.12 برای Windows** | Apache + MariaDB + phpMyAdmin | https://www.apachefriends.org/download.html — نسخه‌های قبلی: https://sourceforge.net/projects/xampp/files/XAMPP%20Windows/8.2.12/ |
+| 3 | **PHP 8.4 — VS17 x64 Thread Safe (zip)** | Laravel 13 به PHP 8.3 یا بالاتر نیاز دارد | https://windows.php.net/download/ — نسخه‌های قبلی: https://windows.php.net/downloads/releases/archives/ |
+| 4 | **Composer** | نصب کتابخانه‌های Laravel (پوشه‌ی `vendor`) | https://getcomposer.org/Composer-Setup.exe |
+| 5 | **Git برای Windows** | گرفتن کد از GitHub و به‌روزرسانی | https://git-scm.com/download/win |
+| 6 | مرورگر (Chrome، Edge یا Firefox) | باز کردن سیستم | https://www.google.com/chrome/ — https://www.mozilla.org/firefox/ |
+| 7 | (اختیاری) Visual Studio Code | ویرایش فایل `.env` و کد | https://code.visualstudio.com/ |
+
+> مهم: از صفحه‌ی PHP حتماً نسخه‌ی **Thread Safe** و **x64** را بگیرید (نام فایل شبیه `php-8.4.x-Win32-vs17-x64.zip`). نسخه‌ی Non Thread Safe با Apache کار نمی‌کند.
+
+حداقل سخت‌افزار سرور: پردازنده‌ی دو هسته‌ای، ۴ گیگابایت RAM، ۲۰ گیگابایت جای خالی، Windows 10 یا 11 (۶۴ بیتی). برای قطع برق، UPS توصیه می‌شود.
+
+---
+
+## ۵. نصب از صفر روی کامپیوتر تازه (قدم‌به‌قدم)
+
+نمونه‌ها فرض می‌کنند XAMPP در `C:\xampp` نصب است و پروژه در `C:\xampp\htdocs\maktab` قرار می‌گیرد.
+
+### قدم ۱ — Visual C++ و XAMPP
+1. `vc_redist.x64.exe` را اجرا و نصب کنید (اگر گفت «نصب است»، بگذرید).
+2. نصب‌کننده‌ی XAMPP را اجرا کنید. پوشه: `C:\xampp`. از بخش‌ها دست‌کم **Apache**، **MySQL**، **PHP** و **phpMyAdmin** را انتخاب کنید.
+3. اگر Windows هشدار UAC داد، همان `C:\xampp` درست است (پوشه‌ی `Program Files` را انتخاب نکنید).
+
+### قدم ۲ — ارتقای PHP به 8.4
+XAMPP 8.2.12 همراه PHP 8.2 است؛ Laravel 13 نسخه‌ی تازه‌تر می‌خواهد.
+
+1. اگر XAMPP Control Panel باز است، Apache را Stop کنید.
+2. پوشه‌ی `C:\xampp\php` را به `C:\xampp\php82` تغییر نام دهید (نسخه‌ی قبلی برای احتیاط می‌ماند).
+3. فایل zip نسخه‌ی PHP 8.4 را در پوشه‌ی تازه‌ی `C:\xampp\php` باز کنید (باید `C:\xampp\php\php.exe` وجود داشته باشد).
+4. فایل `C:\xampp\php\php.ini-production` را کپی و نام کپی را `php.ini` بگذارید.
+5. `php.ini` را با Notepad یا VS Code باز کنید و این‌ها را درست کنید (`;` اول خط را بردارید):
+   ```ini
+   extension_dir = "C:\xampp\php\ext"
+
+   extension=bz2
+   extension=curl
+   extension=fileinfo
+   extension=gd
+   extension=gettext
+   extension=intl
+   extension=mbstring
+   extension=exif
+   extension=mysqli
+   extension=openssl
+   extension=pdo_mysql
+   extension=pdo_sqlite
+   extension=sqlite3
+   extension=sodium
+   extension=zip
+   extension=ftp
+
+   memory_limit = 512M
+   post_max_size = 40M
+   upload_max_filesize = 40M
+   max_input_vars = 5000
+   date.timezone = Asia/Kabul
+   ```
+6. فایل `C:\xampp\apache\conf\extra\httpd-xampp.conf` را باز کنید و مطمئن شوید این خطوط هست (در XAMPP 8.2.12 معمولاً همین است و تغییر لازم ندارد، چون نام فایل‌های PHP 8.4 هم همین است):
+   ```apache
+   LoadFile "/xampp/php/php8ts.dll"
+   LoadFile "/xampp/php/libpq.dll"
+   LoadFile "/xampp/php/libsqlite3.dll"
+   LoadModule php_module "/xampp/php/php8apache2_4.dll"
+   PHPINIDir "/xampp/php"
+   ```
+7. PHP و ابزار پایگاه داده را به PATH ویندوز اضافه کنید: Start ← «Edit the system environment variables» ← Environment Variables ← در «System variables» روی `Path` ← Edit ← New:
+   - `C:\xampp\php`
+   - `C:\xampp\mysql\bin`
+8. یک **Command Prompt تازه** باز کنید و بررسی کنید:
+   ```
+   php -v
+   php -m
+   ```
+   باید `PHP 8.4…` دیده شود و در فهرست `php -m` این‌ها باشد: `intl`، `mbstring`، `openssl`، `pdo_mysql`، `zip`، `gd`، `fileinfo`، `bcmath`، `sodium`.
+9. در XAMPP Control Panel، **Apache** و **MySQL** را Start کنید. `http://localhost/dashboard/phpinfo.php` باید PHP 8.4 را نشان دهد.
+
+### قدم ۳ — Composer و Git
+1. `Composer-Setup.exe` را اجرا کنید. وقتی مسیر PHP را پرسید: `C:\xampp\php\php.exe`. بقیه را پیش‌فرض بگذارید.
+2. نصب‌کننده‌ی Git را اجرا کنید؛ گزینه‌های پیش‌فرض درست است.
+3. Command Prompt تازه:
+   ```
+   composer -V
+   git --version
+   ```
+
+### قدم ۴ — گرفتن کد از GitHub
+```
+cd C:\xampp\htdocs
+git clone https://github.com/4466127/High-School-management-system.git maktab
+cd maktab
+```
+(اگر مخزن خصوصی است، Git نام کاربری GitHub و یک Personal Access Token به جای رمز می‌خواهد.)
+
+### قدم ۵ — کتابخانه‌ها و فایل تنظیمات
+```
+composer install
+copy .env.example .env
+php artisan key:generate
+```
+سپس `.env` را باز کنید و این‌ها را بررسی کنید:
+```ini
+APP_NAME="سیستم مدیریت مکتب"
+APP_ENV=local            # برای مکتب واقعی: production (قدم ۸ و بخش ۸ را ببینید)
+APP_DEBUG=true           # برای مکتب واقعی: false
+APP_URL=http://localhost/maktab
+
+DB_CONNECTION=mariadb
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=maktab
+DB_USERNAME=root
+DB_PASSWORD=             # اگر برای root رمز گذاشته‌اید، اینجا بنویسید
+```
+
+### قدم ۶ — ساخت پایگاه داده
+در Command Prompt:
+```
+mysql -u root -e "CREATE DATABASE maktab CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+mysql -u root -e "CREATE DATABASE maktab_test CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+```
+(یا در phpMyAdmin: `http://localhost/phpmyadmin` ← New ← نام `maktab` ← Collation: `utf8mb4_unicode_ci`.) پایگاه داده‌ی `maktab_test` فقط برای تست‌های خودکار است؛ روی سرور مکتب لازم نیست.
+
+### قدم ۷ — ساخت جدول‌ها و داده‌ی اولیه
+```
+php artisan migrate
+php artisan db:seed
+```
+در محیط `production` هر دو دستور تأیید می‌خواهند؛ `--force` اضافه کنید.
+
+`db:seed` این‌ها را می‌سازد (اجرای دوباره امن است و چیزی را پاک نمی‌کند):
+- نقش‌ها و مجوزها، تنظیمات پیش‌فرض مکتب، صنف‌های اول تا دوازدهم، ۱۹ مضمون آغازین، انواع امتحان، انواع فیس و دسته‌های مالی؛
+- کاربر **`admin`** با **رمز تصادفی** که **فقط یک بار** در خروجی چاپ می‌شود. **آن را همان لحظه یادداشت کنید.**
+- فقط وقتی `APP_ENV=local` است: داده‌ی آزمایشی (دانش‌آموزان و کارکنان ساختگی، حاضری، نمره، بل) و کاربران آزمایشی `demo.admin`، `demo.principal`، `demo.office`، `demo.teacher`، `demo.accountant`، `demo.course-manager` با رمز `password`.
+
+> **برای مکتب واقعی** پیش از `db:seed` در `.env` بنویسید `APP_ENV=production` تا هیچ داده یا کاربر آزمایشی ساخته نشود.
+
+اگر رمز `admin` را گم کردید و هیچ مدیر دیگری نیست:
+```
+php artisan tinker --execute="$u=App\Models\User::where('username','admin')->first(); $u->password=bcrypt('Temp-12345'); $u->must_change_password=true; $u->save();"
+```
+
+### قدم ۸ — باز کردن سیستم
+مرورگر: `http://localhost/maktab/`
+
+فایل `.htaccess` ریشه‌ی پروژه درخواست‌ها را به پوشه‌ی `public` می‌برد، پس نام پوشه هر چه باشد کار می‌کند (اگر نام پوشه فاصله دارد، در آدرس `%20` می‌آید). برای آزمایش سریع بدون Apache: `php artisan serve` و `http://127.0.0.1:8000`.
+
+### قدم ۹ — بررسی نصب (اختیاری، برای توسعه)
+```
+php artisan test
+```
+همه‌ی تست‌ها باید سبز باشد. تست‌ها فقط روی `maktab_test` اجرا می‌شوند و به `maktab` دست نمی‌زنند.
+
+---
+
+## ۶. اولین ورود و آماده‌سازی مکتب
+
+1. با `admin` و رمز قدم ۷ وارد شوید؛ سیستم می‌خواهد رمز تازه بگذارید.
+2. **تنظیمات ← مشخصات مکتب:** نام مکتب، نوع (دولتی/خصوصی)، ولایت، ولسوالی، نام مدیر، لوگو؛ قاعده‌های نمره‌دهی (حد کامیابی ۴۰٪، حد مشروط، حد محروم، حدهای درجه‌ی الف/ب/ج)؛ رخصتی هفته؛ و کلیدهای «مدیریت فیس» و «دفتر درآمد و مصرف» (فقط اگر مکتب لازم دارد).
+3. **تنظیمات ← کاربران:** برای مدیر مکتب، مسئول اداری، معلمان و حسابدار حساب بسازید و هر معلم را به پرونده‌ی کارمندی‌اش وصل کنید.
+4. **صنف‌ها و مضامین:** سال تحصیلی (مثلاً ۱۴۰۵) را بسازید و «سال جاری» کنید؛ مضامین هر صنف؛ بخش‌ها (الف، ب، …) با نوبت؛ نگران صنف و معلم هر مضمون.
+5. **ورود از Excel** (تنظیمات ← ورود از Excel، یا دکمه‌ی آن در فهرست دانش‌آموزان/کارکنان): فایل نمونه را بگیرید، پر کنید، آپلود و بررسی و ذخیره کنید. ستون «صنف/بخش» دانش‌آموز را مستقیم در بخش شامل می‌کند.
+6. **امتحانات ← تعریف امتحانات:** امتحان‌های سال را از روی انواع (فعالیت صنفی ۲۰، چهارونیم‌ماهه ۳۰، سالانه ۵۰) تعریف و «باز» کنید تا معلمان نمره بدهند.
+7. پایان سال: قفل امتحان‌ها ← نهایی‌کردن نتایج هر بخش ← امتحان مشروطی برای «مشروط»ها ← چاپ کارنامه ← ارتقای گروهی صنف.
+
+---
+
+## ۷. نصب بدون اینترنت (در مکتب)
+
+`composer install` و `git clone` اینترنت می‌خواهند. اگر کامپیوتر مکتب اینترنت ندارد:
+
+1. روی کامپیوتری که اینترنت دارد، قدم‌های ۲ تا ۵ را انجام دهید و برای سرور کتابخانه‌های توسعه را کنار بگذارید:
+   ```
+   composer install --no-dev --optimize-autoloader
+   ```
+2. این‌ها را روی فلش کپی کنید:
+   - نصب‌کننده‌ی Visual C++، XAMPP و zip نسخه‌ی PHP 8.4؛
+   - کل پوشه‌ی پروژه **همراه پوشه‌ی `vendor`** (بدون `.env`؛ آن را روی سرور از `.env.example` بسازید).
+3. روی کامپیوتر مکتب: قدم ۱ و ۲ ← کپی پوشه به `C:\xampp\htdocs\maktab` ← `copy .env.example .env` ← `php artisan key:generate` ← قدم ۶ و ۷ و ۸.
+
+Git و Composer روی سرور مکتب لازم نیستند، مگر برای به‌روزرسانی.
+
+---
+
+## ۸. راه‌اندازی در شبکه‌ی داخلی مکتب
+
+این کارها تنظیمات Windows و XAMPP را تغییر می‌دهند. یک بار و با دقت انجام دهید (جزئیات بیشتر در [DEVELOPMENT.md](DEVELOPMENT.md) بخش ۶):
+
+1. **IP ثابت** برای کامپیوتر سرور (مثلاً `192.168.1.100`)، در تنظیمات روتر (DHCP Reservation) یا تنظیمات شبکه‌ی Windows.
+2. **Apache مستقیم به پوشه‌ی `public`:** در `C:\xampp\apache\conf\extra\httpd-vhosts.conf`:
+   ```apache
+   <VirtualHost *:80>
+       DocumentRoot "C:/xampp/htdocs/maktab/public"
+       <Directory "C:/xampp/htdocs/maktab/public">
+           AllowOverride All
+           Require all granted
+       </Directory>
+   </VirtualHost>
+   ```
+3. **فایروال Windows:** پورت 80 (Apache) را فقط برای شبکه‌ی **Private** باز کنید؛ پورت 3306 (MySQL) را باز نکنید.
+4. **رمز MariaDB:** برای `root` رمز بگذارید و همان را در `DB_PASSWORD` فایل `.env` بنویسید. phpMyAdmin را فقط از خود سرور باز کنید.
+5. **`.env` برای مکتب:**
+   ```ini
+   APP_ENV=production
+   APP_DEBUG=false
+   APP_URL=http://192.168.1.100
+   ```
+6. **سرعت:**
+   ```
+   php artisan config:cache
+   php artisan route:cache
+   php artisan view:cache
+   ```
+   (بعد از هر تغییر `.env` یا به‌روزرسانی، این سه را دوباره اجرا کنید.)
+7. **سرویس Windows:** در XAMPP Control Panel (به‌عنوان Administrator) تیک «Service» کنار Apache و MySQL را بزنید تا با روشن‌شدن کامپیوتر خودکار شروع شوند.
+8. کاربران در مرورگر موبایل یا کامپیوتر: `http://192.168.1.100`
+9. Wi-Fi مکتب رمز WPA2 قوی داشته باشد و شبکه‌ی مهمان جدا باشد. ساعت و تاریخ سرور درست باشد (حاضری و رسید به آن وابسته‌اند).
+
+---
+
+## ۹. پشتیبان‌گیری و انتقال به کامپیوتر دیگر
+
+دستور خودکار `school:backup` / `school:restore` در مرحله‌ی ۱۰ ساخته می‌شود. تا آن زمان پشتیبان را دستی بگیرید.
+
+### پشتیبان (دست‌کم هفته‌ای یک بار، و پیش از هر به‌روزرسانی)
+1. پایگاه داده:
+   ```
+   cd C:\xampp\htdocs\maktab
+   mysqldump -u root -p --single-transaction --routines maktab --result-file=backups\maktab-1405-08-25.sql
+   ```
+   (اگر root رمز ندارد، `-p` را بردارید.)
+2. فایل‌های آپلودی (عکس دانش‌آموزان، اسناد، لوگو): پوشه‌ی `storage\app\private`.
+3. فایل `.env` (کلید `APP_KEY` در آن است).
+4. هر سه را روی فلش یا هارد جدا کپی کنید و یک نسخه را بیرون از مکتب نگه دارید.
+
+پوشه‌ی `backups/` در git نیست؛ نسخه‌ی پشتیبان و داده‌ی واقعی هرگز در GitHub قرار نمی‌گیرد.
+
+### انتقال به کامپیوتر تازه
+1. روی کامپیوتر تازه بخش ۵ را تا قدم ۶ انجام دهید (پایگاه داده‌ی خالی `maktab` بسازید).
+2. فایل `.env` قبلی را کپی کنید (همان `APP_KEY` بماند) و اگر لازم است `DB_PASSWORD` و `APP_URL` را عوض کنید.
+3. بازگرداندن پایگاه داده:
+   ```
+   mysql -u root -p maktab < backups\maktab-1405-08-25.sql
+   ```
+4. پوشه‌ی `storage\app\private` را در همان جای پروژه‌ی تازه کپی کنید.
+5. `php artisan migrate --force` (اگر نسخه‌ی کد تازه‌تر است، جدول‌های تازه اضافه می‌شود؛ داده پاک نمی‌شود).
+6. `db:seed` را **دوباره اجرا نکنید** مگر لازم باشد (امن است، ولی لازم نیست).
+
+---
+
+## ۱۰. به‌روزرسانی سیستم از GitHub
+
+```
+cd C:\xampp\htdocs\maktab
+mysqldump -u root -p --single-transaction maktab --result-file=backups\pre-update.sql
+git pull
+composer install --no-dev --optimize-autoloader
+php artisan migrate --force
+php artisan db:seed --force
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+```
+`db:seed` فقط مجوزها و تنظیمات تازه را اضافه می‌کند و تنظیمات مکتب را عوض نمی‌کند.
+
+> **هرگز** روی پایگاه داده‌ی مکتب `php artisan migrate:fresh`، `migrate:reset` یا `db:wipe` اجرا نکنید؛ همه‌ی داده پاک می‌شود.
+
+---
+
+## ۱۱. رفع مشکلات رایج
+
+| مشکل | راه‌حل |
+|---|---|
+| Apache شروع نمی‌شود، «port 80 in use» | برنامه‌ی دیگری (Skype، IIS، VMware) پورت 80 را گرفته؛ آن را ببندید یا در XAMPP ← Config ← `httpd.conf` پورت را `Listen 8080` کنید و آدرس را `http://localhost:8080/maktab` بنویسید |
+| Apache بعد از ارتقای PHP شروع نمی‌شود | نسخه‌ی PHP باید **Thread Safe x64** باشد؛ Visual C++ نصب باشد؛ خطوط `httpd-xampp.conf` (قدم ۲) درست باشد؛ خطا در `C:\xampp\apache\logs\error.log` |
+| `php` شناخته نمی‌شود | `C:\xampp\php` در PATH نیست یا Command Prompt قبل از تغییر PATH باز شده؛ پنجره‌ی تازه باز کنید |
+| `composer install`: «requires php ^8.3» یا «ext-intl missing» | `php -v` باید 8.4 باشد؛ `extension=intl` و بقیه در `php.ini` فعال باشد؛ `php --ini` نشان می‌دهد کدام `php.ini` خوانده می‌شود |
+| صفحه‌ی سفید یا «500 Server Error» | `storage\logs\laravel.log` را ببینید؛ `php artisan key:generate` اجرا شده باشد؛ تنظیمات پایگاه داده‌ی `.env` درست باشد؛ بعد از تغییر `.env`: `php artisan config:clear` |
+| «SQLSTATE[HY000] [1045] Access denied» | `DB_USERNAME`/`DB_PASSWORD` در `.env` با MariaDB یکی نیست |
+| «SQLSTATE[HY000] [1049] Unknown database» | پایگاه داده‌ی `maktab` ساخته نشده (قدم ۶) |
+| «SQLSTATE[HY000] [2002]» | MySQL در XAMPP Control Panel روشن نیست |
+| متن فارسی «????» یا به‌هم‌ریخته | پایگاه داده با `utf8mb4_unicode_ci` ساخته نشده؛ پایگاه داده‌ی تازه با همین collation بسازید |
+| 404 روی همه‌ی صفحه‌ها جز صفحه‌ی اول | `mod_rewrite` در Apache خاموش یا `AllowOverride All` نیست (در `httpd.conf`)؛ فایل‌های `.htaccess` (ریشه و `public`) کپی شده باشد |
+| تاریخ یا ساعت نادرست | `date.timezone = Asia/Kabul` در `php.ini` و ساعت Windows سرور درست باشد |
+| آپلود عکس یا فایل Excel بزرگ رد می‌شود | `upload_max_filesize` و `post_max_size` در `php.ini` (۴۰M)، سپس Restart Apache |
+| تغییر کد/تنظیمات دیده نمی‌شود (روی سرور) | `php artisan optimize:clear` و دوباره سه دستور cache |
+| phpMyAdmin روی PHP 8.4 هشدار Deprecated نشان می‌دهد | مشکلی برای سیستم نیست؛ phpMyAdmin تازه از https://www.phpmyadmin.net/downloads/ یا دستورهای `mysql`/`mysqldump` |
+| رمز admin فراموش شد | دستور tinker در قدم ۷ |
+
+---
+
+## ۱۲. دستورهای روزانه
+
+| کار | دستور |
+|---|---|
+| ساخت جدول‌های تازه بعد از به‌روزرسانی | `php artisan migrate` |
+| نقش‌ها، مجوزها و تنظیمات تازه (اجرای دوباره امن) | `php artisan db:seed` |
+| اجرای تست‌ها (روی `maktab_test`) | `php artisan test` |
+| اجرای آزمایشی بدون Apache | `php artisan serve` |
+| قالب‌بندی کد | `vendor\bin\pint` |
+| فهرست مسیرها | `php artisan route:list --except-vendor` |
+| پاک کردن cacheها | `php artisan optimize:clear` |
+| پشتیبان دستی | `mysqldump -u root -p --single-transaction maktab --result-file=backups\maktab-DATE.sql` |
+
+---
+
+## ۱۳. امنیت و قواعد مهم
+
+- داده‌ی واقعی دانش‌آموزان، فایل `.env`، نسخه‌های پشتیبان و فایل‌های آپلودی **هرگز** وارد git و GitHub نمی‌شوند (`.gitignore`).
+- روی مکتب واقعی: `APP_ENV=production` و `APP_DEBUG=false`؛ رمز برای `root` در MariaDB؛ phpMyAdmin فقط از خود سرور.
+- رمز `admin` را در اولین ورود عوض کنید و برای هر نفر حساب جدا بسازید؛ همه‌ی کارها با نام کاربر در «ثبت رویدادها» می‌ماند.
+- پرداخت، نمره، تراکنش مالی و پرونده‌ی دانش‌آموز حذف نمی‌شوند؛ «باطل» یا «غیرفعال» می‌شوند (با دلیل).
+- فایل‌های آپلودی در `storage/app/private` (بیرون از `public`) است و فقط پس از بررسی مجوز نشان داده می‌شود؛ `php artisan storage:link` اجرا نشود.
+
+---
+
+## ۱۴. اسناد دیگر
 
 | سند | محتوا |
 |---|---|
-| [DEVELOPMENT.md](DEVELOPMENT.md) | نصب، اجرا، تست، راه‌اندازی در شبکه، پشتیبان‌گیری |
-| [ARCHITECTURE.md](ARCHITECTURE.md) | معماری، ماژول‌ها، نقش‌ها و منوها |
+| [ROADMAP.md](ROADMAP.md) | مراحل، کارهای انجام‌شده و آینده، تصمیم‌ها، ریسک‌ها |
+| [CHANGELOG.md](CHANGELOG.md) | تغییرات هر مرحله |
+| [DEVELOPMENT.md](DEVELOPMENT.md) | محیط توسعه، ساختار مخزن، تست‌ها، قواعد پایگاه داده |
+| [ARCHITECTURE.md](ARCHITECTURE.md) | معماری، ماژول‌ها، نقش‌ها، منوها و صفحه‌ها |
 | [DATABASE.md](DATABASE.md) | جدول‌ها و روابط |
-| [ROADMAP.md](ROADMAP.md) | مراحل توسعه و وضعیت |
-| [CHANGELOG.md](CHANGELOG.md) | تغییرات |
-| [API.md](API.md) | مسیرهای داخلی JSON و خروجی CSV |
-| [CLAUDE.md](CLAUDE.md) | قواعد کار روی پروژه |
-
-## وضعیت
-
-مراحل ۰ تا ۷ ساخته و آزمایش شده‌اند (۲۳۲ تست)؛ مرحله‌ی ۷ (مالی مکتب) منتظر آزمایش صاحب پروژه است. مرحله‌ی بعد: کورس‌های جداگانه (مرحله‌ی ۸). جزئیات، کارهای آینده و تصمیم‌های باز در [ROADMAP.md](ROADMAP.md) است.
-
-داده‌ی واقعی دانش‌آموزان هرگز در این مخزن قرار نمی‌گیرد.
+| [API.md](API.md) | مسیرهای داخلی JSON و خروجی‌های CSV |
+| [CLAUDE.md](CLAUDE.md) | قواعد کار روی کد پروژه |

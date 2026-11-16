@@ -12,7 +12,7 @@
         @endif
         @if ($reportCard['provisional'])<span class="small text-warning-emphasis">{{ __('exams.provisional') }}</span>@endif
         <span class="small">{{ __('exams.total') }}: <b>{{ $fmt($reportCard['total']) }}</b> · {{ __('exams.average') }}: <b>{{ $fmt($reportCard['average']) }}</b>
-            @if ($reportCard['rank']) · {{ __('exams.rank') }}: <b>@fa($reportCard['rank'])</b>@endif</span>
+            @if (! empty($reportCard['grade'])) · {{ __('exams.grade') }}: <b>{{ __('exams.grades.'.$reportCard['grade']) }}</b>@endif</span>
         <a href="{{ route('exams.reportcards.show', $reportCard['enrollment']) }}" class="btn btn-sm btn-outline-primary ms-auto"><i class="fa-solid fa-print" aria-hidden="true"></i> {{ __('exams.reportcard') }}</a>
     </div>
     <div class="card">
@@ -35,7 +35,7 @@
                             @php($m = $subject['marks'][$exam['id']] ?? null)
                             <td>{{ $m ? ($m['absent'] ? __('exams.absent') : $fmt($m['mark'])) : '' }}</td>
                         @endforeach
-                        <td @class(['fw-bold', 'text-danger' => $subject['passed'] === false])>{{ $subject['final'] !== null ? $fmt($subject['final']) : '…' }}</td>
+                        <td @class(['fw-bold', 'text-danger' => $subject['passed'] === false])>{{ $subject['final'] !== null ? $fmt($subject['final']) : '…' }}@isset($subject['reexam'])<div class="small text-success">{{ __('exams.reexam_column') }}: {{ $fmt($subject['reexam']) }}</div>@endisset</td>
                     </tr>
                 @endforeach
                 </tbody>

@@ -28,7 +28,20 @@ class Enrollment extends Model
             'final_result' => FinalResult::class,
             'finalized_at' => 'datetime',
             'final_snapshot' => 'array',
+            'reexam_finalized_at' => 'datetime',
         ];
+    }
+
+    public function reexamMarks(): HasMany
+    {
+        return $this->hasMany(ReexamMark::class);
+    }
+
+    /** نتیجه‌ی نهایی پیش از مشروطی «مشروط» بود (چه مشروطی نهایی شده باشد چه نه) */
+    public function wasConditional(): bool
+    {
+        return $this->final_result === FinalResult::Conditional
+            || ($this->final_snapshot['reexam']['original']['result'] ?? null) === FinalResult::Conditional->value;
     }
 
     public function student(): BelongsTo

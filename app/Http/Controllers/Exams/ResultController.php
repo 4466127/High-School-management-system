@@ -50,7 +50,7 @@ class ResultController extends Controller
         $header = array_merge(
             [__('academics.roll_no'), __('students.full_name'), __('students.father_name')],
             $subjects->pluck('name')->all(),
-            [__('exams.total'), __('exams.average'), __('exams.result'), __('exams.rank')],
+            [__('exams.total'), __('exams.average'), __('exams.result'), __('exams.grade')],
         );
         $rows = $data['rows']->map(function ($card) use ($subjects) {
             $finals = collect($card['subjects'])->keyBy('id');
@@ -60,7 +60,8 @@ class ResultController extends Controller
                 $subjects->map(fn ($s) => MarkService::format($finals[$s->id]['final'] ?? null))->all(),
                 [
                     MarkService::format($card['total']), MarkService::format($card['average']),
-                    $card['result'] ? FinalResult::from($card['result'])->label() : __('exams.incomplete'), $card['rank'],
+                    $card['result'] ? FinalResult::from($card['result'])->label() : __('exams.incomplete'),
+                    $card['grade'] ? __('exams.grades.'.$card['grade']) : '',
                 ],
             );
         });
@@ -87,7 +88,11 @@ class ResultController extends Controller
         Gate::authorize('manage', Exam::class);
         $data = $request->validate(['reason' => ['required', 'string', 'max:500']], [], ['reason' => __('students.reason')]);
 
-        $this->results->unfinalize($section, $request->user(), $data['reason']);
+        try {
+            $this->results->unfinalize($section, $request->user(), $data['reason']);
+        } catch (ValidationException $e) {
+            return back()->with('error', collect($e->errors())->flatten()->first());
+        }
 
         return redirect()->route('exams.results.index', ['section' => $section->id])->with('success', __('exams.unfinalized'));
     }

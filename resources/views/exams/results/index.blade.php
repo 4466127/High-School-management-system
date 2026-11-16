@@ -122,7 +122,7 @@
                         <th>{{ __('exams.total') }}</th>
                         <th>{{ __('exams.average') }}</th>
                         <th>{{ __('exams.result') }}</th>
-                        <th>{{ __('exams.rank') }}</th>
+                        <th>{{ __('exams.grade') }}</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -140,18 +140,19 @@
                             </td>
                             @foreach ($subjects as $subject)
                                 @php($f = $finals[$subject->id] ?? null)
-                                <td @class(['text-danger fw-bold' => $f && $f['passed'] === false])>{{ $f && $f['final'] !== null ? $fmt($f['final']) : '…' }}</td>
+                                <td @class(['text-danger fw-bold' => $f && $f['passed'] === false])>{{ $f && $f['final'] !== null ? $fmt($f['final']) : '…' }}@isset($f['reexam'])<div class="small text-success">{{ __('exams.reexam_column') }}: {{ $fmt($f['reexam']) }}</div>@endisset</td>
                             @endforeach
                             <td class="fw-bold">{{ $fmt($card['total']) }}</td>
                             <td>{{ $fmt($card['average']) }}</td>
                             <td>
                                 @if ($result)
                                     <span class="badge {{ $result->badgeClass() }}">{{ $result->label() }}</span>
+                                    @if (! empty($card['reexam']))<div class="small text-secondary">{{ __('exams.after_reexam') }}</div>@endif
                                 @else
                                     <span class="text-secondary small">{{ __('exams.incomplete') }}</span>
                                 @endif
                             </td>
-                            <td>{{ $card['rank'] ? \App\Support\Digits::toPersian((string) $card['rank']) : '' }}</td>
+                            <td class="fw-bold">{{ $card['grade'] ? __('exams.grades.'.$card['grade']) : '' }}</td>
                         </tr>
                     @empty
                         <tr><td colspan="{{ 6 + $subjects->count() }}" class="text-secondary py-3">{{ __('academics.no_students_in_section') }}</td></tr>

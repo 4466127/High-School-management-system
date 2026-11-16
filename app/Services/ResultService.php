@@ -68,7 +68,7 @@ class ResultService
      * نتیجه‌ی زنده‌ی همه‌ی دانش‌آموزان یک بخش (از نمره‌های فعلی و تنظیمات فعلی).
      *
      * @return array{exams: Collection, subjects: Collection, rows: Collection, calculator: ResultCalculator}
-     *                                                                                                        rows: ['enrollment', 'marks' => [subject_id][exam_id] => Mark, 'result' => array, 'rank' => ?int, 'attendance' => object|null]
+     *                                                                                                        rows: ['enrollment', 'marks' => [subject_id][exam_id] => Mark, 'result' => array, 'attendance' => object|null]
      */
     public function sectionResults(Section $section, ?ResultCalculator $calculator = null): array
     {
@@ -99,12 +99,8 @@ class ResultService
                 'marks' => $own,
                 'result' => $calculator->result($subjectIds, $examInput, $input, $totals->absent ?? 0),
                 'attendance' => $totals,
-                'rank' => null,
             ];
         })->keyBy(fn ($row) => $row['enrollment']->id);
-
-        $ranks = ResultCalculator::ranks($rows->map(fn ($row) => ['result' => $row['result']['result'], 'average' => $row['result']['average']])->all());
-        $rows = $rows->map(fn ($row, $id) => ['rank' => $ranks[$id] ?? null] + $row);
 
         return ['exams' => $exams, 'subjects' => $subjects, 'rows' => $rows, 'calculator' => $calculator];
     }
@@ -173,7 +169,8 @@ class ResultService
                     'final_total' => $result['total'],
                     'final_average' => $result['average'],
                     'final_result' => $result['result'],
-                    'class_rank' => $row['rank'],
+                    'class_rank' => null,
+                    'final_grade' => $result['grade'],
                     'finalized_at' => now(),
                     'finalized_by' => $user->id,
                     'final_snapshot' => $this->snapshot($row, $data),
@@ -191,9 +188,13 @@ class ResultService
 
     public function unfinalize(Section $section, User $user, string $reason): int
     {
+        if (Enrollment::where('section_id', $section->id)->whereNotNull('reexam_finalized_at')->exists()) {
+            throw ValidationException::withMessages(['finalize' => __('exams.unfinalize_reexam_first')]);
+        }
+
         return DB::transaction(function () use ($section, $user, $reason) {
             $count = Enrollment::where('section_id', $section->id)->whereNotNull('finalized_at')->update([
-                'final_total' => null, 'final_average' => null, 'final_result' => null, 'class_rank' => null,
+                'final_total' => null, 'final_average' => null, 'final_result' => null, 'class_rank' => null, 'final_grade' => null,
                 'finalized_at' => null, 'finalized_by' => null, 'final_snapshot' => null,
             ]);
             $section->loadMissing('gradeLevel');
@@ -211,7 +212,7 @@ class ResultService
     /**
      * داده‌ی کارنامه‌های یک بخش (یا یک دانش‌آموز). نهایی‌شده ← از نسخه‌ی ثابت؛ در غیر آن نتیجه‌ی زنده با نشان «موقت».
      *
-     * @return Collection<int, array> هر کارنامه: enrollment, provisional, settings, exams, subjects, total, average, failed, result, rank, attendance
+     * @return Collection<int, array> هر کارنامه: enrollment, provisional, settings, exams, subjects, total, average, failed, result, grade, attendance (و reexam اگر مشروطی نهایی شده)
      */
     public function reportCards(Section $section, ?Enrollment $only = null): Collection
     {
@@ -220,7 +221,12 @@ class ResultService
 
         return $enrollments->map(function (Enrollment $enrollment) use ($section, &$live) {
             if ($enrollment->isFinalized() && is_array($enrollment->final_snapshot)) {
-                return ['enrollment' => $enrollment, 'provisional' => false] + $enrollment->final_snapshot;
+                $card = $enrollment->final_snapshot;
+                // نسخه‌های ثابت پیش از درجه‌ی حرفی: درجه از همان اوسط و نتیجه‌ی ذخیره‌شده
+                $card['grade'] ??= ResultCalculator::fromSnapshot($card['settings'] ?? [])
+                    ->grade(FinalResult::tryFrom((string) ($card['result'] ?? '')), isset($card['average']) ? (float) $card['average'] : null);
+
+                return ['enrollment' => $enrollment, 'provisional' => false] + $card;
             }
             $live ??= $this->sectionResults($section);
             $row = $live['rows']->get($enrollment->id);
@@ -255,7 +261,7 @@ class ResultService
             'average' => $result['average'],
             'failed' => $result['failed'],
             'result' => $result['result']?->value,
-            'rank' => $row['rank'],
+            'grade' => $result['grade'],
             'attendance' => [
                 'present' => $attendance->present ?? 0, 'late' => $attendance->late ?? 0, 'absent' => $attendance->absent ?? 0,
                 'excused' => $attendance->excused ?? 0, 'sick' => $attendance->sick ?? 0, 'total' => $attendance->total ?? 0,

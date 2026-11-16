@@ -12,6 +12,7 @@ use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Exams\ExamController;
 use App\Http\Controllers\Exams\MarkController;
+use App\Http\Controllers\Exams\ReexamController;
 use App\Http\Controllers\Exams\ReportCardController;
 use App\Http\Controllers\Exams\ResultController;
 use App\Http\Controllers\Finance\DebtorController;
@@ -162,6 +163,11 @@ Route::middleware(['auth', 'active'])->group(function () {
 
                 Route::post('/results/{section}/finalize', [ResultController::class, 'finalize'])->name('results.finalize');
                 Route::post('/results/{section}/unfinalize', [ResultController::class, 'unfinalize'])->name('results.unfinalize');
+
+                Route::get('/reexam', [ReexamController::class, 'index'])->name('reexam.index');
+                Route::post('/reexam/{section}', [ReexamController::class, 'store'])->name('reexam.store');
+                Route::post('/reexam/{section}/finalize', [ReexamController::class, 'finalize'])->name('reexam.finalize');
+                Route::post('/reexam/{section}/unfinalize', [ReexamController::class, 'unfinalize'])->name('reexam.unfinalize');
             });
 
             Route::middleware('can:marks.enter')->group(function () {

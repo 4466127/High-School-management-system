@@ -19,7 +19,7 @@
 | ساختار آموزشی | `academic_years`, `academic_terms`, `grade_levels`, `sections`, `subjects`, `grade_level_subject`, `teacher_assignments` |
 | اشخاص | `students`, `guardians`, `guardian_student`, `student_documents`, `enrollments`, `staff`, `staff_work_history` |
 | حاضری | `attendance_sessions`, `attendance_records`, `staff_attendance` |
-| امتحانات | `exam_types`, `exams`, `marks` |
+| امتحانات | `exam_types`, `exams`, `marks`, `reexam_marks` |
 | مالی مکتب | `fee_types`, `fee_rates`, `student_invoices`, `payments`, `payment_allocations`, `finance_categories`, `school_transactions` |
 | کورس‌ها | `courses`, `course_participants`, `course_sessions`, `course_attendance`, `course_ledger_entries` |
 | داخلی Laravel | `sessions`, `cache`, `cache_locks`, `migrations` |
@@ -153,7 +153,7 @@ erDiagram
 
 **student_documents** — `student_id`, `title`, `file_path` (در `storage/app/private`), `original_name`, `mime_type`, `size`, `uploaded_by`
 
-**enrollments** — `student_id`, `academic_year_id`, `section_id`, `roll_no` (نمبر حاضری), `enrolled_on`, `status` (active / promoted / repeated / transferred / dropped / graduated), `left_on`, `leave_reason`, و نتیجه‌ی نهایی: `final_total`, `final_average`, `final_result` (passed / conditional / failed / deprived), `class_rank`, `finalized_at`, `finalized_by`. یکتا: (`student_id`, `academic_year_id`).
+**enrollments** — `student_id`, `academic_year_id`, `section_id`, `roll_no` (نمبر حاضری), `enrolled_on`, `status` (active / promoted / repeated / transferred / dropped / graduated), `left_on`, `leave_reason`, و نتیجه‌ی نهایی: `final_total`, `final_average`, `final_result` (passed / conditional / failed / deprived), `class_rank` (دیگر نوشته نمی‌شود), `final_grade` (a / b / c / d = الف / ب / ج / د), `finalized_at`, `finalized_by`, `reexam_finalized_at`, `reexam_finalized_by`. یکتا: (`student_id`, `academic_year_id`).
 
 **staff** — `staff_type` (teacher / admin / service / course_teacher), `first_name`, `last_name`, `father_name`, `gender`, `phone`, `education`, `specialization`, `address`, `hire_date`, `position` (وظیفه), `employment_status` (active / on_leave / left), `status_changed_on`, `status_reason`, `photo_path`, `notes`, `deleted_at`. وضعیت «left» حساب کاربری وصل‌شده را غیرفعال می‌کند.
 
@@ -179,12 +179,15 @@ erDiagram
 
 **marks** — `exam_id`, `enrollment_id`, `subject_id`, `mark` (اختیاری), `is_absent`, `note`, `entered_by`, `updated_by`. یکتا: (`exam_id`, `enrollment_id`, `subject_id`).
 
+**reexam_marks** — نمره‌ی امتحان مشروطی (از ۱۰۰) برای مضامین ناکام دانش‌آموز «مشروط»: `enrollment_id`, `subject_id`, `mark` (اختیاری), `is_absent`, `entered_by`, `updated_by`. یکتا: (`enrollment_id`, `subject_id`).
+
 مجموع، اوسط و درجه‌ی هر امتحان ذخیره نمی‌شود و هنگام نمایش محاسبه می‌شود. فقط نتیجه‌ی نهایی سال در `enrollments` ثبت می‌شود.
 
 - `exams.max_mark`، `weight` و `counts_in_final` هنگام ساخت از `exam_types` کاپی می‌شوند؛ تغییر نوع، امتحان‌های قبلی را عوض نمی‌کند. یکتا: (`academic_year_id`, `name`).
 - `marks.mark` خالی و `is_absent = 0` یعنی «هنوز ثبت نشده» (نتیجه ناقص)؛ `is_absent = 1` یعنی غایب در امتحان (صفر). نمره حذف نمی‌شود.
 - **`enrollments.final_snapshot`** (JSON، هنگام نهایی‌کردن): قاعده‌های نمره‌دهی همان روز (`pass_percent`، حد مشروط، حد محروم)، امتحان‌های حساب‌شونده (نام، نمره‌ی کامل، وزن)، نمره‌ی هر مضمون در هر امتحان، نمره‌ی نهایی و کامیابی هر مضمون، مجموع، اوسط، نتیجه، درجه و شمار حاضری. کارنامه‌ی نهایی‌شده فقط از همین نسخه چاپ می‌شود.
-- `class_rank` (درجه) فقط برای «کامیاب»ها، به ترتیب اوسط؛ برابرها یک درجه.
+- **درجه‌ی حرفی** `final_grade` فقط برای «کامیاب»ها از روی اوسط: الف ≥ `grade_a_min` (۹۰)، ب ≥ `grade_b_min` (۷۵)، ج ≥ `grade_c_min` (۶۰)، د بقیه (حدها در تنظیمات و در نسخه‌ی ثابت). `class_rank` (رتبه‌ی عددی) از مرحله‌ی بهبود پس از ۷ نوشته نمی‌شود؛ درجه‌ی عددی در مکاتب افغانستان نیست.
+- **مشروطی:** نمره‌ی مشروطی جای نمره‌ی نهایی مضمون ناکام را می‌گیرد. نهایی‌کردن مشروطی `final_result` را کامیاب/ناکام، و `final_snapshot` را به‌روز می‌کند (`subjects[].reexam`)؛ نتیجه‌ی اصلی در `final_snapshot.reexam.original` می‌ماند تا لغو (فقط پیش از ارتقا) آن را برگرداند.
 
 ### مالی مکتب
 **fee_types** — `name`, `period` (monthly / annual / once), `is_active`

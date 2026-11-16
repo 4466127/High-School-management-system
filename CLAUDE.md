@@ -12,7 +12,7 @@
 - [API.md](API.md) — مسیرهای داخلی JSON و خروجی CSV
 
 ## وضعیت فعلی
-مرحله‌های ۰ تا ۶ آزمایش شده (بهبودهای خواسته‌شده‌ی صاحب پروژه هم انجام شد). مرحله‌ی ۷ (مالی مکتب) ساخته، آزمایش و push شده و منتظر آزمایش صاحب پروژه است. بعدی: مرحله‌ی ۸ (کورس‌های جداگانه).
+مرحله‌های ۰ تا ۶ آزمایش شده (بهبودهای خواسته‌شده‌ی صاحب پروژه هم انجام شد). مرحله‌ی ۷ (مالی مکتب) و پس از آن امتحان مشروطی و درجه‌ی حرفی ساخته، آزمایش و push شده و منتظر آزمایش صاحب پروژه است. بعدی: مرحله‌ی ۸ (کورس‌های جداگانه؛ معلومات صاحب پروژه در ROADMAP). راهنمای نصب از صفر: README.md.
 وضعیت دقیق همیشه در ROADMAP.md است؛ تغییرات در CHANGELOG.md.
 
 ## قواعد سخت (استثنا ندارد)
@@ -99,6 +99,10 @@ php artisan school:backup       # نسخه‌ی پشتیبان (مرحله‌ی 
 - `NormalizeInput` ارقام فارسی ورودی را لاتین می‌کند؛ متنی که با ارقام فارسی ذخیره می‌شود (مثل `period_label`) را پیش از مقایسه با `Digits::toPersian` برگردانید.
 - مسیرهای اختیاری با `->middleware('feature:fees')` / `feature:ledger`؛ زیرمنو با `'feature' => 'fees'`.
 - مانده‌ی بل ذخیره نمی‌شود: `StudentInvoice::withPaid()` (رسید باطل حساب نمی‌شود).
+
+## نکته‌های امتحان مشروطی و درجه‌ی حرفی
+- درجه فقط `ResultCalculator::grade()` (a/b/c/d؛ برچسب در `exams.grades`). حدها `grade_a_min`/`grade_b_min`/`grade_c_min` در تنظیمات و در `final_snapshot.settings`. نسخه‌ی ثابت قدیمی بدون `grade` ← `ResultService::reportCards` آن را حساب می‌کند. `class_rank` دیگر نوشته نمی‌شود.
+- مشروطی فقط از راه `ReexamService` (sheet، save، finalize، unfinalize)؛ محاسبه `ResultCalculator::reexamResult` با قاعده‌های نسخه‌ی ثابت (`fromSnapshot`). نتیجه‌ی اصلی در `final_snapshot.reexam.original`. `ResultService::unfinalize` تا مشروطی نهایی است خطا می‌دهد.
 
 ## نکته‌های رابط (پس از مرحله‌ی ۶)
 - پیام کاربر فقط با `->with('success'|'error'|'warning', …)`؛ `layouts/partials/alerts` آن را toast می‌کند (خطای اعتبارسنجی هم خودکار toast سرخ می‌شود). alert تازه‌ی Bootstrap برای flash ننویسید.

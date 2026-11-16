@@ -52,7 +52,7 @@
                             <td>
                                 @if ($enrollment->final_result)
                                     <span class="badge {{ $enrollment->final_result->badgeClass() }}">{{ $enrollment->final_result->label() }}</span>
-                                    @if ($enrollment->class_rank)<span class="small text-secondary">· {{ __('exams.rank') }} @fa($enrollment->class_rank)</span>@endif
+                                    @if ($enrollment->final_grade)<span class="small text-secondary">· {{ __('exams.grade') }} {{ __('exams.grades.'.$enrollment->final_grade) }}</span>@endif
                                 @else
                                     <span class="small text-secondary">—</span>
                                 @endif

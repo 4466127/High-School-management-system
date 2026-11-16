@@ -60,6 +60,13 @@
                     <x-form.input class="col-md-4 mb-3" name="conditional_max_failed_subjects" type="number" min="0" max="10" :label="__('school.conditional')" :value="$values['conditional_max_failed_subjects']" required :help="__('school.conditional_hint')" />
                     <x-form.input class="col-md-4 mb-3" name="deprivation_absence_days" type="number" min="0" max="365" :label="__('school.deprivation')" :value="$values['deprivation_absence_days']" required :help="__('school.deprivation_hint')" />
                 </div>
+                <div class="fw-medium mb-2">{{ __('school.grade_scale') }}</div>
+                <div class="row">
+                    <x-form.input class="col-md-4 mb-3" name="grade_a_min" type="number" step="0.5" min="1" max="100" :label="__('school.grade_a_min')" :value="$values['grade_a_min']" required />
+                    <x-form.input class="col-md-4 mb-3" name="grade_b_min" type="number" step="0.5" min="1" max="100" :label="__('school.grade_b_min')" :value="$values['grade_b_min']" required />
+                    <x-form.input class="col-md-4 mb-3" name="grade_c_min" type="number" step="0.5" min="1" max="100" :label="__('school.grade_c_min')" :value="$values['grade_c_min']" required />
+                </div>
+                <div class="form-text">{{ __('school.grade_scale_hint') }}</div>
             </div>
         </div>
 

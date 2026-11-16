@@ -14,6 +14,7 @@ return [
     'exams_marks' => 'ثبت نمره',
     'exams_results' => 'جدول نتایج',
     'exams_reportcards' => 'کارنامه',
+    'exams_reexam' => 'امتحان مشروطی',
     'exams_manage' => 'تعریف امتحانات',
     'finance' => 'مالی',
     'finance_payments' => 'ثبت پرداخت و رسید',

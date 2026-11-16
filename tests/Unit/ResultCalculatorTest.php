@@ -103,16 +103,45 @@ class ResultCalculatorTest extends TestCase
         $this->assertNull($result['average']);
     }
 
-    public function test_ranks_only_passed_students_with_ties(): void
+    public function test_letter_grade_only_for_passed_students(): void
     {
-        $ranks = ResultCalculator::ranks([
-            1 => ['result' => FinalResult::Passed, 'average' => 80.0],
-            2 => ['result' => FinalResult::Passed, 'average' => 92.5],
-            3 => ['result' => FinalResult::Passed, 'average' => 80.0],
-            4 => ['result' => FinalResult::Failed, 'average' => 99.0],
-            5 => ['result' => FinalResult::Passed, 'average' => 70.0],
-            6 => ['result' => null, 'average' => null],
-        ]);
-        $this->assertSame([2 => 1, 1 => 2, 3 => 2, 5 => 4], $ranks);
+        $calc = new ResultCalculator(40, 2, 0, 90, 75, 60);
+        $this->assertSame('a', $calc->grade(FinalResult::Passed, 90.0));
+        $this->assertSame('b', $calc->grade(FinalResult::Passed, 89.99));
+        $this->assertSame('c', $calc->grade(FinalResult::Passed, 60.0));
+        $this->assertSame('d', $calc->grade(FinalResult::Passed, 45.0));
+        $this->assertNull($calc->grade(FinalResult::Conditional, 70.0));
+        $this->assertNull($calc->grade(FinalResult::Failed, 95.0));
+        $this->assertNull($calc->grade(null, null));
+
+        $result = $calc->result([10], [self::MID, self::FINAL], [10 => [1 => $this->m(38), 2 => $this->m(55)]]);
+        $this->assertSame('a', $result['grade']); // ۹۳
+    }
+
+    public function test_reexam_replaces_failed_subject_final(): void
+    {
+        $calc = new ResultCalculator(40, 2, 0, 90, 75, 60);
+        $subjects = [
+            ['id' => 10, 'final' => 80.0, 'passed' => true],
+            ['id' => 20, 'final' => 30.0, 'passed' => false],
+            ['id' => 30, 'final' => 25.0, 'passed' => false],
+        ];
+
+        $passed = $calc->reexamResult($subjects, [20 => ['mark' => 55.0, 'absent' => false], 30 => ['mark' => 40.0, 'absent' => false]]);
+        $this->assertSame(FinalResult::Passed, $passed['result']);
+        $this->assertSame(175.0, $passed['total']);
+        $this->assertSame(58.33, $passed['average']);
+        $this->assertSame('d', $passed['grade']);
+        $this->assertSame(55.0, $passed['subjects'][20]['reexam']);
+        $this->assertNull($passed['subjects'][10]['reexam']);
+
+        $failed = $calc->reexamResult($subjects, [20 => ['mark' => 70.0, 'absent' => false], 30 => ['mark' => null, 'absent' => true]]);
+        $this->assertSame(FinalResult::Failed, $failed['result']);
+        $this->assertSame(1, $failed['failed']);
+        $this->assertNull($failed['grade']);
+
+        $incomplete = $calc->reexamResult($subjects, [20 => ['mark' => 70.0, 'absent' => false]]);
+        $this->assertTrue($incomplete['incomplete']);
+        $this->assertNull($incomplete['result']);
     }
 }
