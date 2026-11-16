@@ -53,6 +53,43 @@ class SchoolSettingsTest extends TestCase
         $this->actingAs($principal)->get('/')->assertSee('لیسه‌ی عالی آزمایشی');
     }
 
+    public function test_switching_to_private_turns_fees_on_once(): void
+    {
+        $principal = $this->userWithRole(Role::Principal);
+        Setting::put('school_type', 'government');
+        Setting::put('fees_enabled', '0');
+
+        // نوع «خصوصی» بدون روشن کردن کلید ← فیس خودکار روشن و پیام آن
+        $this->actingAs($principal)->put('/settings/school', $this->payload(['fees_enabled' => '0']))
+            ->assertSessionHas('success', __('school.fees_auto_enabled'));
+        $this->assertTrue(Setting::enabled('fees_enabled'));
+
+        // بعد از آن، خاموش کردن فیس برای مکتب خصوصی ممکن است
+        $this->actingAs($principal)->put('/settings/school', $this->payload(['fees_enabled' => '0']))
+            ->assertSessionHas('success', __('school.saved'));
+        $this->assertFalse(Setting::enabled('fees_enabled'));
+
+        // دولتی ← فیس دست نمی‌خورد
+        $this->actingAs($principal)->put('/settings/school', $this->payload(['school_type' => 'government', 'fees_enabled' => '0']));
+        $this->assertFalse(Setting::enabled('fees_enabled'));
+    }
+
+    public function test_school_type_appears_in_print_header(): void
+    {
+        Setting::put('school_type', 'private');
+        $year = $this->makeYear();
+        $this->makeSection($year);
+
+        $this->actingAs($this->userWithRole(Role::Principal))
+            ->get(route('reports.students.index', ['print' => 1]))
+            ->assertOk()->assertSee(__('school.type_line', ['type' => 'خصوصی']));
+
+        Setting::put('school_type', 'government');
+        $this->actingAs($this->userWithRole(Role::Principal))
+            ->get(route('reports.students.index', ['print' => 1]))
+            ->assertSee(__('school.type_line', ['type' => 'دولتی']));
+    }
+
     public function test_grading_values_are_validated(): void
     {
         $this->actingAs($this->userWithRole(Role::Principal))->put('/settings/school', $this->payload([

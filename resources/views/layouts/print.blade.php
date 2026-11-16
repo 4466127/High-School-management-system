@@ -14,7 +14,7 @@
     <header class="print-head">
         <div>
             <div class="print-school">{{ \App\Models\Setting::get('school_name') }}</div>
-            <div class="small">{{ collect([\App\Models\Setting::get('province'), \App\Models\Setting::get('district'), \App\Models\Setting::get('address')])->filter()->join('، ') }}</div>
+            <div class="small">{{ collect([__('school.type_line', ['type' => \App\Enums\SchoolType::current()->label()]), \App\Models\Setting::get('province'), \App\Models\Setting::get('district'), \App\Models\Setting::get('address')])->filter()->join('، ') }}</div>
         </div>
         <div class="text-start small">
             {{ __('app.printed_on') }}: @jdate(now())

@@ -15,7 +15,7 @@
                     @if (\App\Models\Setting::get('logo_path'))<img src="{{ route('school.logo') }}" alt="" width="56" height="56" class="object-fit-contain">@endif
                     <div>
                         <div class="print-school">{{ \App\Models\Setting::get('school_name') }}</div>
-                        <div class="small">{{ collect([\App\Models\Setting::get('province'), \App\Models\Setting::get('district')])->filter()->join('، ') }}</div>
+                        <div class="small">{{ collect([__('school.type_line', ['type' => \App\Enums\SchoolType::current()->label()]), \App\Models\Setting::get('province'), \App\Models\Setting::get('district')])->filter()->join('، ') }}</div>
                     </div>
                 </div>
                 <div class="text-start small">{{ __('app.printed_on') }}: @jdate(now())</div>

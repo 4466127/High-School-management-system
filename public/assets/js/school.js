@@ -106,6 +106,15 @@
         refreshCounts();
     });
 
+    // مشخصات مکتب: انتخاب «خصوصی» کلید مدیریت فیس را روشن می‌کند (سرور هم همین را هنگام ذخیره انجام می‌دهد)
+    var schoolType = document.getElementById('school_type');
+    var feesSwitch = document.getElementById('fees_enabled');
+    if (schoolType && feesSwitch) {
+        schoolType.addEventListener('change', function () {
+            if (schoolType.value === 'private') { feesSwitch.checked = true; }
+        });
+    }
+
     if (!window.bootstrap) { return; }
 
     function showTabFromHash() {

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Settings;
 
+use App\Enums\SchoolType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Settings\SchoolSettingsRequest;
 use App\Models\Setting;
@@ -37,6 +38,13 @@ class SchoolSettingController extends Controller
         $data = $request->validated();
         $data['weekly_holidays'] = implode(',', $data['weekly_holidays'] ?? []);
         $data['fees_enabled'] = $data['fees_enabled'] ? '1' : '0';
+        // تبدیل به «خصوصی» ← مدیریت فیس روشن (بعداً می‌شود خاموشش کرد؛ فقط هنگام تغییر نوع)
+        $feesAutoEnabled = $data['school_type'] === SchoolType::Private->value
+            && Setting::get('school_type') !== SchoolType::Private->value
+            && ! Setting::enabled('fees_enabled');
+        if ($feesAutoEnabled) {
+            $data['fees_enabled'] = '1';
+        }
         $data['school_ledger_enabled'] = $data['school_ledger_enabled'] ? '1' : '0';
 
         $oldLogo = Setting::get('logo_path');
@@ -70,7 +78,7 @@ class SchoolSettingController extends Controller
             PrivateFiles::delete($oldLogo);
         }
 
-        return redirect()->route('settings.school.edit')->with('success', __('school.saved'));
+        return redirect()->route('settings.school.edit')->with('success', $feesAutoEnabled ? __('school.fees_auto_enabled') : __('school.saved'));
     }
 
     /** لوگو برای همه (صفحه‌ی ورود هم آن را نشان می‌دهد) */
