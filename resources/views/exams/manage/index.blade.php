@@ -29,17 +29,15 @@
                     <div><button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#examCreate">{{ __('exams.create') }}</button></div>
                 </div>
             @else
-                @php($weights = $exams->where('counts_in_final', true)->sum(fn ($e) => (float) $e->weight))
+                @php($totalMax = $exams->where('counts_in_final', true)->sum(fn ($e) => (float) $e->max_mark))
                 <div class="card">
                     <div class="table-responsive">
                         <table class="table table-hover align-middle mb-0">
                             <thead>
                             <tr>
                                 <th>{{ __('exams.name') }}</th>
-                                <th>{{ __('exams.term') }}</th>
                                 <th>{{ __('exams.dates') }}</th>
                                 <th class="text-center">{{ __('exams.max_mark') }}</th>
-                                <th class="text-center">{{ __('exams.weight') }}</th>
                                 <th class="text-center">{{ __('exams.counts_short') }}</th>
                                 <th>{{ __('exams.status') }}</th>
                                 <th class="text-center">{{ __('exams.marks_count') }}</th>
@@ -53,13 +51,11 @@
                                         <div class="fw-medium">{{ $exam->name }}</div>
                                         <div class="small text-secondary">{{ $exam->type->name }}</div>
                                     </td>
-                                    <td class="small">{{ $exam->term?->name ?? '—' }}</td>
                                     <td class="small text-nowrap">
                                         @if ($exam->start_date)@jdate($exam->start_date)@endif
                                         @if ($exam->end_date) ← @jdate($exam->end_date)@endif
                                     </td>
                                     <td class="text-center">@fa(\App\Services\MarkService::format($exam->max_mark))</td>
-                                    <td class="text-center">@fa(\App\Services\MarkService::format($exam->weight))</td>
                                     <td class="text-center">
                                         @if ($exam->counts_in_final)<i class="fa-solid fa-check text-success" title="{{ __('app.yes') }}"></i>@else<span class="text-secondary">—</span>@endif
                                     </td>
@@ -91,8 +87,9 @@
                         </table>
                     </div>
                 </div>
-                <div @class(['small mt-2', 'text-secondary' => $weights > 0, 'text-danger' => $weights <= 0])>
-                    {{ __('exams.weights_note', ['sum' => \App\Support\Digits::toPersian(\App\Services\MarkService::format($weights))]) }}
+                <div @class(['small mt-2', 'text-secondary' => $totalMax == 100, 'text-danger' => $totalMax != 100])>
+                    {{ __('exams.weights_note', ['sum' => \App\Support\Digits::toPersian(\App\Services\MarkService::format($totalMax))]) }}
+                    @if ($totalMax > 0 && $totalMax != 100) {{ __('exams.total_not_100') }}@endif
                     @if ($yearFinalized) · <span class="text-warning-emphasis">{{ __('exams.scoring_locked_finalized') }}</span>@endif
                 </div>
             @endif
@@ -109,7 +106,6 @@
                         <tr>
                             <th>{{ __('exams.type_name') }}</th>
                             <th class="text-center">{{ __('exams.default_max_mark') }}</th>
-                            <th class="text-center">{{ __('exams.default_weight') }}</th>
                             <th class="text-center">{{ __('exams.counts_short') }}</th>
                             <th class="text-center">{{ __('exams.sort_order') }}</th>
                             <th></th>
@@ -121,7 +117,6 @@
                             <tr @class(['text-secondary' => ! $type->is_active])>
                                 <td class="fw-medium">{{ $type->name }}</td>
                                 <td class="text-center">@fa(\App\Services\MarkService::format($type->default_max_mark))</td>
-                                <td class="text-center">@fa(\App\Services\MarkService::format($type->default_weight))</td>
                                 <td class="text-center">@if ($type->counts_in_final)<i class="fa-solid fa-check text-success"></i>@else — @endif</td>
                                 <td class="text-center">@fa($type->sort_order)</td>
                                 <td>@unless ($type->is_active)<span class="badge text-bg-light border">{{ __('exams.inactive') }}</span>@endunless</td>

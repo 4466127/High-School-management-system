@@ -34,13 +34,26 @@ class ExamManagementTest extends ExamTestCase
         $monthly = ExamType::where('counts_in_final', false)->firstOrFail();
 
         $this->actingAs($this->principal)->post(route('exams.manage.store'), [
-            'exam_type_id' => $monthly->id, 'name' => 'امتحان سالانه', 'counts_in_final' => '1', 'weight' => '0',
+            'exam_type_id' => $monthly->id, 'name' => 'امتحان سالانه', 'counts_in_final' => '1',
             'start_date' => '1405/09/20', 'end_date' => '1405/09/10',
         ])->assertSessionHasErrors(['name', 'end_date']);
+    }
+
+    /** وزن و دوره پرسیده نمی‌شود: وزن همیشه = نمره‌ی کامل (ورودی کهنه نادیده گرفته می‌شود) */
+    public function test_weight_follows_max_mark_and_term_is_not_asked(): void
+    {
+        $monthly = ExamType::where('counts_in_final', false)->firstOrFail();
+
+        $this->actingAs($this->principal)->get(route('exams.manage.index'))
+            ->assertOk()->assertDontSee('name="weight"', false)->assertDontSee('name="academic_term_id"', false)->assertDontSee('name="default_weight"', false);
 
         $this->actingAs($this->principal)->post(route('exams.manage.store'), [
-            'exam_type_id' => $monthly->id, 'name' => 'ماهوار حوت', 'counts_in_final' => '1', 'weight' => '0',
-        ])->assertSessionHasErrors('weight');
+            'exam_type_id' => $monthly->id, 'name' => 'ماهوار حوت', 'max_mark' => '25', 'counts_in_final' => '1', 'weight' => '0',
+        ])->assertSessionHasNoErrors();
+        $exam = Exam::where('name', 'ماهوار حوت')->sole();
+        $this->assertSame('25.00', $exam->weight);
+        $this->assertTrue($exam->counts_in_final);
+        $this->assertNull($exam->academic_term_id);
     }
 
     public function test_only_exam_managers_can_define_exams(): void
@@ -69,7 +82,7 @@ class ExamManagementTest extends ExamTestCase
         $this->assertNotNull($this->mid->fresh());
 
         $this->actingAs($this->principal)->put(route('exams.manage.update', $this->mid), [
-            'exam_type_id' => $this->mid->exam_type_id, 'name' => $this->mid->name, 'max_mark' => '30', 'weight' => '40', 'counts_in_final' => '1',
+            'exam_type_id' => $this->mid->exam_type_id, 'name' => $this->mid->name, 'max_mark' => '30', 'counts_in_final' => '1',
         ])->assertSessionHas('error');
         $this->assertSame('40.00', $this->mid->fresh()->max_mark);
 
@@ -81,19 +94,17 @@ class ExamManagementTest extends ExamTestCase
     public function test_exam_types_can_be_added_and_edited(): void
     {
         $this->actingAs($this->principal)->post(route('exams.manage.types.store'), [
-            '_modal' => 'typeCreate', 'name' => 'آزمون صنفی', 'default_max_mark' => '10', 'default_weight' => '0', 'counts_in_final' => '0', 'sort_order' => '5', 'is_active' => '1',
+            '_modal' => 'typeCreate', 'name' => 'آزمون صنفی', 'default_max_mark' => '10', 'counts_in_final' => '0', 'sort_order' => '5', 'is_active' => '1',
         ])->assertRedirect();
         $type = ExamType::where('name', 'آزمون صنفی')->sole();
         $this->assertFalse($type->counts_in_final);
+        $this->assertSame('10.00', $type->default_weight);
 
         $this->actingAs($this->principal)->put(route('exams.manage.types.update', $type), [
-            'name' => 'آزمون صنفی', 'default_max_mark' => '10', 'default_weight' => '0', 'counts_in_final' => '1', 'sort_order' => '5', 'is_active' => '1',
-        ])->assertSessionHasErrors('default_weight');
-
-        $this->actingAs($this->principal)->put(route('exams.manage.types.update', $type), [
-            'name' => 'آزمون صنفی', 'default_max_mark' => '10', 'default_weight' => '10', 'counts_in_final' => '1', 'sort_order' => '5', 'is_active' => '0',
+            'name' => 'آزمون صنفی', 'default_max_mark' => '15', 'counts_in_final' => '1', 'sort_order' => '5', 'is_active' => '0',
         ])->assertRedirect();
         $this->assertFalse($type->fresh()->is_active);
+        $this->assertSame('15.00', $type->fresh()->default_weight);
         $this->assertTrue(ActivityLog::where('action', 'exam_type.updated')->exists());
     }
 }

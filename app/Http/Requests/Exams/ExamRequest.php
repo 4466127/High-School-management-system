@@ -13,8 +13,10 @@ use Illuminate\Validation\Rule;
 use Illuminate\Validation\Validator;
 
 /**
- * ساخت و ویرایش امتحان. نمره‌ی کامل، وزن و «در نتیجه حساب شود» اگر خالی بماند از نوع امتحان گرفته می‌شود.
+ * ساخت و ویرایش امتحان. نمره‌ی کامل و «در نتیجه حساب شود» اگر خالی بماند از نوع امتحان گرفته می‌شود.
  * counts_in_final: '' = مطابق نوع، '1' = بلی، '0' = نخیر.
+ * وزن جدا ندارد (خواست صاحب پروژه): وزن = نمره‌ی کامل، یعنی نتیجه = مجموع نمره‌ها ÷ مجموع نمره‌های کامل × ۱۰۰.
+ * «دوره» هم دیگر پرسیده نمی‌شود (نوع امتحان خودش چهارونیم‌ماهه/سالانه را می‌گوید)؛ مقدار قدیمی دست نمی‌خورد.
  */
 class ExamRequest extends FormRequest
 {
@@ -38,12 +40,10 @@ class ExamRequest extends FormRequest
 
         return [
             'exam_type_id' => ['required', 'integer', Rule::exists('exam_types', 'id')],
-            'academic_term_id' => ['nullable', 'integer', Rule::exists('academic_terms', 'id')->where('academic_year_id', $this->yearId())],
             'name' => ['required', 'string', 'max:150', Rule::unique('exams', 'name')->where('academic_year_id', $this->yearId())->ignore($exam instanceof Exam ? $exam->id : null)],
             'start_date' => ['nullable', new ValidJalaliDate],
             'end_date' => ['nullable', new ValidJalaliDate],
             'max_mark' => ['nullable', 'numeric', 'min:1', 'max:999'],
-            'weight' => ['nullable', 'numeric', 'min:0', 'max:999'],
             'counts_in_final' => ['nullable', Rule::in(['', '0', '1'])],
         ];
     }
@@ -56,12 +56,6 @@ class ExamRequest extends FormRequest
             if ($start && $end && $end->lt($start)) {
                 $validator->errors()->add('end_date', __('academics.end_before_start'));
             }
-            if ($validator->errors()->isEmpty()) {
-                $data = $this->examData();
-                if ($data['counts_in_final'] && $data['weight'] <= 0) {
-                    $validator->errors()->add('weight', __('exams.weight_required'));
-                }
-            }
         }];
     }
 
@@ -70,15 +64,15 @@ class ExamRequest extends FormRequest
     {
         $data = $this->validated();
         $type = ExamType::findOrFail($data['exam_type_id']);
+        $max = (float) ($data['max_mark'] ?? $type->default_max_mark);
 
         return [
             'exam_type_id' => $type->id,
-            'academic_term_id' => $data['academic_term_id'] ?? null,
             'name' => $data['name'],
             'start_date' => $data['start_date'] ?? null,
             'end_date' => $data['end_date'] ?? null,
-            'max_mark' => (float) ($data['max_mark'] ?? $type->default_max_mark),
-            'weight' => (float) ($data['weight'] ?? $type->default_weight),
+            'max_mark' => $max,
+            'weight' => $max,
             'counts_in_final' => ($data['counts_in_final'] ?? '') === '' ? $type->counts_in_final : $data['counts_in_final'] === '1',
         ];
     }

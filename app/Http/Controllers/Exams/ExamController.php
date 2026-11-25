@@ -30,10 +30,9 @@ class ExamController extends Controller
         return view('exams.manage.index', [
             'year' => $year,
             'exams' => $year
-                ? Exam::query()->with(['type', 'term'])->withCount('marks')->where('academic_year_id', $year->id)->ordered()->get()
+                ? Exam::query()->with('type')->withCount('marks')->where('academic_year_id', $year->id)->ordered()->get()
                 : collect(),
             'types' => ExamType::query()->orderBy('sort_order')->orderBy('name')->get(),
-            'terms' => $year ? $year->terms : collect(),
             'yearFinalized' => $year && $this->yearFinalized($year->id),
         ]);
     }
@@ -45,7 +44,7 @@ class ExamController extends Controller
 
         $exam = Exam::create($request->examData() + ['academic_year_id' => $year->id, 'status' => ExamStatus::Draft]);
         $this->logger->log('exam.created', $exam, $exam->name.' — '.$year->name, new: [
-            'max_mark' => $exam->max_mark, 'weight' => $exam->weight, 'counts_in_final' => $exam->counts_in_final,
+            'max_mark' => $exam->max_mark, 'counts_in_final' => $exam->counts_in_final,
         ]);
 
         return redirect()->route('exams.manage.index')->with('success', __('exams.exam_saved', ['name' => $exam->name]));
@@ -54,9 +53,8 @@ class ExamController extends Controller
     public function edit(Exam $exam): View
     {
         return view('exams.manage.edit', [
-            'exam' => $exam->load('academicYear.terms'),
+            'exam' => $exam,
             'types' => ExamType::query()->where('is_active', true)->orWhere('id', $exam->exam_type_id)->orderBy('sort_order')->get(),
-            'terms' => $exam->academicYear->terms,
             'yearFinalized' => $this->yearFinalized($exam->academic_year_id),
         ]);
     }
@@ -117,7 +115,7 @@ class ExamController extends Controller
 
     public function storeType(ExamTypeRequest $request): RedirectResponse
     {
-        $type = ExamType::create($request->validated());
+        $type = ExamType::create($request->typeData());
         $this->logger->log('exam_type.created', $type, $type->name);
 
         return redirect()->to(route('exams.manage.index').'#types-pane')->with('success', __('exams.type_saved', ['name' => $type->name]));
@@ -125,7 +123,7 @@ class ExamController extends Controller
 
     public function updateType(ExamTypeRequest $request, ExamType $type): RedirectResponse
     {
-        $type->fill($request->validated());
+        $type->fill($request->typeData());
         [$old, $new] = ModelChanges::capture($type);
         $type->save();
         if ($new !== []) {

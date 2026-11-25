@@ -85,9 +85,9 @@ class ResultsTest extends ExamTestCase
         $this->mid->update(['status' => 'open']);
         $this->enterMarks($this->mid, $this->math, [10, 10, 10])->assertSessionHas('error', __('exams.blocked_finalized'));
 
-        // وزن امتحان هم تغییر نمی‌کند
+        // نمره‌ی کامل امتحان هم تغییر نمی‌کند
         $this->actingAs($this->principal)->put(route('exams.manage.update', $this->mid), [
-            'exam_type_id' => $this->mid->exam_type_id, 'name' => $this->mid->name, 'max_mark' => '40', 'weight' => '50', 'counts_in_final' => '1',
+            'exam_type_id' => $this->mid->exam_type_id, 'name' => $this->mid->name, 'max_mark' => '50', 'counts_in_final' => '1',
         ])->assertSessionHas('error', __('exams.scoring_locked_finalized'));
     }
 

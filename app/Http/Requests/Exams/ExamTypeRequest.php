@@ -5,7 +5,6 @@ namespace App\Http\Requests\Exams;
 use App\Models\ExamType;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
-use Illuminate\Validation\Validator;
 
 class ExamTypeRequest extends FormRequest
 {
@@ -24,20 +23,18 @@ class ExamTypeRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:100', Rule::unique('exam_types', 'name')->ignore($type instanceof ExamType ? $type->id : null)],
             'default_max_mark' => ['required', 'numeric', 'min:1', 'max:999'],
-            'default_weight' => ['required', 'numeric', 'min:0', 'max:999'],
             'counts_in_final' => ['boolean'],
             'sort_order' => ['required', 'integer', 'min:1', 'max:99'],
             'is_active' => ['boolean'],
         ];
     }
 
-    public function after(): array
+    /** مقدارهای ذخیره؛ وزن جدا ندارد (وزن = نمره‌ی کامل) */
+    public function typeData(): array
     {
-        return [function (Validator $validator) {
-            if ($this->boolean('counts_in_final') && (float) $this->input('default_weight') <= 0 && ! $validator->errors()->has('default_weight')) {
-                $validator->errors()->add('default_weight', __('exams.weight_required'));
-            }
-        }];
+        $data = $this->validated();
+
+        return $data + ['default_weight' => $data['default_max_mark']];
     }
 
     public function attributes(): array
