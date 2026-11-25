@@ -96,6 +96,7 @@
         </div>
 
         <div class="tab-pane fade" id="types-pane" role="tabpanel">
+            <div class="alert alert-light border small"><i class="fa-solid fa-circle-info" aria-hidden="true"></i> {{ __('exams.types_hint') }}</div>
             <div class="mb-2 text-start">
                 <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#typeCreate"><i class="fa-solid fa-plus" aria-hidden="true"></i> {{ __('exams.type_create') }}</button>
             </div>
