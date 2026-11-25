@@ -35,3 +35,7 @@ Homestead.json
 Homestead.yaml
 Thumbs.db
 .DS_Store
+
+# ویدیوی معرفی (فایل‌های حجیم و خصوصی؛ فقط ساختار پوشه‌ها در git)
+/resources/Ai video Editor/*/*
+!/resources/Ai video Editor/*/.gitkeep
