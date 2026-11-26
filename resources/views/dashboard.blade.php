@@ -58,6 +58,30 @@
         </div>
     @endif
 
+    {{-- درس‌های امروز معلم (مرحله‌ی ۱۵) --}}
+    @if (($lessons ?? null) !== null)
+        <div class="card mb-3">
+            <div class="card-header d-flex align-items-center gap-2">
+                <i class="fa-solid fa-table-cells" aria-hidden="true"></i>
+                <span class="fw-medium flex-grow-1">{{ __('timetable.today_title') }}</span>
+                <a href="{{ route('timetable.teachers.index') }}" class="small">{{ __('timetable.teacher_title') }}</a>
+            </div>
+            @if ($lessons->isEmpty())
+                <div class="card-body small text-secondary">{{ __('timetable.today_none') }}</div>
+            @else
+                <ul class="list-group list-group-flush dash-list">
+                    @foreach ($lessons as $l)
+                        <li class="list-group-item d-flex flex-wrap align-items-center gap-2">
+                            <span class="badge text-bg-light border">{{ $l->period->name }} · @fa($l->period->timeRange())</span>
+                            <span class="fw-medium">{{ $l->subject->name }}</span>
+                            <span class="small text-secondary">{{ $l->section->gradeLevel->name }} {{ $l->section->name }}@if ($l->room) · {{ $l->room->name }}@endif</span>
+                        </li>
+                    @endforeach
+                </ul>
+            @endif
+        </div>
+    @endif
+
     {{-- آمار یک‌نگاه --}}
     @if ($students || $attendance || $finance || $courses)
         <div class="row g-2 mb-3 dash-stats">

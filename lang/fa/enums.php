@@ -80,6 +80,14 @@ return [
         'annual' => 'سالانه',
         'once' => 'یک‌بار',
     ],
+    'room_type' => [
+        'classroom' => 'صنف درسی',
+        'lab' => 'لابراتوار',
+        'computer' => 'صنف کمپیوتر',
+        'library' => 'کتابخانه',
+        'hall' => 'تالار',
+        'other' => 'دیگر',
+    ],
     'document_category' => [
         'registration' => 'اسناد ثبت‌نام',
         'identity' => 'تذکره / هویت',

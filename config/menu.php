@@ -31,6 +31,12 @@ return [
         ['key' => 'attendance_absentees', 'icon' => 'fa-user-clock', 'route' => 'attendance.absentees.index', 'can' => ['attendance.take', 'attendance.edit', 'reports.academic']],
         ['key' => 'attendance_staff', 'icon' => 'fa-id-badge', 'route' => 'attendance.staff.index', 'can' => ['staff.manage']],
     ]],
+    ['key' => 'timetable', 'icon' => 'fa-table-cells', 'route' => null, 'can' => ['timetable.manage', 'academics.view'], 'children' => [
+        ['key' => 'timetable_sections', 'icon' => 'fa-table-cells', 'route' => 'timetable.sections.index', 'can' => ['timetable.manage', 'academics.view']],
+        ['key' => 'timetable_teachers', 'icon' => 'fa-chalkboard-user', 'route' => 'timetable.teachers.index', 'can' => ['timetable.manage', 'academics.view']],
+        ['key' => 'timetable_rooms', 'icon' => 'fa-door-open', 'route' => 'timetable.rooms.index', 'can' => ['timetable.manage']],
+        ['key' => 'timetable_setup', 'icon' => 'fa-clock', 'route' => 'timetable.setup.index', 'can' => ['timetable.manage']],
+    ]],
     ['key' => 'exams', 'icon' => 'fa-file-pen', 'route' => null, 'can' => ['marks.enter', 'exams.manage', 'reportcards.print'], 'children' => [
         ['key' => 'exams_marks', 'icon' => 'fa-pen-to-square', 'route' => 'exams.marks.index', 'can' => ['marks.enter']],
         ['key' => 'exams_results', 'icon' => 'fa-table-list', 'route' => 'exams.results.index', 'can' => ['exams.manage', 'reportcards.print']],

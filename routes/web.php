@@ -48,6 +48,9 @@ use App\Http\Controllers\Students\PastResultController;
 use App\Http\Controllers\Students\StudentController;
 use App\Http\Controllers\Students\StudentDocumentController;
 use App\Http\Controllers\Students\TransferController;
+use App\Http\Controllers\Timetable\SetupController as TimetableSetupController;
+use App\Http\Controllers\Timetable\TimetableController;
+use App\Http\Controllers\Timetable\WeeklyViewController;
 use App\Services\ImportService;
 use Illuminate\Support\Facades\Route;
 
@@ -183,6 +186,23 @@ Route::middleware(['auth', 'active'])->group(function () {
             Route::middleware('can:students.manage')->group(function () {
                 Route::get('/promotion', [PromotionController::class, 'create'])->name('promotion.create');
                 Route::post('/promotion', [PromotionController::class, 'store'])->name('promotion.store');
+            });
+        });
+
+        // ---------- تقسیم اوقات (مرحله‌ی ۱۵؛ دیدن در کنترلر، تغییر با timetable.manage) ----------
+        Route::prefix('timetable')->name('timetable.')->group(function () {
+            Route::get('/', [TimetableController::class, 'index'])->name('sections.index');
+            Route::get('/teachers', [WeeklyViewController::class, 'teachers'])->name('teachers.index');
+            Route::middleware('can:timetable.manage')->group(function () {
+                Route::post('/sections/{section}/cell', [TimetableController::class, 'cell'])->name('sections.cell');
+                Route::post('/sections/{section}/copy', [TimetableController::class, 'copy'])->name('sections.copy');
+                Route::get('/rooms', [WeeklyViewController::class, 'rooms'])->name('rooms.index');
+                Route::get('/setup', [TimetableSetupController::class, 'index'])->name('setup.index');
+                Route::post('/setup/periods', [TimetableSetupController::class, 'storePeriod'])->name('setup.periods.store');
+                Route::post('/setup/periods/defaults', [TimetableSetupController::class, 'defaults'])->name('setup.periods.defaults');
+                Route::put('/setup/periods/{period}', [TimetableSetupController::class, 'updatePeriod'])->name('setup.periods.update');
+                Route::post('/setup/rooms', [TimetableSetupController::class, 'storeRoom'])->name('setup.rooms.store');
+                Route::put('/setup/rooms/{room}', [TimetableSetupController::class, 'updateRoom'])->name('setup.rooms.update');
             });
         });
 

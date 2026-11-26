@@ -243,6 +243,16 @@ erDiagram
 - ترانسکریپت: اگر نتیجه‌ی نهایی‌شده‌ی همان صنف در `enrollments` باشد، آن مقدم است.
 - تنظیمات قالب چاپ: `reportcard_*` و `transcript_*` در `settings` (فهرست در `App\Support\ExamTemplate`).
 
+### تقسیم اوقات (مرحله‌ی ۱۵)
+**periods** — `name`, `shift` (morning / afternoon), `start_time`, `end_time`, `sort_order`, `is_break`, `is_active`.
+
+**rooms** — `name` (یکتا), `type` (classroom / lab / computer / library / hall / other), `capacity`, `notes`, `is_active`.
+
+**timetable_entries** — `academic_year_id`, `section_id`, `day` (saturday … friday), `period_id`, `subject_id`, `staff_id` (nullable), `room_id` (nullable), `note`, `created_by`, `updated_by`.
+کلیدهای یکتا: (`section_id`, `day`, `period_id`)، (`academic_year_id`, `staff_id`, `day`, `period_id`)، (`academic_year_id`, `room_id`, `day`, `period_id`) — معلم یا اتاق خالی تداخل نیست.
+
+قواعد: ساعت و اتاق حذف نمی‌شود (غیرفعال)؛ خانه‌ی تقسیم اوقات داده‌ی حساس نیست و خالی کردنش حذف سطر است (با ثبت رویداد).
+
 ### اعلان‌ها و مکاتیب (مرحله‌ی ۱۲)
 **announcements** — `title`, `body`, `audience` (all / staff / teachers / students / parents), `status` (draft / published / archived), `is_pinned`, `published_at`, `expires_on`, `attachment_path`, `attachment_name`, `attachment_mime`, `attachment_size`, `created_by`, `updated_by`. حذف نمی‌شود؛ بایگانی می‌شود.
 

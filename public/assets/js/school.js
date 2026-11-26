@@ -136,3 +136,46 @@
         window.bootstrap.Modal.getOrCreateInstance(modal).show();
     });
 })();
+
+/* ---------- تقسیم اوقات (مرحله‌ی ۱۵): پنجره‌ی یک خانه ----------
+   هر خانه‌ی جدول دکمه‌ای با data-tt-cell است؛ کلیک ← روز، ساعت و مقدارهای فعلی در پنجره‌ی #ttCell.
+   با انتخاب مضمون، اگر معلم خالی است، معلم همان مضمون در این بخش (data-tt-defaults) گذاشته می‌شود. */
+(function () {
+    'use strict';
+    var modal = document.getElementById('ttCell');
+    if (!modal) { return; }
+    var field = function (name) { return modal.querySelector('[data-tt-field="' + name + '"]'); };
+    var label = modal.querySelector('[data-tt-label]');
+    var subject = field('subject');
+    var staff = field('staff');
+    var defaults = {};
+    try { defaults = JSON.parse(subject.getAttribute('data-tt-defaults') || '{}') || {}; } catch (e) { defaults = {}; }
+
+    function labelFor(day, period) {
+        var btn = document.querySelector('[data-tt-cell][data-day="' + day + '"][data-period="' + period + '"]');
+        return btn ? btn.getAttribute('data-label') : '';
+    }
+
+    document.querySelectorAll('[data-tt-cell]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            field('day').value = btn.getAttribute('data-day');
+            field('period').value = btn.getAttribute('data-period');
+            subject.value = btn.getAttribute('data-subject') || '';
+            staff.value = btn.getAttribute('data-staff') || '';
+            field('room').value = btn.getAttribute('data-room') || '';
+            field('note').value = btn.getAttribute('data-note') || '';
+            modal.querySelectorAll('.is-invalid').forEach(function (el) { el.classList.remove('is-invalid'); });
+            var clear = modal.querySelector('#tt-clear');
+            if (clear) { clear.checked = false; }
+            label.textContent = btn.getAttribute('data-label');
+            window.bootstrap.Modal.getOrCreateInstance(modal).show();
+        });
+    });
+
+    subject.addEventListener('change', function () {
+        if (!staff.value && defaults[subject.value]) { staff.value = String(defaults[subject.value]); }
+    });
+
+    // پس از خطا پنجره دوباره باز می‌شود؛ عنوان خانه را دوباره بگذار
+    if (field('day').value) { label.textContent = labelFor(field('day').value, field('period').value); }
+})();

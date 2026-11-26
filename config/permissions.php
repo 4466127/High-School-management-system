@@ -28,6 +28,7 @@ return [
 
         'academics.view' => 'academics',
         'academics.manage' => 'academics',
+        'timetable.manage' => 'academics',
 
         'attendance.take' => 'attendance',
         'attendance.edit' => 'attendance',
@@ -61,7 +62,7 @@ return [
             'dashboard.view',
             'students.view', 'students.view_all', 'students.manage',
             'staff.manage',
-            'academics.view', 'academics.manage',
+            'academics.view', 'academics.manage', 'timetable.manage',
             'attendance.take', 'attendance.edit',
             'marks.enter', 'exams.manage', 'reportcards.print',
             'finance.view', 'finance.manage',
@@ -75,7 +76,7 @@ return [
             'dashboard.view',
             'students.view', 'students.view_all', 'students.manage',
             'staff.manage',
-            'academics.view', 'academics.manage',
+            'academics.view', 'academics.manage', 'timetable.manage',
             'attendance.take', 'attendance.edit',
             'reportcards.print',
             'reports.academic',

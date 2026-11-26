@@ -40,6 +40,7 @@ return [
         'announcement' => 'اعلان‌ها',
         'letter' => 'مکاتیب',
         'letter_template' => 'قالب‌های مکتوب',
+        'timetable' => 'تقسیم اوقات',
     ],
     'actions' => [
         'auth' => [
@@ -108,6 +109,15 @@ return [
         'subject' => [
             'created' => 'افزودن مضمون',
             'updated' => 'ویرایش مضمون',
+        ],
+        'timetable' => [
+            'saved' => 'ثبت خانه‌ی تقسیم اوقات',
+            'cleared' => 'خالی کردن خانه‌ی تقسیم اوقات',
+            'copied' => 'کاپی تقسیم اوقات بخش',
+            'period_created' => 'افزودن ساعت درسی',
+            'period_updated' => 'ویرایش ساعت درسی',
+            'room_created' => 'افزودن اتاق',
+            'room_updated' => 'ویرایش اتاق',
         ],
         'settings' => [
             'updated' => 'تغییر مشخصات مکتب',

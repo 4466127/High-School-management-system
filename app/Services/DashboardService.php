@@ -18,6 +18,7 @@ use App\Models\Payment;
 use App\Models\SchoolTransaction;
 use App\Models\Setting;
 use App\Models\Staff;
+use App\Models\TimetableEntry;
 use App\Models\User;
 use App\Support\Digits;
 use App\Support\JalaliDate;
@@ -55,10 +56,23 @@ class DashboardService
             'backup' => $this->backup($user),
             'license' => $this->licenseWarning($user),
             'announcements' => $this->announcements($user),
+            'lessons' => $this->lessonsToday($user, $year, $today),
         ];
     }
 
     /** آخرین اعلان‌های فعال که این کاربر می‌بیند (مرحله‌ی ۱۲) */
+    /** درس‌های امروز معلم از تقسیم اوقات (مرحله‌ی ۱۵)؛ null = حساب به کارمند وصل نیست یا تقسیم اوقاتی ندارد */
+    private function lessonsToday(User $user, ?AcademicYear $year, CarbonImmutable $today): ?Collection
+    {
+        if (! $user->staff_id || ! $year || ! TimetableEntry::where('academic_year_id', $year->id)->where('staff_id', $user->staff_id)->exists()) {
+            return null;
+        }
+
+        return TimetableEntry::query()->with(['period', 'subject', 'section.gradeLevel', 'room'])
+            ->where('academic_year_id', $year->id)->where('staff_id', $user->staff_id)->where('day', strtolower($today->format('l')))
+            ->get()->sortBy(fn ($e) => [$e->period->shift->value, $e->period->sort_order])->values();
+    }
+
     private function announcements(User $user): Collection
     {
         return Announcement::query()->active()->visibleTo($user)->newestFirst()->limit(5)->get();
