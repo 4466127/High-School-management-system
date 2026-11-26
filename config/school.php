@@ -40,6 +40,12 @@ return [
         'directorate' => '',
         'school_code' => '',
         'email' => '',
+        // مکاتیب (مرحله‌ی ۱۲): پیشوند شماره، عنوان جای امضاها، جای مهر. همه از «مشخصات مکتب» قابل تغییر
+        'letter_outgoing_prefix' => '',
+        'letter_incoming_prefix' => '',
+        'letter_signature_1' => 'مدیر مکتب',
+        'letter_signature_2' => '',
+        'letter_show_stamp' => '1',
         // شناسه‌ی این نصب (برای لایسنس؛ school:install یا اولین بار LicenseService می‌سازد)
         'installation_id' => '',
 

@@ -80,6 +80,37 @@ return [
         'annual' => 'سالانه',
         'once' => 'یک‌بار',
     ],
+    'announcement_audience' => [
+        'all' => 'همه',
+        'staff' => 'کارکنان',
+        'teachers' => 'معلمان',
+        'students' => 'دانش‌آموزان',
+        'parents' => 'والدین',
+    ],
+    'announcement_status' => [
+        'draft' => 'پیش‌نویس',
+        'published' => 'منتشرشده',
+        'archived' => 'بایگانی',
+    ],
+    'letter_direction' => [
+        'outgoing' => 'صادره',
+        'incoming' => 'وارده',
+    ],
+    'letter_status' => [
+        'draft' => 'پیش‌نویس',
+        'issued' => 'صادر / ثبت شد',
+        'cancelled' => 'باطل',
+    ],
+    'letter_type' => [
+        'general' => 'مکتوب عمومی',
+        'student_introduction' => 'معرفی‌نامه‌ی دانش‌آموز',
+        'enrollment_confirmation' => 'تصدیق شمولیت',
+        'transfer' => 'مکتوب انتقال',
+        'recommendation' => 'توصیه‌نامه',
+        'certificate' => 'تصدیق‌نامه',
+        'employment_confirmation' => 'تصدیق کار کارمند',
+        'invitation' => 'دعوت‌نامه',
+    ],
     'transaction_type' => [
         'income' => 'درآمد',
         'expense' => 'مصرف',

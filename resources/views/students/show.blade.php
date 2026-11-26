@@ -47,6 +47,9 @@
                         <button type="submit" class="btn btn-success"><i class="fa-solid fa-rotate-left" aria-hidden="true"></i> {{ __('students.restore') }}</button>
                     </form>
                 @endcan
+                @can('letters.manage')
+                    <a href="{{ route('letters.outgoing.create', ['student' => $student->admission_no]) }}" class="btn btn-outline-secondary"><i class="fa-solid fa-envelope-open-text" aria-hidden="true"></i> {{ __('letters.create_outgoing') }}</a>
+                @endcan
                 <a href="{{ route('students.index') }}" class="btn btn-light">{{ __('app.back') }}</a>
             </div>
         </div>

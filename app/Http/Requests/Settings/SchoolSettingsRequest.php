@@ -17,6 +17,7 @@ class SchoolSettingsRequest extends FormRequest
             'fees_enabled' => $this->boolean('fees_enabled'),
             'school_ledger_enabled' => $this->boolean('school_ledger_enabled'),
             'remove_logo' => $this->boolean('remove_logo'),
+            'letter_show_stamp' => $this->boolean('letter_show_stamp'),
             'weekly_holidays' => array_values((array) $this->input('weekly_holidays', [])),
         ]);
     }
@@ -35,6 +36,11 @@ class SchoolSettingsRequest extends FormRequest
             'directorate' => ['nullable', 'string', 'max:200'],
             'school_code' => ['nullable', 'string', 'max:50'],
             'email' => ['nullable', 'email:rfc', 'max:150'],
+            'letter_outgoing_prefix' => ['nullable', 'string', 'max:20'],
+            'letter_incoming_prefix' => ['nullable', 'string', 'max:20'],
+            'letter_signature_1' => ['nullable', 'string', 'max:100'],
+            'letter_signature_2' => ['nullable', 'string', 'max:100'],
+            'letter_show_stamp' => ['boolean'],
             'logo' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:1024'],
             'remove_logo' => ['boolean'],
             'fees_enabled' => ['boolean'],

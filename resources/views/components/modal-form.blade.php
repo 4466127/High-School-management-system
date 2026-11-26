@@ -7,12 +7,12 @@
     اگر همین فرم فرستاده شد و خطا داشت، پنجره خودکار دوباره باز می‌شود (school.js، data-open-on-load).
     در خود صفحه: $open = old('_modal') === 'deleteModal'
 --}}
-@props(['id', 'title', 'action', 'method' => 'POST', 'submit' => null, 'submitClass' => 'btn-primary', 'files' => false])
+@props(['id', 'title', 'action', 'method' => 'POST', 'submit' => null, 'submitClass' => 'btn-primary', 'files' => false, 'size' => null])
 
 @php($open = old('_modal') === $id && $errors->any())
 
 <div class="modal fade" id="{{ $id }}" tabindex="-1" aria-labelledby="{{ $id }}-title" aria-hidden="true" @if ($open) data-open-on-load @endif>
-    <div class="modal-dialog">
+    <div @class(['modal-dialog', 'modal-'.$size => $size])>
         <form method="POST" action="{{ $action }}" class="modal-content" @if ($files) enctype="multipart/form-data" @endif novalidate>
             @csrf
             @unless (strtoupper($method) === 'POST')

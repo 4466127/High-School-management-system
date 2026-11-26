@@ -34,6 +34,7 @@ class ResetService
             'migrations', 'cache', 'cache_locks', 'sessions',
             'users', 'roles', 'permissions', 'permission_role', 'permission_user', 'role_user',
             'settings', 'grade_levels', 'subjects', 'grade_level_subject', 'exam_types', 'fee_types', 'finance_categories',
+            'letter_templates',
         ],
         'full' => ['migrations', 'cache', 'cache_locks'],
     ];

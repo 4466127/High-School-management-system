@@ -7,6 +7,7 @@ use App\Enums\EmploymentStatus;
 use App\Enums\ExamStatus;
 use App\Enums\ParticipantStatus;
 use App\Models\AcademicYear;
+use App\Models\Announcement;
 use App\Models\Course;
 use App\Models\CourseGroup;
 use App\Models\CourseLedgerEntry;
@@ -22,6 +23,7 @@ use App\Support\Digits;
 use App\Support\JalaliDate;
 use App\Support\Money;
 use Carbon\CarbonImmutable;
+use Illuminate\Support\Collection;
 
 /**
  * کارت‌های داشبورد هر کاربر به اندازه‌ی مجوزهایش. هر بخش null یعنی برای این کاربر نشان داده نمی‌شود.
@@ -52,7 +54,14 @@ class DashboardService
             'courses' => $this->courses($user, $today),
             'backup' => $this->backup($user),
             'license' => $this->licenseWarning($user),
+            'announcements' => $this->announcements($user),
         ];
+    }
+
+    /** آخرین اعلان‌های فعال که این کاربر می‌بیند (مرحله‌ی ۱۲) */
+    private function announcements(User $user): Collection
+    {
+        return Announcement::query()->active()->visibleTo($user)->newestFirst()->limit(5)->get();
     }
 
     /** هشدار لایسنس فقط برای مدیر سیستم و فقط وقتی لایسنس تنظیم شده ولی معتبر نیست؛ هیچ چیزی بسته نمی‌شود */

@@ -26,6 +26,9 @@ use App\Http\Controllers\Finance\InvoiceController;
 use App\Http\Controllers\Finance\LedgerController;
 use App\Http\Controllers\Finance\PaymentController;
 use App\Http\Controllers\ImportController;
+use App\Http\Controllers\Letters\AnnouncementController;
+use App\Http\Controllers\Letters\LetterController;
+use App\Http\Controllers\Letters\LetterTemplateController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\Settings\ActivityLogController;
 use App\Http\Controllers\Settings\BackupController;
@@ -277,6 +280,48 @@ Route::middleware(['auth', 'active'])->group(function () {
             Route::post('/upload', [ImportController::class, 'upload'])->name('upload');
             Route::get('/preview', [ImportController::class, 'preview'])->name('preview');
             Route::post('/store', [ImportController::class, 'store'])->name('store');
+        });
+
+        // ---------- اعلان‌ها (مرحله‌ی ۱۲): دیدن برای همه، مدیریت با announcements.manage ----------
+        Route::prefix('announcements')->name('announcements.')->group(function () {
+            Route::middleware('can:announcements.manage')->group(function () {
+                Route::get('/create', [AnnouncementController::class, 'create'])->name('create');
+                Route::post('/', [AnnouncementController::class, 'store'])->name('store');
+                Route::get('/{announcement}/edit', [AnnouncementController::class, 'edit'])->name('edit');
+                Route::put('/{announcement}', [AnnouncementController::class, 'update'])->name('update');
+                Route::patch('/{announcement}/status', [AnnouncementController::class, 'status'])->name('status');
+            });
+            Route::get('/', [AnnouncementController::class, 'index'])->name('index');
+            Route::get('/{announcement}', [AnnouncementController::class, 'show'])->name('show');
+            Route::get('/{announcement}/attachment', [AnnouncementController::class, 'attachment'])->name('attachment');
+        });
+
+        // ---------- مکاتیب رسمی (مرحله‌ی ۱۲؛ letters.manage) ----------
+        Route::middleware('can:letters.manage')->prefix('letters')->name('letters.')->group(function () {
+            Route::get('/outgoing', [LetterController::class, 'outgoing'])->name('outgoing.index');
+            Route::get('/outgoing/create', [LetterController::class, 'create'])->name('outgoing.create');
+            Route::post('/outgoing', [LetterController::class, 'store'])->name('outgoing.store');
+            Route::get('/outgoing/{letter}', [LetterController::class, 'show'])->name('outgoing.show');
+            Route::get('/outgoing/{letter}/edit', [LetterController::class, 'edit'])->name('outgoing.edit');
+            Route::put('/outgoing/{letter}', [LetterController::class, 'update'])->name('outgoing.update');
+            Route::post('/outgoing/{letter}/issue', [LetterController::class, 'issue'])->name('outgoing.issue');
+
+            Route::get('/incoming', [LetterController::class, 'incoming'])->name('incoming.index');
+            Route::get('/incoming/create', [LetterController::class, 'createIncoming'])->name('incoming.create');
+            Route::post('/incoming', [LetterController::class, 'storeIncoming'])->name('incoming.store');
+            Route::get('/incoming/{letter}', [LetterController::class, 'show'])->name('incoming.show');
+            Route::get('/incoming/{letter}/edit', [LetterController::class, 'editIncoming'])->name('incoming.edit');
+            Route::put('/incoming/{letter}', [LetterController::class, 'updateIncoming'])->name('incoming.update');
+
+            Route::get('/export', [LetterController::class, 'export'])->name('export');
+            Route::post('/{letter}/cancel', [LetterController::class, 'cancel'])->name('cancel');
+            Route::post('/{letter}/attachments', [LetterController::class, 'storeAttachment'])->name('attachments.store');
+            Route::get('/{letter}/attachments/{attachment}', [LetterController::class, 'attachment'])->name('attachments.show');
+            Route::delete('/{letter}/attachments/{attachment}', [LetterController::class, 'destroyAttachment'])->name('attachments.destroy');
+
+            Route::get('/templates', [LetterTemplateController::class, 'index'])->name('templates.index');
+            Route::post('/templates', [LetterTemplateController::class, 'store'])->name('templates.store');
+            Route::put('/templates/{template}', [LetterTemplateController::class, 'update'])->name('templates.update');
         });
 
         // ---------- تنظیمات ----------

@@ -404,3 +404,15 @@ code { color: #9b3b5a; }
     .print-page { padding: 0; max-width: none; }
     .card { box-shadow: none; }
 }
+
+/* ---------- اعلان‌ها و مکاتیب (مرحله‌ی ۱۲) ---------- */
+.letter-body { white-space: pre-line; line-height: 2; }
+.announcement-item:hover { border-color: var(--hk-accent); }
+.letter-sheet { position: relative; min-height: 250mm; display: flex; flex-direction: column; }
+.letter-print-body { flex: 1 0 auto; font-size: 1.05rem; text-align: justify; }
+.letter-signs { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 24px; margin-top: 28px; page-break-inside: avoid; }
+.letter-sign { min-width: 55mm; text-align: center; }
+.letter-sign-line { border-top: 1px solid #000; margin-top: 42px; padding-top: 4px; font-size: .85rem; color: #555; }
+.letter-stamp { width: 38mm; height: 38mm; border: 1px dashed #999; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #999; font-size: .85rem; }
+.letter-watermark { position: absolute; inset: 40% 0 auto 0; text-align: center; font-size: 2.6rem; font-weight: 700; color: rgba(200, 0, 0, .14); transform: rotate(-18deg); pointer-events: none; }
+.dash-announcement { border-inline-start: 3px solid var(--hk-accent); padding-inline-start: 10px; }

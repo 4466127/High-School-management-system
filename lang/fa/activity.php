@@ -37,6 +37,9 @@ return [
         'finance_category' => 'دسته‌های مالی',
         'backup' => 'پشتیبان',
         'system' => 'سیستم',
+        'announcement' => 'اعلان‌ها',
+        'letter' => 'مکاتیب',
+        'letter_template' => 'قالب‌های مکتوب',
     ],
     'actions' => [
         'auth' => [
@@ -156,6 +159,25 @@ return [
             'license_installed' => 'نصب فایل لایسنس',
             'updated' => 'به‌روزرسانی برنامه',
         ],
+        'announcement' => [
+            'created' => 'نوشتن اعلان',
+            'updated' => 'ویرایش اعلان',
+            'published' => 'انتشار اعلان',
+            'archived' => 'بایگانی اعلان',
+        ],
+        'letter' => [
+            'created' => 'پیش‌نویس مکتوب صادره',
+            'updated' => 'ویرایش مکتوب',
+            'issued' => 'صدور مکتوب',
+            'cancelled' => 'باطل کردن مکتوب',
+            'registered' => 'ثبت مکتوب وارده',
+            'attachment_added' => 'افزودن ضمیمه‌ی مکتوب',
+            'attachment_removed' => 'حذف ضمیمه‌ی مکتوب',
+        ],
+        'letter_template' => [
+            'created' => 'افزودن قالب مکتوب',
+            'updated' => 'ویرایش قالب مکتوب',
+        ],
         'import' => [
             'students' => 'ورود گروهی دانش‌آموزان',
             'staff' => 'ورود گروهی کارکنان',
@@ -199,6 +221,10 @@ return [
         'edition' => 'نوع لایسنس',
         'expires_on' => 'تاریخ ختم',
         'version' => 'نسخه',
+        'number' => 'شماره',
+        'audience' => 'مخاطب',
+        'organization' => 'اداره',
+        'fields' => 'خانه‌های تغییرکرده',
         'safety' => 'پشتیبان پیش از بازیابی',
         'mode' => 'نوع پاک کردن',
         'tables' => 'شمار جدول‌ها',

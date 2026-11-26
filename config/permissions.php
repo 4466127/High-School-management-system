@@ -46,6 +46,9 @@ return [
         'reports.academic' => 'reports',
         'reports.finance' => 'reports',
 
+        'announcements.manage' => 'communication',
+        'letters.manage' => 'communication',
+
         'settings.manage' => 'system',
         'users.manage' => 'system',
         'backups.manage' => 'system',
@@ -64,6 +67,7 @@ return [
             'finance.view', 'finance.manage',
             'courses.manage', 'courses.attendance', 'courses.ledger',
             'reports.academic', 'reports.finance',
+            'announcements.manage', 'letters.manage',
             'settings.manage',
         ],
 
@@ -75,6 +79,7 @@ return [
             'attendance.take', 'attendance.edit',
             'reportcards.print',
             'reports.academic',
+            'announcements.manage', 'letters.manage',
         ],
 
         'teacher' => [

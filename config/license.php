@@ -13,7 +13,7 @@
 */
 
 return [
-    'public_key' => env('LICENSE_PUBLIC_KEY', ''),
+    'public_key' => env('LICENSE_PUBLIC_KEY', '70yMu43L1aSzUROQTOqeIIpp67A5mmnxs7kcMNqz01c='),
     'path' => env('LICENSE_PATH', storage_path('app/license.json')),
     'warn_days' => 30,
 ];

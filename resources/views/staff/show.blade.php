@@ -27,6 +27,9 @@
                     </form>
                 @else
                     <a href="{{ route('staff.edit', $member) }}" class="btn btn-outline-primary"><i class="fa-solid fa-pen" aria-hidden="true"></i> {{ __('app.edit') }}</a>
+                    @can('letters.manage')
+                        <a href="{{ route('letters.outgoing.create', ['staff' => $member->id]) }}" class="btn btn-outline-secondary"><i class="fa-solid fa-envelope-open-text" aria-hidden="true"></i> {{ __('letters.create_outgoing') }}</a>
+                    @endcan
                     <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#statusModal">{{ __('staff.change_status') }}</button>
                     <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal"><i class="fa-solid fa-trash" aria-hidden="true"></i> {{ __('staff.delete') }}</button>
                 @endif

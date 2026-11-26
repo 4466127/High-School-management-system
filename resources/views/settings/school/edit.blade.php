@@ -41,6 +41,23 @@
         </div>
 
         <div class="card form-section mb-3">
+            <div class="card-header"><i class="fa-solid fa-envelope-open-text" aria-hidden="true"></i> {{ __('school.section_letters') }}</div>
+            <div class="card-body">
+                <div class="row">
+                    <x-form.input class="col-md-3 mb-3" name="letter_outgoing_prefix" :label="__('school.letter_outgoing_prefix')" :value="$values['letter_outgoing_prefix']" maxlength="20" />
+                    <x-form.input class="col-md-3 mb-3" name="letter_incoming_prefix" :label="__('school.letter_incoming_prefix')" :value="$values['letter_incoming_prefix']" maxlength="20" />
+                    <x-form.input class="col-md-3 mb-3" name="letter_signature_1" :label="__('school.letter_signature_1')" :value="$values['letter_signature_1']" maxlength="100" />
+                    <x-form.input class="col-md-3 mb-3" name="letter_signature_2" :label="__('school.letter_signature_2')" :value="$values['letter_signature_2']" maxlength="100" />
+                </div>
+                <div class="form-check form-switch mb-1">
+                    <input class="form-check-input" type="checkbox" role="switch" name="letter_show_stamp" value="1" id="letter_show_stamp" @checked(old('letter_show_stamp', $values['letter_show_stamp'] === '1'))>
+                    <label class="form-check-label" for="letter_show_stamp">{{ __('school.letter_show_stamp') }}</label>
+                </div>
+                <p class="form-text mb-0">{{ __('school.letters_hint') }}</p>
+            </div>
+        </div>
+
+        <div class="card form-section mb-3">
             <div class="card-header"><i class="fa-solid fa-coins" aria-hidden="true"></i> {{ __('school.section_finance') }}</div>
             <div class="card-body">
                 <div class="form-check form-switch mb-1">

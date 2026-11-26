@@ -47,6 +47,7 @@
 | `/finance/payments/export?from=&to=&q=` | رسیدها | ۷ ✅ |
 | `/finance/ledger/export?type=&category=&from=&to=` | درآمد و مصرف مکتب | ۷ ✅ |
 | `/courses/finance/{course}/export?type=&voided=` | دفتر مالی یک کورس (کمک، معاش، مصرف) | ۸ ✅ |
+| `/letters/export?direction=outgoing\|incoming&q=&type=&status=&from=&to=` | بایگانی مکاتیب صادره یا وارده | ۱۲ ✅ |
 
 ## اگر در آینده API واقعی لازم شد
 - مسیرها در `routes/api.php` با نسخه (`/api/v1`)، احراز هویت با Laravel Sanctum.

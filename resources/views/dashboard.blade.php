@@ -35,6 +35,29 @@
         </div>
     @endif
 
+    {{-- اعلان‌ها (مرحله‌ی ۱۲) --}}
+    @if (($announcements ?? collect())->isNotEmpty())
+        <div class="card mb-3">
+            <div class="card-header d-flex align-items-center gap-2">
+                <i class="fa-solid fa-bullhorn" aria-hidden="true"></i>
+                <span class="fw-medium flex-grow-1">{{ __('announcements.dashboard_title') }}</span>
+                <a href="{{ route('announcements.index') }}" class="small">{{ __('announcements.dashboard_all') }}</a>
+            </div>
+            <div class="card-body d-flex flex-column gap-2">
+                @foreach ($announcements as $a)
+                    <a href="{{ route('announcements.show', $a) }}" class="dash-announcement text-decoration-none text-body">
+                        <div class="fw-medium">
+                            @if ($a->is_pinned)<i class="fa-solid fa-thumbtack text-danger" aria-hidden="true"></i>@endif
+                            {{ $a->title }}
+                            <span class="badge text-bg-light border fw-normal">{{ $a->audience->label() }}</span>
+                        </div>
+                        <div class="small text-secondary">{{ \Illuminate\Support\Str::limit($a->body, 140) }} · @jdate($a->published_at)</div>
+                    </a>
+                @endforeach
+            </div>
+        </div>
+    @endif
+
     {{-- آمار یک‌نگاه --}}
     @if ($students || $attendance || $finance || $courses)
         <div class="row g-2 mb-3 dash-stats">

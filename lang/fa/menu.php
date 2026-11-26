@@ -41,5 +41,10 @@ return [
     'activity_logs' => 'ثبت رویدادها',
     'import' => 'ورود از Excel',
     'backups' => 'پشتیبان و بازیابی',
+    'announcements' => 'اعلان‌ها',
+    'letters' => 'مکاتیب',
+    'letters_outgoing' => 'مکتوب‌های صادره',
+    'letters_incoming' => 'مکتوب‌های وارده',
+    'letters_templates' => 'قالب‌های مکتوب',
     'license' => 'لایسنس',
 ];

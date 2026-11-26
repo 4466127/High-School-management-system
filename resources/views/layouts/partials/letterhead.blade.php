@@ -1,5 +1,5 @@
 {{-- سربرگ مکتب برای همه‌ی چاپ‌ها (گزارش‌ها، کارنامه، مکاتیب، کارت). همه از تنظیمات؛ هیچ متن رسمی ثابت نیست.
-     پارامترها: $withAddress (آدرس، تلفن، ایمیل)، $logoSize --}}
+     پارامترها: $withAddress (آدرس، تلفن، ایمیل)، $logoSize، $meta (برچسب ← مقدار در سمت چپ؛ پیش‌فرض تاریخ چاپ) --}}
 @php
     $lhSetting = fn (string $key) => (string) \App\Models\Setting::get($key);
     $lhLines = array_filter([$lhSetting('header_line'), $lhSetting('directorate')]);
@@ -19,5 +19,9 @@
             @if ($lhContact !== '')<div class="small">{{ $lhContact }}</div>@endif
         </div>
     </div>
-    <div class="text-start small">{{ __('app.printed_on') }}: @jdate(now())</div>
+    <div class="text-start small">
+        @foreach ($meta ?? [__('app.printed_on') => \App\Support\JalaliDate::format(now())] as $lhLabel => $lhValue)
+            <div>{{ $lhLabel }}: <span class="fw-medium">{{ $lhValue }}</span></div>
+        @endforeach
+    </div>
 </header>

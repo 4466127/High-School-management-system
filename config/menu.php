@@ -51,6 +51,12 @@ return [
         ['key' => 'reports_results', 'icon' => 'fa-square-poll-vertical', 'route' => 'reports.results.index', 'can' => ['reports.academic']],
         ['key' => 'reports_finance', 'icon' => 'fa-sack-dollar', 'route' => 'reports.finance.index', 'can' => ['reports.finance']],
     ]],
+    ['key' => 'announcements', 'icon' => 'fa-bullhorn', 'route' => 'announcements.index', 'can' => ['dashboard.view']],
+    ['key' => 'letters', 'icon' => 'fa-envelope-open-text', 'route' => null, 'can' => ['letters.manage'], 'children' => [
+        ['key' => 'letters_outgoing', 'icon' => 'fa-paper-plane', 'route' => 'letters.outgoing.index', 'can' => ['letters.manage']],
+        ['key' => 'letters_incoming', 'icon' => 'fa-inbox', 'route' => 'letters.incoming.index', 'can' => ['letters.manage']],
+        ['key' => 'letters_templates', 'icon' => 'fa-file-lines', 'route' => 'letters.templates.index', 'can' => ['letters.manage']],
+    ]],
     ['key' => 'settings', 'icon' => 'fa-gear', 'route' => null, 'can' => ['settings.manage', 'users.manage', 'activity_logs.view', 'backups.manage', 'license.manage', 'students.manage', 'staff.manage'], 'children' => [
         ['key' => 'school', 'icon' => 'fa-building-columns', 'route' => 'settings.school.edit', 'can' => ['settings.manage']],
         ['key' => 'users', 'icon' => 'fa-users-gear', 'route' => 'settings.users.index', 'can' => ['users.manage']],

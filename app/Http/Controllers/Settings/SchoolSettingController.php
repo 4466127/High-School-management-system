@@ -19,6 +19,7 @@ class SchoolSettingController extends Controller
     public const KEYS = [
         'school_name', 'school_type', 'province', 'district', 'address', 'phone', 'principal_name',
         'header_line', 'directorate', 'school_code', 'email',
+        'letter_outgoing_prefix', 'letter_incoming_prefix', 'letter_signature_1', 'letter_signature_2', 'letter_show_stamp',
         'fees_enabled', 'school_ledger_enabled',
         'pass_percent', 'conditional_max_failed_subjects', 'deprivation_absence_days', 'absence_alert_days', 'weekly_holidays',
         'grade_a_min', 'grade_b_min', 'grade_c_min',
@@ -47,6 +48,7 @@ class SchoolSettingController extends Controller
             $data['fees_enabled'] = '1';
         }
         $data['school_ledger_enabled'] = $data['school_ledger_enabled'] ? '1' : '0';
+        $data['letter_show_stamp'] = $data['letter_show_stamp'] ? '1' : '0';
 
         $oldLogo = Setting::get('logo_path');
         $newLogo = $request->hasFile('logo') ? PrivateFiles::store($request->file('logo'), 'school') : null;

@@ -17,12 +17,12 @@ class RoleAccessTest extends TestCase
     public static function expectedMenus(): array
     {
         return [
-            'admin' => [Role::Admin, ['dashboard', 'students', 'staff', 'academics', 'attendance', 'exams', 'courses', 'reports', 'settings'], ['school', 'users', 'activity_logs', 'import', 'backups', 'license']],
-            'principal' => [Role::Principal, ['dashboard', 'students', 'staff', 'academics', 'attendance', 'exams', 'courses', 'reports', 'settings'], ['school', 'import']],
-            'office' => [Role::Office, ['dashboard', 'students', 'staff', 'academics', 'attendance', 'exams', 'reports', 'settings'], ['import']],
-            'teacher' => [Role::Teacher, ['dashboard', 'students', 'academics', 'attendance', 'exams', 'courses', 'reports'], []],
-            'accountant' => [Role::Accountant, ['dashboard', 'students', 'courses', 'reports'], []],
-            'course_manager' => [Role::CourseManager, ['dashboard', 'students', 'courses', 'reports'], []],
+            'admin' => [Role::Admin, ['dashboard', 'students', 'staff', 'academics', 'attendance', 'exams', 'courses', 'reports', 'announcements', 'letters', 'settings'], ['school', 'users', 'activity_logs', 'import', 'backups', 'license']],
+            'principal' => [Role::Principal, ['dashboard', 'students', 'staff', 'academics', 'attendance', 'exams', 'courses', 'reports', 'announcements', 'letters', 'settings'], ['school', 'import']],
+            'office' => [Role::Office, ['dashboard', 'students', 'staff', 'academics', 'attendance', 'exams', 'reports', 'announcements', 'letters', 'settings'], ['import']],
+            'teacher' => [Role::Teacher, ['dashboard', 'students', 'academics', 'attendance', 'exams', 'courses', 'reports', 'announcements'], []],
+            'accountant' => [Role::Accountant, ['dashboard', 'students', 'courses', 'reports', 'announcements'], []],
+            'course_manager' => [Role::CourseManager, ['dashboard', 'students', 'courses', 'reports', 'announcements'], []],
         ];
     }
 

@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
         SubjectSeeder::class,
         ExamTypeSeeder::class,
         FinanceSeeder::class,
+        LetterTemplateSeeder::class,
     ];
 
     public function run(): void

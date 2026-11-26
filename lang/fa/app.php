@@ -50,6 +50,7 @@ return [
         'finance' => 'مالی مکتب',
         'courses' => 'کورس‌های جداگانه',
         'reports' => 'گزارش‌ها',
+        'communication' => 'اعلان‌ها و مکاتیب',
         'system' => 'سیستم',
     ],
 

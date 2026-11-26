@@ -224,6 +224,20 @@ erDiagram
 - مانده‌ی صندوق کورس = Σ donation(cashbox) − Σ teacher_salary − Σ expense (سطرهای باطل‌نشده). معاش/مصرف بیشتر از مانده، و باطل کردن کمکی که مانده را منفی کند، پذیرفته نمی‌شود.
 - دریافتی معلم = Σ teacher_salary + Σ donation(direct_to_teacher).
 - مانده ذخیره نمی‌شود (`CourseLedgerCalculator`). پول کورس با فیس یا دفتر مکتب جمع نمی‌شود.
+### اعلان‌ها و مکاتیب (مرحله‌ی ۱۲)
+**announcements** — `title`, `body`, `audience` (all / staff / teachers / students / parents), `status` (draft / published / archived), `is_pinned`, `published_at`, `expires_on`, `attachment_path`, `attachment_name`, `attachment_mime`, `attachment_size`, `created_by`, `updated_by`. حذف نمی‌شود؛ بایگانی می‌شود.
+
+**letter_templates** — `name` (یکتا), `type`, `subject`, `body` (با جای‌نشان‌هایی مثل `{student_name}`), `is_active`. حذف نمی‌شود؛ غیرفعال می‌شود.
+
+**letters** — `direction` (outgoing / incoming), `status` (draft / issued / cancelled), `year` (سال شمسی), `serial`, `number` (پیشوند + `year/serial`، ارقام لاتین), `type`, `letter_date`, `letter_template_id`, `recipient` (صادره: گیرنده؛ وارده: فرستنده), `organization`, `subject`, `body`, `student_id`, `staff_id`, `external_number`, `received_on`, `needs_response` (وارده), `reply_to_id` (→ letters؛ صادره‌ای که جواب یک وارده است), `issued_at`, `issued_by`, `cancelled_at`, `cancelled_by`, `cancel_reason`, `created_by`, `updated_by`. یکتا: (`direction`, `year`, `serial`).
+
+**letter_attachments** — `letter_id`, `title`, `file_path` (`storage/app/private/letters`), `original_name`, `mime_type`, `size`, `uploaded_by`.
+
+قواعد:
+- صادره: پیش‌نویس بدون شماره و قابل ویرایش؛ صدور ← شماره‌ی بعدی همان سال و جهت، متن قفل. وارده: هنگام ثبت شماره می‌گیرد.
+- مکتوب حذف نمی‌شود؛ باطل می‌شود و شماره‌اش دوباره داده نمی‌شود. ضمیمه فقط در پیش‌نویس حذف می‌شود.
+- وارده «منتظر جواب» = `needs_response` و هیچ صادره‌ی صادرشده با `reply_to_id` آن نیست.
+
 ## نمایه‌ها (index) ی مهم
 - `students`: (`last_name`, `first_name`), `father_name`, `status`
 - `enrollments`: (`section_id`, `status`)
@@ -231,6 +245,7 @@ erDiagram
 - `marks`: (`enrollment_id`, `exam_id`)
 - `payments`: `paid_on`؛ `school_transactions`: (`type`, `date`)؛ `course_ledger_entries`: (`course_id`, `date`)
 - `activity_logs`: (`subject_type`, `subject_id`), `created_at`
+- `letters`: (`direction`, `letter_date`), `number`؛ `announcements`: (`status`, `published_at`)
 
 ## داده‌ی اولیه (Seeder)
 - نقش‌ها و مجوزها، یک کاربر مدیر سیستم (رمز در اولین ورود باید عوض شود)
