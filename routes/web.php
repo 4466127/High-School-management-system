@@ -9,6 +9,7 @@ use App\Http\Controllers\Attendance\DailyAttendanceController;
 use App\Http\Controllers\Attendance\StaffAttendanceController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\PasswordController;
+use App\Http\Controllers\Auth\SetupController;
 use App\Http\Controllers\Courses\CourseAttendanceController;
 use App\Http\Controllers\Courses\CourseController;
 use App\Http\Controllers\Courses\CourseLedgerController;
@@ -28,6 +29,7 @@ use App\Http\Controllers\ImportController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\Settings\ActivityLogController;
 use App\Http\Controllers\Settings\BackupController;
+use App\Http\Controllers\Settings\LicenseController;
 use App\Http\Controllers\Settings\SchoolSettingController;
 use App\Http\Controllers\Settings\UserController;
 use App\Http\Controllers\Staff\StaffController;
@@ -44,6 +46,10 @@ Route::get('/school-logo', [SchoolSettingController::class, 'logo'])->name('scho
 Route::middleware('guest')->group(function () {
     Route::get('/login', [LoginController::class, 'create'])->name('login');
     Route::post('/login', [LoginController::class, 'store'])->name('login.store');
+
+    // راه‌اندازی نصب تازه (فقط بعد از school:install و پیش از ساخت اولین مدیر سیستم؛ در غیر آن ۴۰۴)
+    Route::get('/setup', [SetupController::class, 'create'])->name('setup.create');
+    Route::post('/setup', [SetupController::class, 'store'])->middleware('throttle:10,1')->name('setup.store');
 });
 
 Route::middleware(['auth', 'active'])->group(function () {
@@ -291,6 +297,11 @@ Route::middleware(['auth', 'active'])->group(function () {
                 Route::post('backups', [BackupController::class, 'store'])->name('backups.store');
                 Route::get('backups/{name}/download', [BackupController::class, 'download'])
                     ->where('name', '[A-Za-z0-9_.\-]+')->name('backups.download');
+            });
+
+            Route::middleware('can:license.manage')->group(function () {
+                Route::get('license', [LicenseController::class, 'index'])->name('license.index');
+                Route::post('license', [LicenseController::class, 'store'])->name('license.store');
             });
 
             Route::get('activity-logs', ActivityLogController::class)

@@ -18,6 +18,7 @@ return [
         'manual' => 'دستی',
         'pre_restore' => 'پیش از بازیابی',
         'pre_reset' => 'پیش از پاک‌کردن',
+        'pre_update' => 'پیش از به‌روزرسانی',
     ],
     'last' => 'آخرین پشتیبان',
     'never' => 'هیچ',
@@ -60,6 +61,16 @@ return [
         'login' => 'حالا سیستم را باز کنید و وارد شوید.',
     ],
 
+    // به‌روزرسانی (school:update؛ tools\update.bat)
+    'update' => [
+        'title' => 'به‌روزرسانی سیستم مکتب',
+        'no_backup' => 'پشتیبان گرفته نشد؛ به‌روزرسانی انجام نشد و هیچ چیزی تغییر نکرد. (:message)',
+        'migrating' => 'اعمال تغییرهای پایگاه داده (:n migration تازه)…',
+        'failed' => 'به‌روزرسانی ناتمام ماند: :message — اطلاعات پیش از به‌روزرسانی در این پشتیبان است: :file (DEPLOYMENT.md بخش برگشت).',
+        'done' => 'به‌روزرسانی تمام شد. نسخه‌ی فعلی: :version',
+        'check_errors' => 'بررسی سلامت خطا دارد؛ tools\check.bat را اجرا کنید.',
+    ],
+
     // پاک کردن اطلاعات (school:reset)
     'reset_title' => 'پاک کردن اطلاعات سیستم',
     'reset_mode_data' => 'پاک کردن اطلاعات مکتب',
@@ -88,6 +99,10 @@ return [
         'extensions' => 'افزونه‌های PHP',
         'env' => 'فایل تنظیمات .env',
         'mode' => 'حالت اجرا',
+        'version' => 'نسخه‌ی برنامه',
+        'session' => 'رمزنگاری session',
+        'db_user' => 'کاربر پایگاه داده',
+        'license' => 'لایسنس',
         'writable' => 'پوشه‌های قابل نوشتن',
         'disk' => 'جای خالی دیسک',
         'database' => 'پایگاه داده',
@@ -105,6 +120,11 @@ return [
         'missing' => 'نیست: :list',
         'env_missing' => '.env یا APP_KEY نیست. README بخش نصب، قدم .env را ببینید.',
         'mode_hint' => 'در سرور مکتب APP_ENV=production و APP_DEBUG=false بگذارید (README بخش شبکه).',
+        'session_encrypted' => 'روشن',
+        'session_plain' => 'خاموش؛ در سرور مکتب SESSION_ENCRYPT=true بگذارید (DEPLOYMENT.md بخش امنیت).',
+        'db_no_password' => 'بدون رمز',
+        'dev_only' => 'در حالت توسعه اشکال ندارد؛ در سرور مکتب (production) درست شود.',
+        'db_root' => 'برای سرور مکتب یک کاربر جدا فقط برای همین پایگاه داده بسازید (DEPLOYMENT.md بخش امنیت).',
         'disk_free' => ':gb گیگابایت خالی',
         'db_down' => 'وصل نمی‌شود. MySQL را از XAMPP روشن کنید؛ اگر روشن نشد tools\\repair-mysql.bat را اجرا کنید.',
         'no_tables' => 'جدول‌ها ساخته نشده‌اند.',

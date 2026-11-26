@@ -17,7 +17,7 @@ class RoleAccessTest extends TestCase
     public static function expectedMenus(): array
     {
         return [
-            'admin' => [Role::Admin, ['dashboard', 'students', 'staff', 'academics', 'attendance', 'exams', 'courses', 'reports', 'settings'], ['school', 'users', 'activity_logs', 'import', 'backups']],
+            'admin' => [Role::Admin, ['dashboard', 'students', 'staff', 'academics', 'attendance', 'exams', 'courses', 'reports', 'settings'], ['school', 'users', 'activity_logs', 'import', 'backups', 'license']],
             'principal' => [Role::Principal, ['dashboard', 'students', 'staff', 'academics', 'attendance', 'exams', 'courses', 'reports', 'settings'], ['school', 'import']],
             'office' => [Role::Office, ['dashboard', 'students', 'staff', 'academics', 'attendance', 'exams', 'reports', 'settings'], ['import']],
             'teacher' => [Role::Teacher, ['dashboard', 'students', 'academics', 'attendance', 'exams', 'courses', 'reports'], []],

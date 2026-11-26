@@ -33,6 +33,7 @@ class SystemCheckService
         $add = $this->add(...);
 
         // ---- PHP و فایل‌ها ----
+        $add('version', 'ok', 'v'.config('app.version'));
         $add('php', version_compare(PHP_VERSION, '8.4.0', '>=') ? 'ok' : 'error', 'PHP '.PHP_VERSION);
         $missing = array_values(array_filter(self::EXTENSIONS, fn ($e) => ! extension_loaded($e)));
         $add('extensions', $missing === [] ? 'ok' : 'error', $missing === [] ? implode('، ', self::EXTENSIONS) : __('backup.check.missing', ['list' => implode('، ', $missing)]));
@@ -43,6 +44,15 @@ class SystemCheckService
         $production = app()->environment('production');
         $add('mode', $production && ! config('app.debug') ? 'ok' : 'warn',
             'APP_ENV='.app()->environment().' · APP_DEBUG='.(config('app.debug') ? 'true' : 'false').($production && ! config('app.debug') ? '' : ' — '.__('backup.check.mode_hint')));
+
+        // امنیت (مرحله‌ی ۱۱): رمزنگاری session و کاربر محدود پایگاه داده فقط در production مهم است
+        $encrypted = (bool) config('session.encrypt');
+        $add('session', $encrypted || ! $production ? 'ok' : 'warn', $encrypted ? __('backup.check.session_encrypted') : ($production ? __('backup.check.session_plain') : __('backup.check.dev_only')));
+        $dbUser = (string) config('database.connections.'.config('database.default').'.username');
+        $dbPassword = (string) config('database.connections.'.config('database.default').'.password');
+        $weakDb = $dbUser === 'root' || $dbPassword === '';
+        $add('db_user', $production && $weakDb ? 'warn' : 'ok',
+            $dbUser.($dbPassword === '' ? ' — '.__('backup.check.db_no_password') : '').($weakDb ? ' — '.($production ? __('backup.check.db_root') : __('backup.check.dev_only')) : ''));
 
         $bad = array_values(array_filter(self::WRITABLE, fn ($d) => ! is_dir(base_path($d)) || ! is_writable(base_path($d))));
         $add('writable', $bad === [] ? 'ok' : 'error', $bad === [] ? 'storage · bootstrap/cache' : implode('، ', $bad), 'folders');
@@ -86,6 +96,10 @@ class SystemCheckService
             $add('settings', $missingSettings !== [] ? 'warn' : ($named ? 'ok' : 'warn'),
                 $missingSettings !== [] ? __('backup.check.settings_missing', ['n' => count($missingSettings)]) : ($named ? Setting::get('school_name') : __('backup.check.school_unnamed')),
                 $missingSettings !== [] ? 'seed' : null);
+
+            $license = app(LicenseService::class)->status();
+            $add('license', in_array($license['state'], ['not_configured', 'valid'], true) ? 'ok' : 'warn',
+                $license['state'] === 'not_configured' ? __('license.not_configured') : __('license.states.'.$license['state']));
 
             $year = AcademicYear::current();
             $add('year', $year ? 'ok' : 'warn', $year ? __('academics.year').' '.$year->name : __('academics.no_year'));

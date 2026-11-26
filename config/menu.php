@@ -51,11 +51,12 @@ return [
         ['key' => 'reports_results', 'icon' => 'fa-square-poll-vertical', 'route' => 'reports.results.index', 'can' => ['reports.academic']],
         ['key' => 'reports_finance', 'icon' => 'fa-sack-dollar', 'route' => 'reports.finance.index', 'can' => ['reports.finance']],
     ]],
-    ['key' => 'settings', 'icon' => 'fa-gear', 'route' => null, 'can' => ['settings.manage', 'users.manage', 'activity_logs.view', 'backups.manage', 'students.manage', 'staff.manage'], 'children' => [
+    ['key' => 'settings', 'icon' => 'fa-gear', 'route' => null, 'can' => ['settings.manage', 'users.manage', 'activity_logs.view', 'backups.manage', 'license.manage', 'students.manage', 'staff.manage'], 'children' => [
         ['key' => 'school', 'icon' => 'fa-building-columns', 'route' => 'settings.school.edit', 'can' => ['settings.manage']],
         ['key' => 'users', 'icon' => 'fa-users-gear', 'route' => 'settings.users.index', 'can' => ['users.manage']],
         ['key' => 'activity_logs', 'icon' => 'fa-clock-rotate-left', 'route' => 'settings.activity-logs.index', 'can' => ['activity_logs.view']],
         ['key' => 'import', 'icon' => 'fa-file-excel', 'route' => 'import.index', 'can' => ['students.manage', 'staff.manage']],
         ['key' => 'backups', 'icon' => 'fa-database', 'route' => 'settings.backups.index', 'can' => ['backups.manage']],
+        ['key' => 'license', 'icon' => 'fa-key', 'route' => 'settings.license.index', 'can' => ['license.manage']],
     ]],
 ];

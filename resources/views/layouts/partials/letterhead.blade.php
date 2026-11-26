@@ -1,0 +1,23 @@
+{{-- سربرگ مکتب برای همه‌ی چاپ‌ها (گزارش‌ها، کارنامه، مکاتیب، کارت). همه از تنظیمات؛ هیچ متن رسمی ثابت نیست.
+     پارامترها: $withAddress (آدرس، تلفن، ایمیل)، $logoSize --}}
+@php
+    $lhSetting = fn (string $key) => (string) \App\Models\Setting::get($key);
+    $lhLines = array_filter([$lhSetting('header_line'), $lhSetting('directorate')]);
+    $lhPlace = collect([__('school.type_line', ['type' => \App\Enums\SchoolType::current()->label()]), $lhSetting('province'), $lhSetting('district')])
+        ->merge(($withAddress ?? false) ? [$lhSetting('address')] : [])->filter()->join('، ');
+    $lhContact = ($withAddress ?? false) ? collect([$lhSetting('phone') !== '' ? \App\Support\Digits::toPersian($lhSetting('phone')) : '', $lhSetting('email')])->filter()->join(' · ') : '';
+@endphp
+<header class="print-head">
+    <div class="d-flex align-items-center gap-2">
+        @if ($lhSetting('logo_path') !== '')<img src="{{ route('school.logo') }}" alt="" width="{{ $logoSize ?? 56 }}" height="{{ $logoSize ?? 56 }}" class="object-fit-contain">@endif
+        <div>
+            @foreach ($lhLines as $line)
+                <div class="small fw-medium">{{ $line }}</div>
+            @endforeach
+            <div class="print-school">{{ $lhSetting('school_name') }}</div>
+            <div class="small">{{ $lhPlace }}</div>
+            @if ($lhContact !== '')<div class="small">{{ $lhContact }}</div>@endif
+        </div>
+    </div>
+    <div class="text-start small">{{ __('app.printed_on') }}: @jdate(now())</div>
+</header>

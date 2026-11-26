@@ -52,5 +52,5 @@
         @endforeach
     </ul>
 
-    <div class="side-foot">@jdate(now(), 'full')</div>
+    <div class="side-foot">@jdate(now(), 'full') <span class="d-block opacity-75" dir="ltr">v{{ config('app.version') }}</span></div>
 </aside>

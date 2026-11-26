@@ -20,6 +20,10 @@
                     <x-form.input class="col-md-3 mb-3" name="district" :label="__('school.district')" :value="$values['district']" maxlength="100" :placeholder="__('school.district_ph')" />
                     <x-form.input class="col-md-3 mb-3" name="phone" :label="__('school.phone')" :value="$values['phone']" type="tel" ltr maxlength="30" :placeholder="__('school.phone_ph')" />
                     <x-form.input class="col-md-3 mb-3" name="address" :label="__('school.address')" :value="$values['address']" maxlength="300" :placeholder="__('school.address_ph')" />
+                    <x-form.input class="col-md-3 mb-3" name="school_code" :label="__('school.school_code')" :value="$values['school_code']" maxlength="50" :help="__('school.school_code_hint')" />
+                    <x-form.input class="col-md-3 mb-3" name="email" type="email" ltr :label="__('school.email')" :value="$values['email']" maxlength="150" />
+                    <x-form.input class="col-md-6 mb-3" name="header_line" :label="__('school.header_line')" :value="$values['header_line']" maxlength="200" :help="__('school.header_line_hint')" />
+                    <x-form.input class="col-md-6 mb-3" name="directorate" :label="__('school.directorate')" :value="$values['directorate']" maxlength="200" :help="__('school.directorate_hint')" />
                     <div class="col-md-6 mb-3">
                         <x-form.input class="mb-1" name="logo" type="file" :label="__('school.logo')" accept="image/jpeg,image/png,image/webp" :help="__('school.logo_hint')" />
                         @if ($logo)

@@ -233,6 +233,9 @@ code { color: #9b3b5a; }
     box-shadow: 0 8px 20px rgba(240, 180, 41, .35);
 }
 .auth-title { color: var(--sc-navy); }
+.auth-wrap { flex-direction: column; }
+.auth-wrap.is-wide .auth-card { width: 100%; max-width: 720px; }
+.auth-version { color: rgba(255, 255, 255, .6); font-size: .75rem; text-align: center; margin-top: .75rem; }
 
 /* ---------- بخش‌ها (صنف‌ها) ---------- */
 .section-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }

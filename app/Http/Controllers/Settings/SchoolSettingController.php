@@ -18,6 +18,7 @@ class SchoolSettingController extends Controller
 {
     public const KEYS = [
         'school_name', 'school_type', 'province', 'district', 'address', 'phone', 'principal_name',
+        'header_line', 'directorate', 'school_code', 'email',
         'fees_enabled', 'school_ledger_enabled',
         'pass_percent', 'conditional_max_failed_subjects', 'deprivation_absence_days', 'absence_alert_days', 'weekly_holidays',
         'grade_a_min', 'grade_b_min', 'grade_c_min',

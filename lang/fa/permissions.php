@@ -36,5 +36,6 @@ return [
     'settings' => ['manage' => 'تنظیمات مکتب'],
     'users' => ['manage' => 'مدیریت کاربران و نقش‌ها'],
     'backups' => ['manage' => 'پشتیبان‌گیری و بازیابی'],
+    'license' => ['manage' => 'دیدن و نصب لایسنس'],
     'activity_logs' => ['view' => 'دیدن ثبت رویدادها'],
 ];

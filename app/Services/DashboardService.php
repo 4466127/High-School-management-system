@@ -34,6 +34,7 @@ class DashboardService
         private readonly ReportService $reports,
         private readonly FinanceService $finance,
         private readonly BackupService $backups,
+        private readonly LicenseService $license,
     ) {}
 
     public function for(User $user): array
@@ -50,7 +51,18 @@ class DashboardService
             'finance' => $this->financeCard($user, $year, $today),
             'courses' => $this->courses($user, $today),
             'backup' => $this->backup($user),
+            'license' => $this->licenseWarning($user),
         ];
+    }
+
+    /** هشدار لایسنس فقط برای مدیر سیستم و فقط وقتی لایسنس تنظیم شده ولی معتبر نیست؛ هیچ چیزی بسته نمی‌شود */
+    private function licenseWarning(User $user): ?string
+    {
+        if (! $user->hasPermission('license.manage') || ! $this->license->needsAttention()) {
+            return null;
+        }
+
+        return $this->license->status()['state'];
     }
 
     /** یادآوری پشتیبان برای مدیر سیستم، فقط وقتی پشتیبان ماهانه کهنه یا هیچ است */

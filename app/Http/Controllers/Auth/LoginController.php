@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Services\ActivityLogger;
+use App\Services\SetupService;
 use App\Support\Digits;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -19,8 +20,13 @@ class LoginController extends Controller
 
     private const DECAY_SECONDS = 60;
 
-    public function create(): View
+    public function create(SetupService $setup): View|RedirectResponse
     {
+        // نصب تازه: تا اولین مدیر سیستم ساخته نشده، صفحه‌ی راه‌اندازی
+        if ($setup->pending()) {
+            return redirect()->route('setup.create');
+        }
+
         return view('auth.login');
     }
 

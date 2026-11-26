@@ -132,4 +132,25 @@ class SchoolSettingsTest extends TestCase
             $this->actingAs($this->userWithRole($role))->get('/settings/school')->assertForbidden();
         }
     }
+
+    public function test_letterhead_lines_appear_on_prints(): void
+    {
+        $principal = $this->userWithRole(Role::Principal);
+        $this->actingAs($principal)->put('/settings/school', $this->payload([
+            'header_line' => 'سطر بالای سربرگ آزمایشی',
+            'directorate' => 'اداره‌ی آزمایشی معارف',
+            'school_code' => 'K-123',
+            'email' => 'school@example.test',
+            'address' => 'سرک آزمایشی',
+        ]))->assertRedirect('/settings/school')->assertSessionHasNoErrors();
+
+        $this->assertSame('K-123', Setting::get('school_code'));
+        $this->actingAs($principal)->get('/attendance?print=1')
+            ->assertOk()
+            ->assertSee('سطر بالای سربرگ آزمایشی')
+            ->assertSee('اداره‌ی آزمایشی معارف')
+            ->assertSee('school@example.test');
+
+        $this->actingAs($principal)->put('/settings/school', $this->payload(['email' => 'not-an-email']))->assertSessionHasErrors('email');
+    }
 }

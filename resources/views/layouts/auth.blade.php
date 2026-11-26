@@ -4,7 +4,7 @@
     @include('layouts.partials.head')
 </head>
 <body class="auth-body">
-<div class="auth-wrap">
+<div @class(['auth-wrap', 'is-wide' => $wide ?? false])>
     <div class="card auth-card shadow-sm">
         <div class="card-body p-4">
             <div class="text-center mb-3">
@@ -24,6 +24,7 @@
             @yield('content')
         </div>
     </div>
+    <div class="auth-version" dir="ltr">v{{ config('app.version') }}</div>
 </div>
 @include('layouts.partials.scripts')
 </body>

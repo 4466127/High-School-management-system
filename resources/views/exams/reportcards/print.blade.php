@@ -10,16 +10,7 @@
             @php($student = $card['enrollment']->student)
             @php($result = $card['result'] ? \App\Enums\FinalResult::from($card['result']) : null)
             @php($hasReexam = ! empty($card['reexam']))
-            <header class="print-head">
-                <div class="d-flex align-items-center gap-2">
-                    @if (\App\Models\Setting::get('logo_path'))<img src="{{ route('school.logo') }}" alt="" width="56" height="56" class="object-fit-contain">@endif
-                    <div>
-                        <div class="print-school">{{ \App\Models\Setting::get('school_name') }}</div>
-                        <div class="small">{{ collect([__('school.type_line', ['type' => \App\Enums\SchoolType::current()->label()]), \App\Models\Setting::get('province'), \App\Models\Setting::get('district')])->filter()->join('، ') }}</div>
-                    </div>
-                </div>
-                <div class="text-start small">{{ __('app.printed_on') }}: @jdate(now())</div>
-            </header>
+            @include('layouts.partials.letterhead')
             <h1 class="report-card-title">
                 {{ __('exams.reportcard') }} — {{ __('academics.year') }} @fa($section->academicYear->name)
                 @if ($card['provisional'])<span class="report-card-provisional">{{ __('exams.provisional') }}</span>@endif

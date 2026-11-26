@@ -30,11 +30,11 @@ use ZipArchive;
  */
 class BackupService
 {
-    public const REASONS = ['auto', 'manual', 'pre_restore', 'pre_reset'];
+    public const REASONS = ['auto', 'manual', 'pre_restore', 'pre_reset', 'pre_update'];
 
     private const FORMAT = 1;
 
-    private const NAME_PATTERN = '/^maktab-(\d{4}-\d{2}-\d{2}_\d{6})-(auto|manual|pre_restore|pre_reset)\.zip$/';
+    private const NAME_PATTERN = '/^maktab-(\d{4}-\d{2}-\d{2}_\d{6})-(auto|manual|pre_restore|pre_reset|pre_update)\.zip$/';
 
     /** پوشه در zip => دیسک Laravel */
     private const FILE_DISKS = ['private' => 'local', 'public' => 'public'];

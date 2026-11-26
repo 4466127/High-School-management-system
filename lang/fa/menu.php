@@ -41,4 +41,5 @@ return [
     'activity_logs' => 'ثبت رویدادها',
     'import' => 'ورود از Excel',
     'backups' => 'پشتیبان و بازیابی',
+    'license' => 'لایسنس',
 ];

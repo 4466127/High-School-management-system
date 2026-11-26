@@ -130,7 +130,7 @@ erDiagram
 
 **activity_logs** — `user_id` (اختیاری), `action` (مثل `mark.updated`, `payment.voided`), `subject_type`, `subject_id`, `description`, `old_values` (JSON), `new_values` (JSON), `ip_address`, `created_at`. فقط افزودن؛ ویرایش و حذف ندارد.
 
-**settings** — `key` (کلید اصلی), `value`. کلیدها: `school_name`, `school_type` (government/private), `province`, `district`, `address`, `phone`, `principal_name`, `logo_path`, `fees_enabled`, `school_ledger_enabled`, `pass_percent`, `conditional_max_failed_subjects`, `deprivation_absence_days`, `weekly_holidays`, …
+**settings** — `key` (کلید اصلی), `value`. کلیدها: `school_name`, `school_type` (government/private), `province`, `district`, `address`, `phone`, `principal_name`, `logo_path`, `header_line`, `directorate`, `school_code`, `email`, `installation_id` (مرحله‌ی ۱۱)، `setup_token`/`setup_expires_at` (فقط تا راه‌اندازی)، `fees_enabled`, `school_ledger_enabled`, `pass_percent`, `conditional_max_failed_subjects`, `deprivation_absence_days`, `weekly_holidays`, …
 
 ### ساختار آموزشی
 **academic_years** — `name` (مثل ۱۴۰۵), `start_date`, `end_date`, `is_current`, `status` (open/closed). فقط یک سال `is_current` است.

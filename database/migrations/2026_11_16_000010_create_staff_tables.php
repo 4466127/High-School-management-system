@@ -11,6 +11,12 @@ return new class extends Migration
 {
     public function up(): void
     {
+        // این فایل پیش‌تر نام 2026_11_17_… داشت و در نصب تازه بعد از migrationهای وابسته اجرا می‌شد.
+        // نصب‌های قبلی جدول را از قبل دارند؛ این‌جا فقط ثبت می‌شود و هیچ چیزی عوض نمی‌شود.
+        if (Schema::hasTable('staff')) {
+            return;
+        }
+
         Schema::create('staff', function (Blueprint $table) {
             $table->id();
             $table->string('staff_type', 20)->index();          // App\Enums\StaffType

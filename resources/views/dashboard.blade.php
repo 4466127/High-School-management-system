@@ -19,6 +19,14 @@
         </div>
     </div>
 
+    @if ($license ?? null)
+        <div class="alert alert-warning d-flex flex-wrap align-items-center gap-2 py-2">
+            <i class="fa-solid fa-key" aria-hidden="true"></i>
+            <span class="flex-fill">{{ __('license.dashboard_warning', ['state' => __('license.states.'.$license)]) }}</span>
+            <a href="{{ route('settings.license.index') }}" class="btn btn-sm btn-warning">{{ __('license.title') }}</a>
+        </div>
+    @endif
+
     @if ($backup)
         <div class="alert alert-warning d-flex flex-wrap align-items-center gap-2 py-2">
             <i class="fa-solid fa-database" aria-hidden="true"></i>

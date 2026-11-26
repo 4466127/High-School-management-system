@@ -49,6 +49,7 @@ return [
         'settings.manage' => 'system',
         'users.manage' => 'system',
         'backups.manage' => 'system',
+        'license.manage' => 'system',
         'activity_logs.view' => 'system',
     ],
 
