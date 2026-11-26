@@ -41,6 +41,7 @@ return [
         'letter' => 'مکاتیب',
         'letter_template' => 'قالب‌های مکتوب',
         'timetable' => 'تقسیم اوقات',
+        'teaching' => 'پلان تدریس',
     ],
     'actions' => [
         'auth' => [
@@ -109,6 +110,18 @@ return [
         'subject' => [
             'created' => 'افزودن مضمون',
             'updated' => 'ویرایش مضمون',
+        ],
+        'teaching' => [
+            'plan_created' => 'ساختن پلان تدریس',
+            'plan_updated' => 'ویرایش یادداشت پلان تدریس',
+            'topics_added' => 'افزودن موضوع‌های پلان تدریس',
+            'topic_updated' => 'ویرایش موضوع پلان تدریس',
+            'topic_removed' => 'حذف موضوع پلان تدریس',
+            'progress' => 'ثبت پیشرفت تدریس',
+            'plan_submitted' => 'فرستادن پلان تدریس',
+            'plan_approved' => 'منظوری پلان تدریس',
+            'plan_returned' => 'برگشت پلان تدریس',
+            'plan_copied' => 'کاپی پلان تدریس',
         ],
         'timetable' => [
             'saved' => 'ثبت خانه‌ی تقسیم اوقات',

@@ -48,6 +48,8 @@ use App\Http\Controllers\Students\PastResultController;
 use App\Http\Controllers\Students\StudentController;
 use App\Http\Controllers\Students\StudentDocumentController;
 use App\Http\Controllers\Students\TransferController;
+use App\Http\Controllers\Teaching\PlanController;
+use App\Http\Controllers\Teaching\TeacherReportController;
 use App\Http\Controllers\Timetable\SetupController as TimetableSetupController;
 use App\Http\Controllers\Timetable\TimetableController;
 use App\Http\Controllers\Timetable\WeeklyViewController;
@@ -203,6 +205,26 @@ Route::middleware(['auth', 'active'])->group(function () {
                 Route::put('/setup/periods/{period}', [TimetableSetupController::class, 'updatePeriod'])->name('setup.periods.update');
                 Route::post('/setup/rooms', [TimetableSetupController::class, 'storeRoom'])->name('setup.rooms.store');
                 Route::put('/setup/rooms/{room}', [TimetableSetupController::class, 'updateRoom'])->name('setup.rooms.update');
+            });
+        });
+
+        // ---------- پلان تدریس و گزارش معلمان (مرحله‌ی ۱۶؛ مجوز دقیق در TeachingPlanPolicy) ----------
+        Route::prefix('teaching')->name('teaching.')->group(function () {
+            Route::get('/plans', [PlanController::class, 'index'])->name('plans.index');
+            Route::post('/plans/open', [PlanController::class, 'open'])->name('plans.open');
+            Route::get('/plans/{plan}', [PlanController::class, 'show'])->name('plans.show');
+            Route::put('/plans/{plan}/notes', [PlanController::class, 'notes'])->name('plans.notes');
+            Route::post('/plans/{plan}/topics', [PlanController::class, 'topics'])->name('plans.topics');
+            Route::post('/plans/{plan}/submit', [PlanController::class, 'submit'])->name('plans.submit');
+            Route::post('/plans/{plan}/review', [PlanController::class, 'review'])->name('plans.review');
+            Route::post('/plans/{plan}/copy', [PlanController::class, 'copy'])->name('plans.copy');
+            Route::put('/items/{item}', [PlanController::class, 'updateItem'])->name('items.update');
+            Route::delete('/items/{item}', [PlanController::class, 'destroyItem'])->name('items.destroy');
+            Route::post('/items/{item}/progress', [PlanController::class, 'progress'])->name('items.progress');
+            Route::middleware('can:teaching.manage')->group(function () {
+                Route::get('/reports', [TeacherReportController::class, 'index'])->name('reports.index');
+                Route::get('/reports/export', [TeacherReportController::class, 'export'])->name('reports.export');
+                Route::get('/reports/{staff}', [TeacherReportController::class, 'show'])->withTrashed()->name('reports.show');
             });
         });
 

@@ -243,6 +243,13 @@ erDiagram
 - ترانسکریپت: اگر نتیجه‌ی نهایی‌شده‌ی همان صنف در `enrollments` باشد، آن مقدم است.
 - تنظیمات قالب چاپ: `reportcard_*` و `transcript_*` در `settings` (فهرست در `App\Support\ExamTemplate`).
 
+### پلان تدریس (مرحله‌ی ۱۶)
+**teaching_plans** — `academic_year_id`, `section_id`, `subject_id` (یکتا با بخش), `staff_id`, `status` (draft / submitted / approved / returned), `notes`, `submitted_at`, `reviewed_by`, `reviewed_at`, `review_note`, `created_by`. حذف نمی‌شود.
+
+**teaching_plan_items** — `teaching_plan_id`, `sort_order`, `week_no`, `planned_from`, `planned_to`, `topic`, `objectives`, `planned_hours`, `status` (planned / done / partial / skipped), `completed_on`, `note`.
+
+قواعد: موضوع‌ها فقط در پیش‌نویس یا برگشت افزوده/ویرایش/حذف می‌شوند؛ پیشرفت همیشه. هر تغییر در `activity_logs`.
+
 ### تقسیم اوقات (مرحله‌ی ۱۵)
 **periods** — `name`, `shift` (morning / afternoon), `start_time`, `end_time`, `sort_order`, `is_break`, `is_active`.
 

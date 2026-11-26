@@ -37,6 +37,10 @@ return [
         ['key' => 'timetable_rooms', 'icon' => 'fa-door-open', 'route' => 'timetable.rooms.index', 'can' => ['timetable.manage']],
         ['key' => 'timetable_setup', 'icon' => 'fa-clock', 'route' => 'timetable.setup.index', 'can' => ['timetable.manage']],
     ]],
+    ['key' => 'teaching', 'icon' => 'fa-book-open', 'route' => null, 'can' => ['teaching.plan', 'teaching.manage'], 'children' => [
+        ['key' => 'teaching_plans', 'icon' => 'fa-list-check', 'route' => 'teaching.plans.index', 'can' => ['teaching.plan', 'teaching.manage']],
+        ['key' => 'teaching_reports', 'icon' => 'fa-chart-simple', 'route' => 'teaching.reports.index', 'can' => ['teaching.manage']],
+    ]],
     ['key' => 'exams', 'icon' => 'fa-file-pen', 'route' => null, 'can' => ['marks.enter', 'exams.manage', 'reportcards.print'], 'children' => [
         ['key' => 'exams_marks', 'icon' => 'fa-pen-to-square', 'route' => 'exams.marks.index', 'can' => ['marks.enter']],
         ['key' => 'exams_results', 'icon' => 'fa-table-list', 'route' => 'exams.results.index', 'can' => ['exams.manage', 'reportcards.print']],

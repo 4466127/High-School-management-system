@@ -80,6 +80,18 @@ return [
         'annual' => 'سالانه',
         'once' => 'یک‌بار',
     ],
+    'plan_status' => [
+        'draft' => 'پیش‌نویس',
+        'submitted' => 'فرستاده به مدیر',
+        'approved' => 'منظور شد',
+        'returned' => 'برگشت برای اصلاح',
+    ],
+    'plan_item_status' => [
+        'planned' => 'در برنامه',
+        'done' => 'تدریس شد',
+        'partial' => 'نیمه تدریس شد',
+        'skipped' => 'رها شد',
+    ],
     'room_type' => [
         'classroom' => 'صنف درسی',
         'lab' => 'لابراتوار',
