@@ -80,6 +80,20 @@ return [
         'annual' => 'سالانه',
         'once' => 'یک‌بار',
     ],
+    'document_category' => [
+        'registration' => 'اسناد ثبت‌نام',
+        'identity' => 'تذکره / هویت',
+        'photo' => 'عکس',
+        'certificate' => 'شهادت‌نامه / سند',
+        'report_card' => 'کارنامه',
+        'transfer' => 'اسناد انتقال',
+        'medical' => 'صحی',
+        'other' => 'دیگر',
+    ],
+    'transfer_direction' => [
+        'out' => 'به مکتب دیگر',
+        'in' => 'از مکتب دیگر',
+    ],
     'announcement_audience' => [
         'all' => 'همه',
         'staff' => 'کارکنان',

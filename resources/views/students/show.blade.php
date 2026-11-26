@@ -149,6 +149,21 @@
                     </div>
                 @endif
             @endcan
+            @can('update', $student)
+                <div class="d-flex flex-wrap gap-2 mb-2">
+                    <a href="{{ route('student-transfers.record', $student) }}" class="btn btn-sm btn-outline-secondary"><i class="fa-solid fa-print" aria-hidden="true"></i> {{ __('students.record_print') }}</a>
+                    <a href="{{ route('student-transfers.package', $student) }}" class="btn btn-sm btn-outline-secondary"><i class="fa-solid fa-file-export" aria-hidden="true"></i> {{ __('students.record_file') }}</a>
+                    @if (in_array($student->status, [\App\Enums\StudentStatus::Active, \App\Enums\StudentStatus::Inactive], true) && ! $student->trashed())
+                        <a href="{{ route('student-transfers.out.create', $student) }}" class="btn btn-sm btn-outline-secondary"><i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i> {{ __('students.transfer_out') }}</a>
+                    @endif
+                    @unless ($student->trashed())
+                        <a href="{{ route('student-transfers.in.create', $student) }}" class="btn btn-sm btn-outline-secondary"><i class="fa-solid fa-right-to-bracket" aria-hidden="true"></i> {{ __('students.transfer_in') }}</a>
+                    @endunless
+                    @if ($currentEnrollment)
+                        <a href="{{ route('student-cards.index', ['student' => $student->id, 'print' => 1]) }}" class="btn btn-sm btn-outline-secondary"><i class="fa-solid fa-id-badge" aria-hidden="true"></i> {{ __('students.id_card') }}</a>
+                    @endif
+                </div>
+            @endcan
             <div class="card">
                 <div class="table-responsive">
                     <table class="table align-middle mb-0">
@@ -185,6 +200,31 @@
                     </table>
                 </div>
             </div>
+
+            @if ($student->status === \App\Enums\StudentStatus::Graduated && $student->certificate_no)
+                <div class="card card-body mt-3 small">
+                    <div><i class="fa-solid fa-award" aria-hidden="true"></i> {{ __('students.graduation') }}: @fa($student->certificate_no)@if ($student->certificate_date) — @jdate($student->certificate_date, 'long')@endif</div>
+                    @if ($student->certificate_note)<div class="text-secondary">{{ $student->certificate_note }}</div>@endif
+                </div>
+            @endif
+
+            @if ($sensitive && $transfers->isNotEmpty())
+                <h2 class="h6 fw-bold mt-3">{{ __('students.transfers_title') }}</h2>
+                <div class="card">
+                    <ul class="list-group list-group-flush">
+                        @foreach ($transfers as $t)
+                            <li class="list-group-item d-flex flex-wrap align-items-center gap-2 small">
+                                <span class="badge {{ $t->direction->badgeClass() }}">{{ $t->direction->label() }}</span>
+                                <span class="flex-grow-1">{{ $t->other_school }} — @jdate($t->transfer_date)@if ($t->isCancelled()) <span class="badge text-bg-light border">{{ __('transfers.cancelled') }}</span>@endif</span>
+                                <a href="{{ route('student-transfers.show', $t) }}" class="btn btn-sm btn-outline-primary">{{ __('app.view') }}</a>
+                            </li>
+                        @endforeach
+                    </ul>
+                </div>
+                @foreach ($transfers->filter(fn ($t) => ! $t->isCancelled() && $t->previous_records) as $t)
+                    <div class="mt-3">@include('students.partials.previous-records', ['records' => $t->previous_records, 'student' => $student])</div>
+                @endforeach
+            @endif
         </div>
 
         {{-- حاضری سال جاری --}}

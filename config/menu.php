@@ -12,7 +12,12 @@
 
 return [
     ['key' => 'dashboard', 'icon' => 'fa-gauge-high', 'route' => 'dashboard', 'can' => ['dashboard.view']],
-    ['key' => 'students', 'icon' => 'fa-user-graduate', 'route' => 'students.index', 'can' => ['students.view']],
+    ['key' => 'students', 'icon' => 'fa-user-graduate', 'route' => null, 'can' => ['students.view'], 'children' => [
+        ['key' => 'students_list', 'icon' => 'fa-user-graduate', 'route' => 'students.index', 'can' => ['students.view']],
+        ['key' => 'student_transfers', 'icon' => 'fa-right-left', 'route' => 'student-transfers.index', 'can' => ['students.manage']],
+        ['key' => 'student_archive', 'icon' => 'fa-box-archive', 'route' => 'student-archive.index', 'can' => ['students.manage']],
+        ['key' => 'student_cards', 'icon' => 'fa-id-badge', 'route' => 'student-cards.index', 'can' => ['students.manage']],
+    ]],
     ['key' => 'staff', 'icon' => 'fa-chalkboard-user', 'route' => 'staff.index', 'can' => ['staff.manage']],
     ['key' => 'academics', 'icon' => 'fa-school', 'route' => null, 'can' => ['academics.view', 'academics.manage'], 'children' => [
         ['key' => 'sections', 'icon' => 'fa-chalkboard', 'route' => 'academics.sections.index', 'can' => ['academics.view', 'academics.manage']],

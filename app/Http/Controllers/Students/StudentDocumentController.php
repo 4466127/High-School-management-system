@@ -28,6 +28,7 @@ class StudentDocumentController extends Controller
             DB::transaction(function () use ($request, $student, $file, $path) {
                 $document = $student->documents()->create([
                     'title' => $request->validated('title'),
+                    'category' => $request->validated('category') ?: 'other',
                     'file_path' => $path,
                     'original_name' => mb_substr($file->getClientOriginalName(), 0, 255),
                     'mime_type' => $file->getMimeType(),
@@ -48,6 +49,11 @@ class StudentDocumentController extends Controller
     {
         Gate::authorize('viewSensitive', Student::class);
         abort_unless($document->student_id === $student->id && PrivateFiles::exists($document->file_path), 404);
+
+        // پیش‌نمایش داخل مرورگر فقط برای عکس و PDF (نوع از سرور، نه از نام فایل)
+        if ($request->boolean('preview') && in_array($document->mime_type, ['application/pdf', 'image/jpeg', 'image/png', 'image/webp'], true)) {
+            return PrivateFiles::inline($document->file_path);
+        }
 
         return PrivateFiles::download($document->file_path, $document->original_name);
     }

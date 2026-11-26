@@ -37,10 +37,13 @@ use App\Http\Controllers\Settings\SchoolSettingController;
 use App\Http\Controllers\Settings\UserController;
 use App\Http\Controllers\Staff\StaffController;
 use App\Http\Controllers\Staff\WorkHistoryController;
+use App\Http\Controllers\Students\ArchiveController;
 use App\Http\Controllers\Students\EnrollmentController;
 use App\Http\Controllers\Students\GuardianController;
+use App\Http\Controllers\Students\IdCardController;
 use App\Http\Controllers\Students\StudentController;
 use App\Http\Controllers\Students\StudentDocumentController;
+use App\Http\Controllers\Students\TransferController;
 use Illuminate\Support\Facades\Route;
 
 // لوگوی مکتب: برای همه (صفحه‌ی ورود هم نشان می‌دهد)
@@ -87,6 +90,27 @@ Route::middleware(['auth', 'active'])->group(function () {
             Route::post('/{student}/documents', [StudentDocumentController::class, 'store'])->name('documents.store');
             Route::get('/{student}/documents/{document}', [StudentDocumentController::class, 'show'])->name('documents.show');
             Route::delete('/{student}/documents/{document}', [StudentDocumentController::class, 'destroy'])->name('documents.destroy');
+        });
+
+        // ---------- پرونده‌ی دانش‌آموز: انتقال، بایگانی، کارت هویت (مرحله‌ی ۱۳؛ students.manage) ----------
+        // آدرس‌ها بیرون از /students تا با /students/{student} قاطی نشوند
+        Route::middleware('can:students.manage')->group(function () {
+            Route::prefix('student-transfers')->name('student-transfers.')->group(function () {
+                Route::get('/', [TransferController::class, 'index'])->name('index');
+                Route::get('/export', [TransferController::class, 'export'])->name('export');
+                Route::get('/out/{student}', [TransferController::class, 'create'])->name('out.create');
+                Route::post('/out/{student}', [TransferController::class, 'store'])->name('out.store');
+                Route::get('/in/{student}', [TransferController::class, 'create'])->name('in.create');
+                Route::post('/in/{student}', [TransferController::class, 'store'])->name('in.store');
+                Route::get('/record/{student}', [TransferController::class, 'record'])->withTrashed()->name('record');
+                Route::get('/record/{student}/file', [TransferController::class, 'package'])->withTrashed()->name('package');
+                Route::get('/{transfer}', [TransferController::class, 'show'])->name('show');
+                Route::post('/{transfer}/cancel', [TransferController::class, 'cancel'])->name('cancel');
+            });
+            Route::get('/student-archive', [ArchiveController::class, 'index'])->name('student-archive.index');
+            Route::get('/student-archive/export', [ArchiveController::class, 'export'])->name('student-archive.export');
+            Route::patch('/student-archive/{student}/certificate', [ArchiveController::class, 'certificate'])->name('student-archive.certificate');
+            Route::get('/student-cards', [IdCardController::class, 'index'])->name('student-cards.index');
         });
 
         // ---------- معلمان و کارکنان ----------

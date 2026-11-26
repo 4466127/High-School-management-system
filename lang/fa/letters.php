@@ -112,6 +112,10 @@ return [
         'staff_father_name' => 'نام پدر کارمند',
         'staff_position' => 'وظیفه‌ی کارمند',
         'hire_date' => 'تاریخ استخدام',
+        'other_school' => 'مکتب مقصد انتقال',
+        'transfer_date' => 'تاریخ انتقال',
+        'transfer_reason' => 'دلیل انتقال',
+        'certificate_no' => 'شماره‌ی سند فراغت',
     ],
 
     'attributes' => [

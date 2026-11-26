@@ -41,6 +41,7 @@ class Student extends Model
             'birth_date' => 'date',
             'admission_date' => 'date',
             'status_changed_on' => 'date',
+            'certificate_date' => 'date',
         ];
     }
 
@@ -54,7 +55,13 @@ class Student extends Model
 
     public function documents(): HasMany
     {
-        return $this->hasMany(StudentDocument::class)->latest();
+        return $this->hasMany(StudentDocument::class)->orderBy('category')->latest();
+    }
+
+    /** انتقال‌ها میان مکاتب (مرحله‌ی ۱۳) */
+    public function transfers(): HasMany
+    {
+        return $this->hasMany(StudentTransfer::class)->latest('transfer_date')->latest('id');
     }
 
     /** سوابق تحصیلی: یک سطر برای هر سال */

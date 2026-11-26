@@ -31,6 +31,7 @@ class LetterService
         'school_name', 'school_address', 'principal_name', 'today', 'letter_date', 'recipient', 'organization',
         'student_name', 'father_name', 'grandfather_name', 'admission_no', 'birth_date', 'class', 'academic_year',
         'staff_name', 'staff_father_name', 'staff_position', 'hire_date',
+        'other_school', 'transfer_date', 'transfer_reason', 'certificate_no',
     ];
 
     public function __construct(private readonly ActivityLogger $logger) {}
@@ -58,6 +59,7 @@ class LetterService
                 'birth_date' => $student->birth_date ? JalaliDate::format($student->birth_date, 'long') : '',
                 'class' => $enrollment?->section?->label ?? '',
                 'academic_year' => $enrollment ? Digits::toPersian($enrollment->section->academicYear->name) : '',
+                'certificate_no' => Digits::toPersian((string) $student->certificate_no),
             ];
         }
         if ($staff) {
@@ -79,9 +81,9 @@ class LetterService
     }
 
     /** خانه‌های فرم مکتوب تازه از روی قالب (پیش از ذخیره؛ کاربر متن را ویرایش می‌کند) */
-    public function draftFromTemplate(?LetterTemplate $template, ?Student $student, ?Staff $staff): array
+    public function draftFromTemplate(?LetterTemplate $template, ?Student $student, ?Staff $staff, array $extra = []): array
     {
-        $context = $this->context($student, $staff, ['letter_date' => JalaliDate::format(now(), 'long')]);
+        $context = $this->context($student, $staff, ['letter_date' => JalaliDate::format(now(), 'long')] + $extra);
 
         return [
             'type' => $template?->type?->value ?? 'general',

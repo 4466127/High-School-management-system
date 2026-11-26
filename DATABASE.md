@@ -224,6 +224,16 @@ erDiagram
 - مانده‌ی صندوق کورس = Σ donation(cashbox) − Σ teacher_salary − Σ expense (سطرهای باطل‌نشده). معاش/مصرف بیشتر از مانده، و باطل کردن کمکی که مانده را منفی کند، پذیرفته نمی‌شود.
 - دریافتی معلم = Σ teacher_salary + Σ donation(direct_to_teacher).
 - مانده ذخیره نمی‌شود (`CourseLedgerCalculator`). پول کورس با فیس یا دفتر مکتب جمع نمی‌شود.
+### پرونده‌ی دانش‌آموز (مرحله‌ی ۱۳)
+- **student_documents.category** — registration / identity / photo / certificate / report_card / transfer / medical / other (پیش‌فرض other).
+- **students** — `certificate_no`, `certificate_date`, `certificate_note`: مشخصات سند فراغت (فقط برای فارغ‌ها).
+
+**student_transfers** — `student_id`, `direction` (out / in), `status` (completed / cancelled), `enrollment_id` (صادره: شمولیتی که «منتقل» بسته شد), `other_school`, `other_province`, `other_district`, `requested_on`, `approved_on`, `transfer_date`, `reason`, `reference_number`, `last_grade` (وارده), `outstanding_balance` (صادره: مانده‌ی فیس هنگام انتقال، DECIMAL(12,2)), `clearance_note`, `notes`, `previous_records` (JSON؛ وارده: فایل سوابق مکتب قبلی پس از پاک‌سازی), `cancelled_at`, `cancelled_by`, `cancel_reason`, `created_by`.
+
+قواعد:
+- انتقال جدا از ارتقا است؛ سوابق (`enrollments`، نمرات، حاضری) هرگز پاک یا بازنویسی نمی‌شود. انتقال حذف نمی‌شود؛ باطل می‌شود.
+- فایل سوابق: `format = maktab-student-record`، `version = 1`؛ مشخصات دانش‌آموز، مکتب، سوابق هر سال (صنف، وضعیت، نتیجه، اوسط، درجه، نمره‌ی نهایی مضامین، شمار حاضری) و مشخصات انتقال.
+
 ### اعلان‌ها و مکاتیب (مرحله‌ی ۱۲)
 **announcements** — `title`, `body`, `audience` (all / staff / teachers / students / parents), `status` (draft / published / archived), `is_pinned`, `published_at`, `expires_on`, `attachment_path`, `attachment_name`, `attachment_mime`, `attachment_size`, `created_by`, `updated_by`. حذف نمی‌شود؛ بایگانی می‌شود.
 

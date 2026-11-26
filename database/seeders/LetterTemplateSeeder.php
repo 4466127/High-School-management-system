@@ -37,6 +37,12 @@ class LetterTemplateSeeder extends Seeder
             'body' => "محترما!\n\nبه اطلاع می‌رساند که {staff_name} فرزند {staff_father_name} از تاریخ {hire_date} به حیث {staff_position} در {school_name} وظیفه اجرا می‌کند.\n\nاین تصدیق به درخواست خود او صادر شد.\n\nبا احترام",
         ],
         [
+            'name' => 'مکتوب انتقال دانش‌آموز',
+            'type' => 'transfer',
+            'subject' => 'انتقال {student_name}',
+            'body' => "محترما!\n\n{student_name} فرزند {father_name}، به نمبر اساس {admission_no}، دانش‌آموز {class} این مکتب، به تاریخ {transfer_date} به {other_school} انتقال می‌یابد.\n\nسوابق تحصیلی او ضمیمه است.\n\nبا احترام",
+        ],
+        [
             'name' => 'دعوت‌نامه',
             'type' => 'invitation',
             'subject' => 'دعوت‌نامه',

@@ -48,6 +48,10 @@
 | `/finance/ledger/export?type=&category=&from=&to=` | درآمد و مصرف مکتب | ۷ ✅ |
 | `/courses/finance/{course}/export?type=&voided=` | دفتر مالی یک کورس (کمک، معاش، مصرف) | ۸ ✅ |
 | `/letters/export?direction=outgoing\|incoming&q=&type=&status=&from=&to=` | بایگانی مکاتیب صادره یا وارده | ۱۲ ✅ |
+| `/student-transfers/export?direction=&q=&from=&to=` | انتقال‌های میان مکاتب | ۱۳ ✅ |
+| `/student-archive/export?status=&year=&q=` | دانش‌آموزان سابق (فارغ، منتقل، ترک، غیرفعال) | ۱۳ ✅ |
+
+**فایل سوابق دانش‌آموز (JSON، مرحله‌ی ۱۳):** `/student-transfers/record/{student}/file` — قالب `maktab-student-record`، نسخه‌ی ۱ (DATABASE.md بخش پرونده‌ی دانش‌آموز). در صفحه‌ی «ثبت انتقال از مکتب دیگر» آپلود می‌شود.
 
 ## اگر در آینده API واقعی لازم شد
 - مسیرها در `routes/api.php` با نسخه (`/api/v1`)، احراز هویت با Laravel Sanctum.

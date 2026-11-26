@@ -154,6 +154,7 @@ class StudentController extends Controller
             'canSeeMarks' => $canSeeMarks = $current && Gate::allows('viewResults', [Exam::class, $current->section]),
             'reportCard' => $canSeeMarks ? $this->results->reportCards($current->section, $current)->first() : null,
             'fees' => $this->feesData($request, $student, $current),
+            'transfers' => $sensitive ? $student->transfers()->get() : collect(),
             'yearSections' => $year && $request->user()->can('update', $student)
                 ? Section::query()->with('gradeLevel')->where('academic_year_id', $year->id)->ordered()->get()
                 : collect(),

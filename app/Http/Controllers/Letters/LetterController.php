@@ -65,7 +65,19 @@ class LetterController extends Controller
         $staff = $request->integer('staff') ? Staff::find($request->integer('staff')) : null;
         $replyTo = $request->integer('reply_to') ? Letter::where('direction', LetterDirection::Incoming)->find($request->integer('reply_to')) : null;
 
-        $draft = $this->letters->draftFromTemplate($template, $student, $staff);
+        // از صفحه‌ی انتقال (مرحله‌ی ۱۳): مکتب مقصد، تاریخ و دلیل انتقال
+        $transfer = $student && $request->integer('transfer') ? $student->transfers()->find($request->integer('transfer')) : null;
+        $extra = $transfer ? [
+            'other_school' => $transfer->other_school,
+            'transfer_date' => JalaliDate::format($transfer->transfer_date, 'long'),
+            'transfer_reason' => $transfer->reason,
+            'organization' => $transfer->other_school,
+        ] : [];
+
+        $draft = $this->letters->draftFromTemplate($template, $student, $staff, $extra);
+        if ($transfer) {
+            $draft['organization'] = $transfer->other_school;
+        }
         if ($replyTo) {
             $draft += ['reply_to_id' => $replyTo->id, 'recipient' => $replyTo->recipient, 'organization' => $replyTo->organization];
             $draft['subject'] = $draft['subject'] ?: __('letters.reply_subject', ['subject' => $replyTo->subject]);

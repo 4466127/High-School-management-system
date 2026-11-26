@@ -1,6 +1,16 @@
 <?php
 
 return [
+    'document_category' => 'دسته',
+    'document_all' => 'همه‌ی دسته‌ها',
+    'document_preview' => 'دیدن',
+    'transfer_out' => 'انتقال به مکتب دیگر',
+    'transfer_in' => 'ثبت انتقال از مکتب دیگر',
+    'record_print' => 'چاپ سوابق تحصیلی',
+    'record_file' => 'فایل سوابق (برای مکتب مقصد)',
+    'id_card' => 'کارت هویت',
+    'transfers_title' => 'انتقال‌ها',
+    'graduation' => 'سند فراغت',
     'title' => 'دانش‌آموزان',
     'create' => 'ثبت دانش‌آموز جدید',
     'edit' => 'ویرایش دانش‌آموز',
