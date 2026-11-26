@@ -66,6 +66,10 @@ return [
             'transfer_cancelled' => 'باطل کردن انتقال',
             'record_exported' => 'خروجی فایل سوابق دانش‌آموز',
             'certificate_saved' => 'ثبت مشخصات سند فراغت',
+            'former_added' => 'ثبت دانش‌آموز سابق',
+            'past_result_added' => 'ثبت نتیجه‌ی سال قبل',
+            'past_result_updated' => 'ویرایش نتیجه‌ی سال قبل',
+            'past_result_cancelled' => 'باطل کردن نتیجه‌ی سال قبل',
             'guardian_added' => 'افزودن سرپرست',
             'guardian_updated' => 'ویرایش سرپرست',
             'guardian_removed' => 'جدا کردن سرپرست',
@@ -107,6 +111,7 @@ return [
         ],
         'settings' => [
             'updated' => 'تغییر مشخصات مکتب',
+            'exam_templates' => 'تغییر قالب کارنامه و ترانسکریپت',
         ],
         'attendance' => [
             'taken' => 'ثبت حاضری بخش',
@@ -186,6 +191,7 @@ return [
         'import' => [
             'students' => 'ورود گروهی دانش‌آموزان',
             'staff' => 'ورود گروهی کارکنان',
+            'graduates' => 'ورود گروهی فارغ‌های سال‌های قبل',
         ],
         'results' => [
             'finalized' => 'نهایی‌کردن نتایج',

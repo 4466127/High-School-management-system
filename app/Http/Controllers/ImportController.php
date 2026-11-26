@@ -16,7 +16,7 @@ use Throwable;
 
 /**
  * ورود گروهی از Excel: انتخاب نوع و آپلود ← بررسی (پیش‌نمایش) ← ذخیره‌ی سطرهای درست.
- * دانش‌آموزان: students.manage؛ کارکنان: staff.manage. فایل آپلودی تا ذخیره در storage/app/private/imports می‌ماند.
+ * دانش‌آموزان و فارغ‌های سال‌های قبل: students.manage؛ کارکنان: staff.manage. فایل آپلودی تا ذخیره در storage/app/private/imports می‌ماند.
  */
 class ImportController extends Controller
 {
@@ -99,7 +99,11 @@ class ImportController extends Controller
         $summary = $this->import->import($type, $result['rows'], $request->user());
         Storage::disk('local')->delete(self::DIR.'/'.$token);
 
-        $target = $type === 'students' ? route('students.index') : route('staff.index');
+        $target = match ($type) {
+            'students' => route('students.index'),
+            'graduates' => route('student-archive.index'),
+            default => route('staff.index'),
+        };
 
         return redirect()->to($target)->with('success', __('import.done', [
             'imported' => Digits::toPersian((string) $summary['imported']),
@@ -127,7 +131,7 @@ class ImportController extends Controller
     /** @return list<string> */
     private function allowedTypes(Request $request): array
     {
-        return array_values(array_filter(ImportService::TYPES, fn ($t) => $request->user()->hasPermission($t === 'students' ? 'students.manage' : 'staff.manage')));
+        return array_values(array_filter(ImportService::TYPES, fn ($t) => $request->user()->hasPermission($t === 'staff' ? 'staff.manage' : 'students.manage')));
     }
 
     private function authorizeType(Request $request, string $type): void

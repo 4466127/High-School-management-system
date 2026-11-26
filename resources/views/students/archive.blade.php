@@ -9,6 +9,7 @@
         <div class="page-head">
             <h1 class="page-title mb-0">{{ __('archive.title') }}</h1>
             <div class="d-flex flex-wrap gap-2">
+                <a href="{{ route('student-archive.create') }}" class="btn btn-primary"><i class="fa-solid fa-user-plus" aria-hidden="true"></i> {{ __('past_results.former_add') }}</a>
                 <a href="{{ route('student-archive.index', $query + ['print' => 1]) }}" class="btn btn-outline-secondary"><i class="fa-solid fa-print" aria-hidden="true"></i> {{ __('attendance.print') }}</a>
                 <a href="{{ route('student-archive.export', $query) }}" class="btn btn-outline-secondary"><i class="fa-solid fa-file-csv" aria-hidden="true"></i> {{ __('attendance.export_csv') }}</a>
             </div>
@@ -48,17 +49,24 @@
                 <tbody>
                 @forelse ($students as $s)
                     @php($last = $s->enrollments->first())
+                    @php($past = $last ? null : $s->pastResults->last())
                     <tr>
                         <td>@fa($s->admission_no)</td>
                         <td>@if ($print){{ $s->full_name }}@else<a href="{{ route('students.show', $s) }}">{{ $s->full_name }}</a>@endif</td>
                         <td>{{ $s->father_name }}</td>
                         <td><span class="badge {{ $s->status->badgeClass() }}">{{ $s->status->label() }}</span></td>
-                        <td class="small">@if ($last)@fa($last->academicYear->name) — {{ $last->section->gradeLevel->name }}@else — @endif</td>
-                        <td class="small">{{ $last?->final_result?->label() ?? '—' }}@if ($last?->final_average !== null) ({{ \App\Support\Digits::toPersian(\App\Services\MarkService::format($last->final_average)) }})@endif</td>
+                        @if ($past)
+                            <td class="small">@fa($past->year_name) — {{ $past->grade_name }}</td>
+                            <td class="small">{{ $past->result?->label() ?? '—' }}@if ($past->average !== null) ({{ \App\Support\Digits::toPersian(\App\Services\MarkService::format($past->average)) }})@endif</td>
+                        @else
+                            <td class="small">@if ($last)@fa($last->academicYear->name) — {{ $last->section->gradeLevel->name }}@else — @endif</td>
+                            <td class="small">{{ $last?->final_result?->label() ?? '—' }}@if ($last?->final_average !== null) ({{ \App\Support\Digits::toPersian(\App\Services\MarkService::format($last->final_average)) }})@endif</td>
+                        @endif
                         <td class="small">{{ $s->status_changed_on ? \App\Support\JalaliDate::format($s->status_changed_on) : '—' }}</td>
                         <td class="small">{{ $s->certificate_no ? \App\Support\Digits::toPersian($s->certificate_no) : '—' }}</td>
                         @unless ($print)
                             <td class="text-end text-nowrap">
+                                <a href="{{ route('exams.transcripts.student', $s) }}" class="btn btn-sm btn-outline-secondary" title="{{ __('transcripts.print') }}"><i class="fa-solid fa-scroll" aria-hidden="true"></i></a>
                                 <a href="{{ route('student-transfers.record', $s) }}" class="btn btn-sm btn-outline-secondary" title="{{ __('students.record_print') }}"><i class="fa-solid fa-print" aria-hidden="true"></i></a>
                                 @if ($s->status === \App\Enums\StudentStatus::Graduated)
                                     <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#cert{{ $s->id }}">{{ __('archive.certificate_edit') }}</button>

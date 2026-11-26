@@ -5,9 +5,12 @@ namespace App\Http\Controllers\Students;
 use App\Enums\EnrollmentStatus;
 use App\Enums\StudentStatus;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Students\FormerStudentRequest;
 use App\Models\AcademicYear;
 use App\Models\Student;
 use App\Rules\ValidJalaliDate;
+use App\Services\PastResultService;
+use App\Services\TranscriptService;
 use App\Services\TransferService;
 use App\Support\Csv;
 use App\Support\Digits;
@@ -19,7 +22,7 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
  * بایگانی دانش‌آموزان سابق (فارغ، منتقل‌شده، ترک تحصیل، غیرفعال) — مرحله‌ی ۱۳؛ students.manage.
- * فقط خواندن، به جز مشخصات سند فراغت. سوابق هیچ‌وقت پاک نمی‌شود.
+ * فقط خواندن، به جز مشخصات سند فراغت و ثبت دانش‌آموز سابقی که در سیستم نبود (مرحله‌ی ۱۴). سوابق هیچ‌وقت پاک نمی‌شود.
  */
 class ArchiveController extends Controller
 {
@@ -38,15 +41,34 @@ class ArchiveController extends Controller
         ]);
     }
 
+    /** ثبت فارغ یا دانش‌آموز سابق سال‌های قبل (پیش از سیستم) با نتیجه‌ی صنف‌های ترانسکریپت */
+    public function create(TranscriptService $transcripts): View
+    {
+        return view('students.archive-create', ['levels' => $transcripts->gradeLevels()]);
+    }
+
+    public function store(FormerStudentRequest $request, PastResultService $service): RedirectResponse
+    {
+        $student = $service->createFormerStudent($request->studentData(), $request->leavingData(), $request->resultsData(), $request->user());
+
+        if ($request->boolean('add_another')) {
+            return redirect()->route('student-archive.create')->with('success', __('past_results.former_saved_next', ['name' => $student->full_name]));
+        }
+
+        return redirect()->to(route('students.show', $student).'#history')->with('success', __('past_results.former_saved'));
+    }
+
     public function export(Request $request): StreamedResponse
     {
         $rows = $this->query($request)->get()->map(function (Student $s) {
             $last = $s->enrollments->first();
+            $past = $last ? null : $s->pastResults->last();
 
             return [
                 $s->admission_no, $s->full_name, $s->father_name, $s->gender?->studentLabel(), $s->status->label(),
-                $last ? Digits::toLatin((string) $last->academicYear->name) : '', $last?->section?->gradeLevel?->name,
-                $last?->final_result?->label(), $last?->final_average,
+                $last ? Digits::toLatin((string) $last->academicYear->name) : ($past ? Digits::toLatin($past->year_name) : ''),
+                $last?->section?->gradeLevel?->name ?? $past?->grade_name,
+                $last ? $last->final_result?->label() : $past?->result?->label(), $last ? $last->final_average : $past?->average,
                 $s->status_changed_on ? Digits::toLatin(JalaliDate::format($s->status_changed_on)) : '',
                 $s->certificate_no, $s->status_reason,
             ];
@@ -95,7 +117,8 @@ class ArchiveController extends Controller
                 ->whereIn('status', [EnrollmentStatus::Graduated, EnrollmentStatus::Transferred, EnrollmentStatus::Dropped])))
             ->with(['enrollments' => fn ($q) => $q->with(['academicYear', 'section.gradeLevel'])
                 ->join('academic_years', 'academic_years.id', '=', 'enrollments.academic_year_id')
-                ->orderByDesc('academic_years.start_date')->select('enrollments.*')])
+                ->orderByDesc('academic_years.start_date')->select('enrollments.*'),
+                'pastResults' => fn ($q) => $q->active()])
             ->orderByDesc('status_changed_on')->orderBy('first_name');
     }
 }

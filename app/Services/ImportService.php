@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Enums\EducationLevel;
 use App\Enums\Gender;
 use App\Enums\StaffType;
+use App\Enums\StudentStatus;
 use App\Exceptions\ImportFileException;
 use App\Http\Requests\Students\StudentRequest;
 use App\Models\AcademicYear;
@@ -26,10 +27,14 @@ use Illuminate\Validation\Rule;
  * ورود گروهی دانش‌آموزان و کارکنان از Excel (یا CSV) هنگام راه‌اندازی سیستم.
  * گام ۱: خواندن و بررسی هر سطر (بدون ذخیره). گام ۲: ذخیره‌ی سطرهای درست از راه StudentService/StaffService
  * (همان قاعده‌ها و ثبت رویداد ثبت تکی). سطر خطادار یا تکراری وارد نمی‌شود.
+ * graduates (مرحله‌ی ۱۴): فارغ‌ها و دانش‌آموزان سابق سال‌های قبل، مستقیم در بایگانی با اوسط صنف‌های ۱۰ تا ۱۲ (PastResultService).
  */
 class ImportService
 {
-    public const TYPES = ['students', 'staff'];
+    public const TYPES = ['students', 'staff', 'graduates'];
+
+    /** ستون اوسط فایل فارغ‌ها ← شماره‌ی صنف (GradeLevel::sort_order) و فاصله تا سال فراغت */
+    private const GRADUATE_AVERAGES = ['avg_10' => [10, 2], 'avg_11' => [11, 1], 'avg_12' => [12, 0]];
 
     public const MAX_ROWS = 2000;
 
@@ -38,6 +43,7 @@ class ImportService
         private readonly StaffService $staff,
         private readonly EnrollmentService $enrollments,
         private readonly ActivityLogger $logger,
+        private readonly PastResultService $pastResults,
     ) {}
 
     /**
@@ -109,9 +115,11 @@ class ImportService
             foreach ($map as $index => $key) {
                 $values[$key] = $this->clean($key, (string) ($cells[$index] ?? ''));
             }
-            $rows[] = $type === 'students'
-                ? $this->checkStudent($values, $i + 1, $seen)
-                : $this->checkStaff($values, $i + 1, $seen);
+            $rows[] = match ($type) {
+                'students' => $this->checkStudent($values, $i + 1, $seen),
+                'graduates' => $this->checkGraduate($values, $i + 1, $seen),
+                default => $this->checkStaff($values, $i + 1, $seen),
+            };
         }
 
         return ['rows' => $rows, 'unknown' => $unknown, 'missing' => []];
@@ -129,7 +137,9 @@ class ImportService
         return DB::transaction(function () use ($type, $ok, $rows, $user) {
             $enrolled = 0;
             foreach ($ok as $row) {
-                if ($type === 'students') {
+                if ($type === 'graduates') {
+                    $this->pastResults->createFormerStudent($row['data']['student'], $row['data']['leaving'], $row['data']['results'], $user);
+                } elseif ($type === 'students') {
                     $student = $this->students->create($row['data']['student'], null, $row['data']['guardian']);
                     if ($row['data']['section_id']) {
                         $this->enrollments->enroll($student, Section::findOrFail($row['data']['section_id']));
@@ -257,6 +267,72 @@ class ImportService
         ];
     }
 
+    /** فارغ یا دانش‌آموز سابق: همان بررسی دانش‌آموز + وضعیت، سال فراغت، سند و اوسط صنف‌ها */
+    private function checkGraduate(array $v, int $line, array &$seen): array
+    {
+        $row = $this->checkStudent(array_diff_key($v, array_flip(['grade', 'section', 'guardian_name', 'guardian_relation', 'guardian_phone'])), $line, $seen);
+        $errors = $row['errors'];
+
+        $status = match (true) {
+            ($v['status'] ?? '') === '' || str_contains($v['status'], 'فارغ') => StudentStatus::Graduated,
+            str_contains($v['status'], 'منتقل') || str_contains($v['status'], 'انتقال') => StudentStatus::Transferred,
+            str_contains($v['status'], 'ترک') => StudentStatus::Dropped,
+            default => null,
+        };
+        if (! $status) {
+            $errors[] = __('import.bad_former_status');
+        }
+
+        $year = $v['graduation_year'] ?? '';
+        if ($year !== '' && ! preg_match('/^1[2-4][0-9]{2}$/', $year)) {
+            $errors[] = __('past_results.year_format');
+        }
+        foreach (['left_on', 'certificate_date'] as $field) {
+            if (($v[$field] ?? '') !== '' && ! JalaliDate::parse($v[$field])) {
+                $errors[] = __('import.bad_date', ['column' => __('import.columns.graduates.'.$field)[0]]);
+            }
+        }
+
+        $results = [];
+        foreach (self::GRADUATE_AVERAGES as $key => [$number, $back]) {
+            $avg = $v[$key] ?? '';
+            if ($avg === '') {
+                continue;
+            }
+            if (! is_numeric($avg) || $avg < 0 || $avg > 100) {
+                $errors[] = __('import.bad_average', ['column' => __('import.columns.graduates.'.$key)[0]]);
+
+                continue;
+            }
+            $level = GradeLevel::where('sort_order', $number)->first();
+            if ($year === '' || ! $level) {
+                $errors[] = $level ? __('import.average_needs_year') : __('import.grade_not_found', ['grade' => $number]);
+
+                continue;
+            }
+            $results[] = ['grade_level_id' => $level->id, 'year_name' => (string) ((int) $year - $back), 'average' => $avg];
+        }
+
+        $errors = array_values(array_unique($errors));
+        // تکراری تکراری می‌ماند (وارد نمی‌شود)؛ در غیر آن هر خطا ← سطر خطادار
+        if ($row['status'] !== 'duplicate') {
+            $row['status'] = $errors === [] ? 'ok' : 'error';
+        }
+        $row['errors'] = $errors;
+        $row['values']['status_label'] = $status?->label() ?? ($v['status'] ?? '');
+        $row['data']['leaving'] = [
+            'status' => $status?->value,
+            'left_on' => JalaliDate::parse($v['left_on'] ?? null)?->toDateString(),
+            'reason' => $year !== '' ? __('import.graduated_in', ['year' => Digits::toPersian($year)]) : null,
+            'certificate_no' => ($v['certificate_no'] ?? '') ?: null,
+            'certificate_date' => JalaliDate::parse($v['certificate_date'] ?? null)?->toDateString(),
+        ];
+        $row['data']['results'] = $results;
+        unset($row['data']['guardian'], $row['data']['section_id']);
+
+        return $row;
+    }
+
     private function checkStaff(array $v, int $line, array &$seen): array
     {
         $errors = [];
@@ -363,7 +439,8 @@ class ImportService
     private function clean(string $key, string $value): string
     {
         $value = trim(preg_replace('/\s+/u', ' ', PersianText::normalize($value)) ?? '');
-        if (in_array($key, ['admission_no', 'phone', 'guardian_phone', 'tazkira_no', 'birth_date', 'admission_date', 'hire_date'], true)) {
+        if (in_array($key, ['admission_no', 'phone', 'guardian_phone', 'tazkira_no', 'birth_date', 'admission_date', 'hire_date',
+            'graduation_year', 'left_on', 'certificate_date', 'avg_10', 'avg_11', 'avg_12'], true)) {
             $value = Digits::toLatin($value);
         }
         // Excel صفر اول شماره را می‌برد: 799123456 ← 0799123456

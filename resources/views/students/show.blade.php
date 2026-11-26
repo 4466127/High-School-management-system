@@ -159,6 +159,7 @@
                     @unless ($student->trashed())
                         <a href="{{ route('student-transfers.in.create', $student) }}" class="btn btn-sm btn-outline-secondary"><i class="fa-solid fa-right-to-bracket" aria-hidden="true"></i> {{ __('students.transfer_in') }}</a>
                     @endunless
+                    <a href="{{ route('exams.transcripts.student', $student) }}" class="btn btn-sm btn-outline-secondary"><i class="fa-solid fa-scroll" aria-hidden="true"></i> {{ __('transcripts.print') }}</a>
                     @if ($currentEnrollment)
                         <a href="{{ route('student-cards.index', ['student' => $student->id, 'print' => 1]) }}" class="btn btn-sm btn-outline-secondary"><i class="fa-solid fa-id-badge" aria-hidden="true"></i> {{ __('students.id_card') }}</a>
                     @endif
@@ -206,6 +207,10 @@
                     <div><i class="fa-solid fa-award" aria-hidden="true"></i> {{ __('students.graduation') }}: @fa($student->certificate_no)@if ($student->certificate_date) — @jdate($student->certificate_date, 'long')@endif</div>
                     @if ($student->certificate_note)<div class="text-secondary">{{ $student->certificate_note }}</div>@endif
                 </div>
+            @endif
+
+            @if ($sensitive)
+                @include('students.past-results.list', ['student' => $student, 'pastResults' => $pastResults])
             @endif
 
             @if ($sensitive && $transfers->isNotEmpty())

@@ -63,6 +63,7 @@ return [
     'attendance' => 'حاضری (حاضر / غیرحاضر / رخصت و مریض)',
     'subjects' => 'نمره‌ی نهایی مضامین',
     'not_final' => 'نهایی نشده',
+    'manual_entry' => 'درج دستی',
     'attributes' => [
         'other_school' => 'نام مکتب',
         'other_province' => 'ولایت',

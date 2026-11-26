@@ -46,6 +46,26 @@ return [
         'letter_signature_1' => 'مدیر مکتب',
         'letter_signature_2' => '',
         'letter_show_stamp' => '1',
+        // قالب کارنامه و ترانسکریپت (مرحله‌ی ۱۴؛ «امتحانات ← قالب کارنامه و ترانسکریپت»). عنوان خالی = عنوان پیش‌فرض.
+        // شکل رسمی وزارت معارف حدس زده نشده؛ هر مکتب با نمونه‌ی خودش تنظیم می‌کند.
+        'reportcard_title' => '',
+        'reportcard_subtitle' => '',
+        'reportcard_show_exams' => '1',         // ستون نمره‌ی هر امتحان (چهارونیم‌ماهه، سالانه)
+        'reportcard_show_attendance' => '1',
+        'reportcard_show_grade' => '1',
+        'reportcard_show_rules' => '1',         // سطر توضیح حد کامیابی و درجه‌ها
+        'reportcard_show_remarks' => '0',       // خانه‌ی خالی «ملاحظات» برای نوشتن با دست
+        'reportcard_signature_1' => 'امضای نگران صنف',
+        'reportcard_signature_2' => 'امضای مدیر مکتب',
+        'reportcard_signature_3' => '',
+        'reportcard_show_stamp' => '0',
+        'reportcard_footer' => '',
+        'transcript_title' => '',
+        'transcript_grade_ids' => '',           // خالی = سه صنف آخر فعال (دهم، یازدهم، دوازدهم)
+        'transcript_signature_1' => 'امضای مدیر مکتب',
+        'transcript_signature_2' => '',
+        'transcript_show_stamp' => '1',
+        'transcript_footer' => '',
         // شناسه‌ی این نصب (برای لایسنس؛ school:install یا اولین بار LicenseService می‌سازد)
         'installation_id' => '',
 

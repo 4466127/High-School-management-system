@@ -234,6 +234,15 @@ erDiagram
 - انتقال جدا از ارتقا است؛ سوابق (`enrollments`، نمرات، حاضری) هرگز پاک یا بازنویسی نمی‌شود. انتقال حذف نمی‌شود؛ باطل می‌شود.
 - فایل سوابق: `format = maktab-student-record`، `version = 1`؛ مشخصات دانش‌آموز، مکتب، سوابق هر سال (صنف، وضعیت، نتیجه، اوسط، درجه، نمره‌ی نهایی مضامین، شمار حاضری) و مشخصات انتقال.
 
+### نتیجه‌ی سال‌های قبل (مرحله‌ی ۱۴)
+**student_past_results** — `student_id`, `grade_level_id` (nullable؛ جای ستون در ترانسکریپت), `grade_name` (نام صنف هنگام ثبت), `year_name` (سال شمسی، مثلاً 1402), `school_name` (خالی = همین مکتب), `total` DECIMAL(8,2), `average` DECIMAL(5,2), `result` (FinalResult), `grade_letter` (a–d), `subjects` (JSON: `[{name, mark, passed}]`), `note`, `cancelled_at`, `cancelled_by`, `cancel_reason`, `created_by`.
+
+قواعد:
+- برای سال‌هایی که در سیستم نیست (فارغ‌های پیش از سیستم، سال‌های مکتب دیگر). حذف نمی‌شود؛ باطل می‌شود. فقط از راه `PastResultService`.
+- خانه‌های خالی مجموع، اوسط، نتیجه و درجه از نمره‌ی مضامین با قاعده‌های تنظیمات حساب و ذخیره می‌شود.
+- ترانسکریپت: اگر نتیجه‌ی نهایی‌شده‌ی همان صنف در `enrollments` باشد، آن مقدم است.
+- تنظیمات قالب چاپ: `reportcard_*` و `transcript_*` در `settings` (فهرست در `App\Support\ExamTemplate`).
+
 ### اعلان‌ها و مکاتیب (مرحله‌ی ۱۲)
 **announcements** — `title`, `body`, `audience` (all / staff / teachers / students / parents), `status` (draft / published / archived), `is_pinned`, `published_at`, `expires_on`, `attachment_path`, `attachment_name`, `attachment_mime`, `attachment_size`, `created_by`, `updated_by`. حذف نمی‌شود؛ بایگانی می‌شود.
 

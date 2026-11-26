@@ -16,11 +16,12 @@
                             @foreach ($types as $t)
                                 <input type="radio" class="btn-check" name="type" id="type-{{ $t }}" value="{{ $t }}" @checked(old('type', $type) === $t)>
                                 <label class="btn btn-outline-primary" for="type-{{ $t }}">
-                                    <i class="fa-solid {{ $t === 'students' ? 'fa-user-graduate' : 'fa-chalkboard-user' }}" aria-hidden="true"></i> {{ __('import.type_'.$t) }}
+                                    <i class="fa-solid {{ ['students' => 'fa-user-graduate', 'staff' => 'fa-chalkboard-user', 'graduates' => 'fa-box-archive'][$t] }}" aria-hidden="true"></i> {{ __('import.type_'.$t) }}
                                 </label>
                             @endforeach
                         </div>
                     </div>
+                    @if (in_array('graduates', $types, true))<div class="form-text mt-n2 mb-3">{{ __('import.graduates_hint') }}</div>@endif
                     <x-form.input name="file" type="file" :label="__('import.file')" accept=".xlsx,.csv" required :help="__('import.file_hint')" />
                 </div>
                 <div class="card-footer bg-transparent">

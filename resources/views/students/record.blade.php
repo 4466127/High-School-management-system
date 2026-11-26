@@ -62,6 +62,21 @@
         </tr>
         </thead>
         <tbody>
+        {{-- سال‌های درج دستی (پیش از سیستم یا مکتب دیگر؛ مرحله‌ی ۱۴) --}}
+        @foreach ($past as $r)
+            <tr>
+                <td>{{ $fa($r->year_name) }}</td>
+                <td>{{ $r->grade_name }}@if ($r->school_name) <span class="small">({{ $r->school_name }})</span>@endif</td>
+                <td class="small">{{ __('transfers.manual_entry') }}</td>
+                <td>{{ $r->result?->label() ?? '—' }}</td>
+                <td>{{ $mark($r->average) }}</td>
+                <td>{{ $r->grade_letter ? __('exams.grades.'.$r->grade_letter) : '—' }}</td>
+                <td class="small">—</td>
+            </tr>
+            @if (! empty($r->subjects))
+                <tr><td colspan="7" class="small"><span class="text-secondary">{{ __('transfers.subjects') }}:</span> {{ collect($r->subjects)->map(fn ($s) => $s['name'].' '.$mark($s['mark']))->join('، ') }}</td></tr>
+            @endif
+        @endforeach
         @forelse ($history as $h)
             <tr>
                 <td>{{ $fa($h['year']) }}</td>
@@ -81,7 +96,7 @@
                 </tr>
             @endif
         @empty
-            <tr><td colspan="7" class="text-center text-secondary">{{ __('academics.no_history') }}</td></tr>
+            @if ($past->isEmpty())<tr><td colspan="7" class="text-center text-secondary">{{ __('academics.no_history') }}</td></tr>@endif
         @endforelse
         </tbody>
     </table>

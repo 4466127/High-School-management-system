@@ -2,9 +2,13 @@
 
 @php
     $fmt = fn ($n) => $n === null ? '—' : \App\Support\Digits::toPersian(\App\Services\MarkService::format($n));
+    // قالب کارنامه (مرحله‌ی ۱۴؛ «امتحانات ← قالب کارنامه و ترانسکریپت»)
+    $tpl = \App\Support\ExamTemplate::reportCard();
+    $sample ??= false;
 @endphp
 
 @section('content')
+    @if ($sample)<div class="alert alert-warning noprint small">{{ __('exam_templates.sample_notice') }}</div>@endif
     @forelse ($cards as $card)
         <div class="report-card">
             @php($student = $card['enrollment']->student)
@@ -12,8 +16,9 @@
             @php($hasReexam = ! empty($card['reexam']))
             @include('layouts.partials.letterhead')
             <h1 class="report-card-title">
-                {{ __('exams.reportcard') }} — {{ __('academics.year') }} @fa($section->academicYear->name)
+                {{ $tpl['title'] }} — {{ __('academics.year') }} @fa($section->academicYear->name)
                 @if ($card['provisional'])<span class="report-card-provisional">{{ __('exams.provisional') }}</span>@endif
+                @if ($tpl['subtitle'])<div class="report-card-subtitle">{{ $tpl['subtitle'] }}</div>@endif
             </h1>
 
             <table class="report-card-info">
@@ -32,7 +37,7 @@
                 <tr>
                     <th>#</th>
                     <th class="text-start">{{ __('academics.subject') }}</th>
-                    @foreach ($card['exams'] as $exam)
+                    @foreach ($tpl['exams'] ? $card['exams'] : [] as $exam)
                         <th>{{ $exam['name'] }}<div class="small fw-normal">({{ $fmt($exam['max_mark']) }})</div></th>
                     @endforeach
                     <th>{{ __('exams.final_mark') }}<div class="small fw-normal">(۱۰۰)</div></th>
@@ -45,7 +50,7 @@
                     <tr>
                         <td>@fa($i + 1)</td>
                         <td class="text-start">{{ $subject['name'] }}</td>
-                        @foreach ($card['exams'] as $exam)
+                        @foreach ($tpl['exams'] ? $card['exams'] : [] as $exam)
                             @php($m = $subject['marks'][$exam['id']] ?? null)
                             <td>{{ $m ? ($m['absent'] ? __('exams.absent_short') : $fmt($m['mark'])) : '' }}</td>
                         @endforeach
@@ -65,9 +70,10 @@
                 <tr>
                     <th>{{ __('exams.total') }}</th><td>{{ $fmt($card['total']) }}</td>
                     <th>{{ __('exams.average') }}</th><td>{{ $fmt($card['average']) }}</td>
-                    <th>{{ __('exams.result') }}</th><td class="fw-bold">{{ $result?->label() ?? __('exams.incomplete') }}@if ($hasReexam) <span class="small fw-normal">({{ __('exams.after_reexam') }})</span>@endif</td>
-                    <th>{{ __('exams.grade') }}</th><td class="fw-bold">{{ ! empty($card['grade']) ? __('exams.grades.'.$card['grade']) : '—' }}</td>
+                    <th>{{ __('exams.result') }}</th><td class="fw-bold" @if (! $tpl['grade']) colspan="3" @endif>{{ $result?->label() ?? __('exams.incomplete') }}@if ($hasReexam) <span class="small fw-normal">({{ __('exams.after_reexam') }})</span>@endif</td>
+                    @if ($tpl['grade'])<th>{{ __('exams.grade') }}</th><td class="fw-bold">{{ ! empty($card['grade']) ? __('exams.grades.'.$card['grade']) : '—' }}</td>@endif
                 </tr>
+                @if ($tpl['attendance'])
                 <tr>
                     <th>{{ __('exams.attendance_days') }}</th>
                     <td colspan="7">
@@ -77,7 +83,12 @@
                         · {{ __('enums.attendance_status.sick') }}: @fa($card['attendance']['sick'])
                     </td>
                 </tr>
+                @endif
+                @if ($tpl['remarks'])
+                <tr><th>{{ __('exam_templates.remarks') }}</th><td colspan="7" class="report-card-remarks"></td></tr>
+                @endif
             </table>
+            @if ($tpl['rules'])
             <div class="small text-secondary">
                 {{ __('exams.card_rules', [
                     'pass' => $fmt($card['settings']['pass_percent']),
@@ -86,11 +97,19 @@
                     'c' => $fmt($card['settings']['grade_c_min'] ?? \App\Models\Setting::get('grade_c_min', 60)),
                 ]) }}
             </div>
+            @endif
 
+            {{-- امضاها: اولی نام نگران صنف، آخری نام مدیر مکتب را زیرش دارد --}}
             <div class="signatures">
-                <div>{{ __('app.signature_teacher') }}@if ($section->classTeacher)<div class="small">{{ $section->classTeacher->full_name }}</div>@endif</div>
-                <div>{{ __('app.signature_principal') }}@if ($p = \App\Models\Setting::get('principal_name'))<div class="small">{{ $p }}</div>@endif</div>
+                @foreach ($tpl['signatures'] as $i => $label)
+                    <div>{{ $label }}
+                        @if ($i === 0 && $section->classTeacher)<div class="small">{{ $section->classTeacher->full_name }}</div>
+                        @elseif ($i > 0 && $loop->last && ($p = \App\Models\Setting::get('principal_name')))<div class="small">{{ $p }}</div>@endif
+                    </div>
+                @endforeach
+                @if ($tpl['stamp'])<div class="signature-stamp">{{ __('letters.stamp') }}</div>@endif
             </div>
+            @if ($tpl['footer'])<div class="report-card-footer">{{ $tpl['footer'] }}</div>@endif
         </div>
     @empty
         <p class="text-center text-secondary">{{ __('academics.no_students_in_section') }}</p>

@@ -16,10 +16,13 @@ use App\Http\Controllers\Courses\CourseLedgerController;
 use App\Http\Controllers\Courses\ParticipantController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Exams\ExamController;
+use App\Http\Controllers\Exams\ExamTemplateController;
 use App\Http\Controllers\Exams\MarkController;
 use App\Http\Controllers\Exams\ReexamController;
 use App\Http\Controllers\Exams\ReportCardController;
 use App\Http\Controllers\Exams\ResultController;
+use App\Http\Controllers\Exams\TranscriptController;
+use App\Http\Controllers\Exams\YearReviewController;
 use App\Http\Controllers\Finance\DebtorController;
 use App\Http\Controllers\Finance\FeeSetupController;
 use App\Http\Controllers\Finance\InvoiceController;
@@ -41,9 +44,11 @@ use App\Http\Controllers\Students\ArchiveController;
 use App\Http\Controllers\Students\EnrollmentController;
 use App\Http\Controllers\Students\GuardianController;
 use App\Http\Controllers\Students\IdCardController;
+use App\Http\Controllers\Students\PastResultController;
 use App\Http\Controllers\Students\StudentController;
 use App\Http\Controllers\Students\StudentDocumentController;
 use App\Http\Controllers\Students\TransferController;
+use App\Services\ImportService;
 use Illuminate\Support\Facades\Route;
 
 // لوگوی مکتب: برای همه (صفحه‌ی ورود هم نشان می‌دهد)
@@ -108,9 +113,20 @@ Route::middleware(['auth', 'active'])->group(function () {
                 Route::post('/{transfer}/cancel', [TransferController::class, 'cancel'])->name('cancel');
             });
             Route::get('/student-archive', [ArchiveController::class, 'index'])->name('student-archive.index');
+            Route::get('/student-archive/create', [ArchiveController::class, 'create'])->name('student-archive.create');
+            Route::post('/student-archive', [ArchiveController::class, 'store'])->name('student-archive.store');
             Route::get('/student-archive/export', [ArchiveController::class, 'export'])->name('student-archive.export');
             Route::patch('/student-archive/{student}/certificate', [ArchiveController::class, 'certificate'])->name('student-archive.certificate');
             Route::get('/student-cards', [IdCardController::class, 'index'])->name('student-cards.index');
+
+            // نتیجه‌ی سال‌هایی که در سیستم نیست، درج دستی (مرحله‌ی ۱۴)
+            Route::prefix('student-past-results')->name('student-past-results.')->group(function () {
+                Route::get('/{student}/create', [PastResultController::class, 'create'])->name('create');
+                Route::post('/{student}', [PastResultController::class, 'store'])->name('store');
+                Route::get('/item/{pastResult}/edit', [PastResultController::class, 'edit'])->name('edit');
+                Route::put('/item/{pastResult}', [PastResultController::class, 'update'])->name('update');
+                Route::post('/item/{pastResult}/cancel', [PastResultController::class, 'cancel'])->name('cancel');
+            });
         });
 
         // ---------- معلمان و کارکنان ----------
@@ -207,6 +223,12 @@ Route::middleware(['auth', 'active'])->group(function () {
                 Route::post('/reexam/{section}', [ReexamController::class, 'store'])->name('reexam.store');
                 Route::post('/reexam/{section}/finalize', [ReexamController::class, 'finalize'])->name('reexam.finalize');
                 Route::post('/reexam/{section}/unfinalize', [ReexamController::class, 'unfinalize'])->name('reexam.unfinalize');
+
+                // مرحله‌ی ۱۴: قالب کارنامه و ترانسکریپت، مرور پایان سال
+                Route::get('/templates', [ExamTemplateController::class, 'edit'])->name('templates.index');
+                Route::put('/templates', [ExamTemplateController::class, 'update'])->name('templates.update');
+                Route::get('/templates/preview', [ExamTemplateController::class, 'preview'])->name('templates.preview');
+                Route::get('/year-review', [YearReviewController::class, 'index'])->name('year-review.index');
             });
 
             Route::middleware('can:marks.enter')->group(function () {
@@ -220,6 +242,9 @@ Route::middleware(['auth', 'active'])->group(function () {
             Route::get('/report-cards', [ReportCardController::class, 'index'])->name('reportcards.index');
             Route::get('/report-cards/student/{enrollment}', [ReportCardController::class, 'show'])->name('reportcards.show');
             Route::get('/report-cards/section/{section}', [ReportCardController::class, 'section'])->name('reportcards.section');
+            Route::get('/transcripts', [TranscriptController::class, 'index'])->name('transcripts.index');
+            Route::get('/transcripts/student/{student}', [TranscriptController::class, 'student'])->withTrashed()->name('transcripts.student');
+            Route::get('/transcripts/section/{section}', [TranscriptController::class, 'section'])->name('transcripts.section');
         });
 
         // ---------- گزارش‌ها (مجوز reports.academic / reports.finance در ReportController) ----------
@@ -300,7 +325,7 @@ Route::middleware(['auth', 'active'])->group(function () {
         // ---------- ورود گروهی از Excel (مجوز هر نوع در ImportController) ----------
         Route::prefix('import')->name('import.')->group(function () {
             Route::get('/', [ImportController::class, 'index'])->name('index');
-            Route::get('/template/{type}', [ImportController::class, 'template'])->whereIn('type', ['students', 'staff'])->name('template');
+            Route::get('/template/{type}', [ImportController::class, 'template'])->whereIn('type', ImportService::TYPES)->name('template');
             Route::post('/upload', [ImportController::class, 'upload'])->name('upload');
             Route::get('/preview', [ImportController::class, 'preview'])->name('preview');
             Route::post('/store', [ImportController::class, 'store'])->name('store');

@@ -56,10 +56,10 @@ class RoleAccessTest extends TestCase
     public function test_exams_submenu_per_role(): void
     {
         $expected = [
-            'admin' => [Role::Admin, ['exams_marks', 'exams_results', 'exams_reportcards', 'exams_reexam', 'exams_manage']],
-            'principal' => [Role::Principal, ['exams_marks', 'exams_results', 'exams_reportcards', 'exams_reexam', 'exams_manage']],
-            'office' => [Role::Office, ['exams_results', 'exams_reportcards']],
-            'teacher' => [Role::Teacher, ['exams_marks', 'exams_results', 'exams_reportcards']],
+            'admin' => [Role::Admin, ['exams_marks', 'exams_results', 'exams_reportcards', 'exams_transcripts', 'exams_reexam', 'exams_year_review', 'exams_manage', 'exams_templates']],
+            'principal' => [Role::Principal, ['exams_marks', 'exams_results', 'exams_reportcards', 'exams_transcripts', 'exams_reexam', 'exams_year_review', 'exams_manage', 'exams_templates']],
+            'office' => [Role::Office, ['exams_results', 'exams_reportcards', 'exams_transcripts']],
+            'teacher' => [Role::Teacher, ['exams_marks', 'exams_results', 'exams_reportcards', 'exams_transcripts']],
         ];
 
         foreach ($expected as $name => [$role, $keys]) {

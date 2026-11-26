@@ -2,10 +2,12 @@
 
 @php
     // ستون‌هایی که در پیش‌نمایش نشان داده می‌شوند (همه‌ی ستون‌های فایل در جدول جا نمی‌شوند)
-    $shown = $type === 'students'
-        ? ['admission_no', 'first_name', 'last_name', 'father_name', 'gender', 'birth_date', 'phone', 'section_label', 'guardian_name']
-        : ['staff_type', 'first_name', 'last_name', 'father_name', 'gender', 'phone', 'education', 'position'];
-    $labels = collect($columns)->map(fn ($c) => $c[0])->all() + ['section_label' => __('academics.section')];
+    $shown = match ($type) {
+        'students' => ['admission_no', 'first_name', 'last_name', 'father_name', 'gender', 'birth_date', 'phone', 'section_label', 'guardian_name'],
+        'graduates' => ['admission_no', 'first_name', 'last_name', 'father_name', 'gender', 'status_label', 'graduation_year', 'certificate_no', 'avg_10', 'avg_11', 'avg_12'],
+        default => ['staff_type', 'first_name', 'last_name', 'father_name', 'gender', 'phone', 'education', 'position'],
+    };
+    $labels = collect($columns)->map(fn ($c) => $c[0])->all() + ['section_label' => __('academics.section'), 'status_label' => __('students.status')];
     $badges = ['ok' => 'text-bg-success', 'error' => 'text-bg-danger', 'duplicate' => 'text-bg-warning'];
 @endphp
 

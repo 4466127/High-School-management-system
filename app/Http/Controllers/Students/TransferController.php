@@ -108,6 +108,7 @@ class TransferController extends Controller
         return view('students.record', [
             'student' => $student,
             'history' => $this->records->history($student),
+            'past' => $student->pastResults()->active()->get(),
             'transfer' => $transfer,
             'incoming' => $student->transfers()->where('direction', TransferDirection::In)->where('status', 'completed')->get(),
         ]);

@@ -49,7 +49,7 @@
 | `/courses/finance/{course}/export?type=&voided=` | دفتر مالی یک کورس (کمک، معاش، مصرف) | ۸ ✅ |
 | `/letters/export?direction=outgoing\|incoming&q=&type=&status=&from=&to=` | بایگانی مکاتیب صادره یا وارده | ۱۲ ✅ |
 | `/student-transfers/export?direction=&q=&from=&to=` | انتقال‌های میان مکاتب | ۱۳ ✅ |
-| `/student-archive/export?status=&year=&q=` | دانش‌آموزان سابق (فارغ، منتقل، ترک، غیرفعال) | ۱۳ ✅ |
+| `/student-archive/export?status=&year=&q=` | دانش‌آموزان سابق (فارغ، منتقل، ترک، غیرفعال)؛ برای سابق‌های بدون شمولیت، آخرین نتیجه‌ی درج دستی | ۱۳–۱۴ ✅ |
 
 **فایل سوابق دانش‌آموز (JSON، مرحله‌ی ۱۳):** `/student-transfers/record/{student}/file` — قالب `maktab-student-record`، نسخه‌ی ۱ (DATABASE.md بخش پرونده‌ی دانش‌آموز). در صفحه‌ی «ثبت انتقال از مکتب دیگر» آپلود می‌شود.
 

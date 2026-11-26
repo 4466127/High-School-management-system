@@ -14,6 +14,7 @@
 @endphp
 
 @section('content')
+    @if ($letter->isDraft())<div class="alert alert-warning noprint small">{{ __('letters.draft_help') }}</div>@endif
     <div @class(['letter-sheet', 'is-draft' => $letter->isDraft(), 'is-cancelled' => $letter->isCancelled()])>
         @if ($letter->isDraft())<div class="letter-watermark">{{ __('letters.draft_watermark') }}</div>@endif
         @if ($letter->isCancelled())<div class="letter-watermark">{{ __('letters.cancelled_badge') }}</div>@endif

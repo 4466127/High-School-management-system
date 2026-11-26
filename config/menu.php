@@ -35,8 +35,11 @@ return [
         ['key' => 'exams_marks', 'icon' => 'fa-pen-to-square', 'route' => 'exams.marks.index', 'can' => ['marks.enter']],
         ['key' => 'exams_results', 'icon' => 'fa-table-list', 'route' => 'exams.results.index', 'can' => ['exams.manage', 'reportcards.print']],
         ['key' => 'exams_reportcards', 'icon' => 'fa-id-card', 'route' => 'exams.reportcards.index', 'can' => ['exams.manage', 'reportcards.print']],
+        ['key' => 'exams_transcripts', 'icon' => 'fa-scroll', 'route' => 'exams.transcripts.index', 'can' => ['exams.manage', 'reportcards.print']],
         ['key' => 'exams_reexam', 'icon' => 'fa-rotate', 'route' => 'exams.reexam.index', 'can' => ['exams.manage']],
+        ['key' => 'exams_year_review', 'icon' => 'fa-flag-checkered', 'route' => 'exams.year-review.index', 'can' => ['exams.manage']],
         ['key' => 'exams_manage', 'icon' => 'fa-list-check', 'route' => 'exams.manage.index', 'can' => ['exams.manage']],
+        ['key' => 'exams_templates', 'icon' => 'fa-sliders', 'route' => 'exams.templates.index', 'can' => ['exams.manage']],
     ]],
     ['key' => 'finance', 'icon' => 'fa-coins', 'route' => null, 'can' => ['finance.view', 'finance.manage'], 'feature' => 'finance', 'children' => [
         ['key' => 'finance_payments', 'icon' => 'fa-receipt', 'route' => 'finance.payments.index', 'can' => ['finance.view', 'finance.manage'], 'feature' => 'fees'],

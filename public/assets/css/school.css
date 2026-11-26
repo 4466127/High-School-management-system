@@ -432,3 +432,15 @@ code { color: #9b3b5a; }
 .id-card-info dd { margin: 0; }
 .id-card-foot { display: flex; justify-content: space-between; align-items: flex-end; font-size: 6.5pt; color: #444; }
 .id-card-sign { border-top: 1px solid #666; padding-top: .5mm; min-width: 22mm; text-align: center; }
+
+/* ---------- قالب کارنامه و ترانسکریپت (مرحله‌ی ۱۴) ---------- */
+.report-card-subtitle { font-size: .9rem; font-weight: 500; margin-top: 2px; }
+.report-card-remarks { height: 14mm; }
+.signatures > .signature-stamp { flex: 0 0 26mm; height: 26mm; border: 1px dashed #888; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #888; font-size: .75rem; padding-top: 0; }
+.report-card-footer { margin-top: 10px; font-size: .8rem; text-align: center; color: #444; white-space: pre-line; }
+.transcript + .transcript { break-before: page; page-break-before: always; padding-top: 4mm; }
+.transcript-marks { font-size: .85rem; }
+.transcript-marks th, .transcript-marks td { padding: 3px 5px !important; }
+.transcript-marks .transcript-src { font-size: .7rem; font-weight: 400; color: #555; }
+.transcript-marks tfoot th, .transcript-marks tfoot td { background: #f6f8fc; }
+.year-review-check { width: 1.4rem; text-align: center; }

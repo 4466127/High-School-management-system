@@ -155,6 +155,7 @@ class StudentController extends Controller
             'reportCard' => $canSeeMarks ? $this->results->reportCards($current->section, $current)->first() : null,
             'fees' => $this->feesData($request, $student, $current),
             'transfers' => $sensitive ? $student->transfers()->get() : collect(),
+            'pastResults' => $sensitive ? $student->pastResults()->active()->get() : collect(),
             'yearSections' => $year && $request->user()->can('update', $student)
                 ? Section::query()->with('gradeLevel')->where('academic_year_id', $year->id)->ordered()->get()
                 : collect(),

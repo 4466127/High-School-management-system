@@ -64,6 +64,12 @@ class Student extends Model
         return $this->hasMany(StudentTransfer::class)->latest('transfer_date')->latest('id');
     }
 
+    /** نتیجه‌ی سال‌هایی که در سیستم نیست، درج دستی (مرحله‌ی ۱۴) */
+    public function pastResults(): HasMany
+    {
+        return $this->hasMany(StudentPastResult::class)->orderBy('year_name')->orderBy('id');
+    }
+
     /** سوابق تحصیلی: یک سطر برای هر سال */
     public function enrollments(): HasMany
     {

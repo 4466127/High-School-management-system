@@ -30,6 +30,9 @@
         </div>
     </div>
 
+    @if ($out && $letter->isDraft())
+        <div class="alert alert-warning py-2"><i class="fa-solid fa-circle-info" aria-hidden="true"></i> {{ __('letters.draft_help') }}</div>
+    @endif
     @if ($letter->isCancelled())
         <div class="alert alert-secondary">{{ __('letters.cancelled_info', ['date' => \App\Support\JalaliDate::format($letter->cancelled_at, 'long'), 'user' => $letter->canceller?->name, 'reason' => $letter->cancel_reason]) }}</div>
     @endif

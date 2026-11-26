@@ -18,7 +18,7 @@
             @foreach ($records['history'] ?? [] as $h)
                 <tr>
                     <td>@fa($h['year'])</td>
-                    <td>{{ $h['grade'] }} {{ $h['section'] }}</td>
+                    <td>{{ $h['grade'] }} {{ $h['section'] }}@if (! empty($h['school'])) <span class="small text-secondary">({{ $h['school'] }})</span>@endif</td>
                     <td>{{ \App\Services\StudentRecordService::resultLabel($h['result']) }}</td>
                     <td>{{ $h['average'] !== null ? \App\Support\Digits::toPersian(\App\Services\MarkService::format($h['average'])) : '—' }}</td>
                     <td class="small">{{ collect($h['subjects'])->map(fn ($s) => $s['name'].': '.($s['final'] !== null ? \App\Support\Digits::toPersian(\App\Services\MarkService::format($s['final'])) : '—'))->join('، ') }}</td>

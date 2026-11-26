@@ -90,7 +90,15 @@ class StudentRecordService
     /** فایل سوابق برای مکتب مقصد (JSON). معلومات حساس فقط همان که مکتب مقصد برای ثبت لازم دارد. */
     public function package(Student $student, User $user, ?array $transfer = null): array
     {
-        $history = collect($this->history($student))->map(fn ($h) => collect($h)->except('enrollment')->all())->all();
+        // سال‌های درج دستی (مرحله‌ی ۱۴) پیش از سال‌های سیستم، با نام مکتب
+        $past = $student->pastResults()->active()->get()->map(fn ($r) => [
+            'year' => $r->year_name, 'grade' => $r->grade_name, 'section' => '', 'school' => $r->school_name, 'status' => 'manual',
+            'finalized' => true, 'result' => $r->result?->value, 'average' => $r->average !== null ? (float) $r->average : null,
+            'total' => $r->total !== null ? (float) $r->total : null, 'letter' => $r->grade_letter,
+            'subjects' => collect($r->subjects ?? [])->map(fn ($s) => ['name' => $s['name'], 'final' => $s['mark'], 'passed' => $s['passed']])->all(),
+            'attendance' => [],
+        ]);
+        $history = $past->concat(collect($this->history($student))->map(fn ($h) => collect($h)->except('enrollment')->all()))->values()->all();
 
         $this->logger->log('student.record_exported', $student, $student->full_name, user: $user);
 
@@ -154,6 +162,7 @@ class StudentRecordService
                 'year' => $text($h['year'] ?? null, 20),
                 'grade' => $text($h['grade'] ?? null, 100),
                 'section' => $text($h['section'] ?? null, 50),
+                'school' => $text($h['school'] ?? null, 200),
                 'status' => $text($h['status'] ?? null, 20),
                 'result' => $text($h['result'] ?? null, 20),
                 'average' => $num($h['average'] ?? null),
@@ -174,6 +183,10 @@ class StudentRecordService
 
     public static function statusLabel(?string $status): string
     {
+        if ($status === 'manual') {
+            return __('transfers.manual_entry');
+        }
+
         return $status && EnrollmentStatus::tryFrom($status) ? EnrollmentStatus::from($status)->label() : (string) $status;
     }
 
