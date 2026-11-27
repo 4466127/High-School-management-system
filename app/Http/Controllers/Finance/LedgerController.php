@@ -15,6 +15,7 @@ use App\Support\Csv;
 use App\Support\Digits;
 use App\Support\JalaliDate;
 use App\Support\Money;
+use App\Support\Paging;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -117,7 +118,7 @@ class LedgerController extends Controller
         $totals = $this->finance->totals(($from ?? JalaliDate::toGregorian(1300, 1, 1))->toDateString(), ($to ?? now()->addYears(5))->toDateString());
 
         return [
-            'transactions' => $paginate ? $query->paginate(50)->withQueryString() : $query->get(),
+            'transactions' => $paginate ? $query->paginate(Paging::size())->withQueryString() : $query->get(),
             'categories' => FinanceCategory::orderBy('type')->orderBy('name')->get(),
             'totals' => $totals,
             'feesEnabled' => Setting::enabled('fees_enabled'),

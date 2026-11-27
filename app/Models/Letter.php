@@ -110,15 +110,6 @@ class Letter extends Model
 
     public function scopeSearch(Builder $query, ?string $term): Builder
     {
-        foreach (PersianText::searchTerms($term) as $word) {
-            $like = PersianText::like($word);
-            $query->where(fn (Builder $q) => $q->where('subject', 'like', $like)
-                ->orWhere('recipient', 'like', $like)
-                ->orWhere('organization', 'like', $like)
-                ->orWhere('number', 'like', $like)
-                ->orWhere('external_number', 'like', $like));
-        }
-
-        return $query;
+        return PersianText::whereMatches($query, ['subject', 'recipient', 'organization', 'number', 'external_number'], $term);
     }
 }

@@ -26,13 +26,17 @@
     @else
         @unless ($print)
             @if ($canManage)
-                <div class="alert alert-light border small"><i class="fa-solid fa-circle-info" aria-hidden="true"></i> {{ __('timetable.intro') }}</div>
+                <div class="alert alert-light border small mb-3">
+                    <div class="fw-medium mb-1"><i class="fa-solid fa-circle-info" aria-hidden="true"></i> {{ __('timetable.steps_title') }}</div>
+                    <ol class="mb-1 ps-3">@foreach (__('timetable.steps') as $step)<li>{{ $step }}</li>@endforeach</ol>
+                    <div>{{ __('timetable.intro') }}</div>
+                </div>
             @endif
             <form method="GET" class="card card-body mb-3">
                 <div class="row g-2 align-items-end">
                     <div class="col-sm-8 col-lg-5">
                         <label for="tt-section" class="form-label">{{ __('academics.section') }}</label>
-                        <select name="section" id="tt-section" class="form-select">
+                        <select name="section" id="tt-section" class="form-select" data-submit-on-change>
                             @foreach ($sections as $s)<option value="{{ $s->id }}" @selected($section && $section->id === $s->id)>{{ $s->label }}</option>@endforeach
                         </select>
                     </div>

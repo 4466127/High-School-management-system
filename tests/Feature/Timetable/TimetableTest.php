@@ -9,6 +9,7 @@ use App\Models\Room;
 use App\Models\Setting;
 use App\Models\Subject;
 use App\Models\TimetableEntry;
+use App\Services\TimetableService;
 use Database\Seeders\DemoTimetableSeeder;
 use Database\Seeders\RolePermissionSeeder;
 use Tests\Feature\Exams\ExamTestCase;
@@ -144,5 +145,59 @@ class TimetableTest extends ExamTestCase
         $this->assertGreaterThan(0, TimetableEntry::where('section_id', $this->section->id)->count());
         $clash = TimetableEntry::whereNotNull('staff_id')->selectRaw('staff_id, day, period_id, count(*) n')->groupBy('staff_id', 'day', 'period_id')->having('n', '>', 1)->count();
         $this->assertSame(0, $clash);
+    }
+
+    /** 1.8.1: تنظیم سریع وقت نوبت — ساعت k-ام همان رکورد می‌ماند تا خانه‌های پرشده از دست نرود */
+    public function test_quick_period_plan_keeps_lessons_and_filled_cells(): void
+    {
+        $plan = TimetableService::periodPlan('08:00', 35, 6, 3, 15);
+        $this->assertCount(7, $plan);
+        $this->assertSame(['08:00', '08:35'], [$plan[0]['start'], $plan[0]['end']]);
+        $this->assertTrue($plan[3]['break']);
+        $this->assertSame(['09:45', '10:00'], [$plan[3]['start'], $plan[3]['end']]);
+        $this->assertSame('11:45', end($plan)['end']);
+        $this->assertSame(__('timetable.period_n', ['n' => 'اول']), $plan[0]['name']);
+
+        $this->cell(['subject_id' => $this->math->id])->assertSessionHasNoErrors();
+        // ۵ ساعت ۴۰ دقیقه‌ای از ۷:۳۰ با تفریح ۱۰ دقیقه بعد از ساعت دوم
+        $this->actingAs($this->principal)->post(route('timetable.setup.periods.generate'), [
+            'shift' => 'morning', 'start_time' => '07:30', 'minutes' => 40, 'lessons' => 5, 'break_after' => 2, 'break_minutes' => 10,
+        ])->assertSessionHasNoErrors()->assertSessionHas('success');
+        $this->assertSame('07:30', substr($this->first->fresh()->start_time, 0, 5));
+        $this->assertTrue($this->first->fresh()->is_active);
+        $this->assertSame(1, TimetableEntry::where('period_id', $this->first->id)->count());
+        $active = Period::where('shift', 'morning')->where('is_active', true)->ordered()->get();
+        $this->assertSame(6, $active->count());                     // ۵ درس + ۱ تفریح
+        $this->assertSame('11:00', substr($active->last()->end_time, 0, 5));
+        $this->assertSame(1, Period::where('shift', 'morning')->where('is_active', false)->count());   // ساعت ششم قبلی غیرفعال، حذف نه
+        // فرم با وقت فعلی پر می‌شود
+        $this->actingAs($this->principal)->get(route('timetable.setup.index'))->assertOk()->assertSee('value="07:30"', false);
+        // بعد از ظهر هنوز ساعت ندارد ← ساخته می‌شود
+        $this->actingAs($this->principal)->post(route('timetable.setup.periods.generate'), [
+            'shift' => 'afternoon', 'start_time' => '13:00', 'minutes' => 35, 'lessons' => 6, 'break_after' => 3, 'break_minutes' => 15,
+        ])->assertSessionHasNoErrors();
+        $this->assertSame(7, Period::where('shift', 'afternoon')->count());
+        $this->actingAs($this->principal)->post(route('timetable.setup.periods.generate'), [
+            'shift' => 'afternoon', 'start_time' => '23:00', 'minutes' => 60, 'lessons' => 3, 'break_after' => 0, 'break_minutes' => 0,
+        ])->assertSessionHasErrors('lessons');
+        $this->assertTrue(ActivityLog::where('action', 'timetable.periods_generated')->exists());
+    }
+
+    /** 1.8.1: نوبت صنف‌ها — صنف ۱ تا ۶ قبل از ظهر، ۷ تا ۱۲ بعد از ظهر؛ بخش با تقسیم اوقات پر عوض نمی‌شود */
+    public function test_grade_shifts_preset_and_protection(): void
+    {
+        $grade3 = $this->makeSection($this->year, 3, 'الف', ['shift' => 'afternoon']);
+        $this->cell(['subject_id' => $this->math->id])->assertSessionHasNoErrors();   // بخش الف صنف ۷ تقسیم اوقات دارد
+
+        $this->actingAs($this->principal)->post(route('timetable.setup.shifts'), ['preset' => 'common'])->assertSessionHas('warning');
+        $this->assertSame('morning', $grade3->fresh()->shift->value);
+        $this->assertSame('afternoon', $this->otherSection->fresh()->shift->value);   // صنف ۷ ب
+        $this->assertSame('morning', $this->section->fresh()->shift->value);         // تقسیم اوقات دارد ← عوض نشد
+
+        $this->actingAs($this->principal)->post(route('timetable.setup.shifts'), ['shifts' => [$grade3->grade_level_id => 'afternoon']])->assertSessionHas('success');
+        $this->assertSame('afternoon', $grade3->fresh()->shift->value);
+        $this->assertSame(__('enums.shift.afternoon'), $grade3->fresh()->shift->label());
+        $this->actingAs($this->teacher)->post(route('timetable.setup.shifts'), ['preset' => 'common'])->assertForbidden();
+        $this->assertTrue(ActivityLog::where('action', 'timetable.section_shift')->exists());
     }
 }

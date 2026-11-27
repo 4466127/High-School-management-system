@@ -8,6 +8,8 @@ use App\Models\Section;
 use App\Services\FinanceService;
 use App\Support\Csv;
 use App\Support\Money;
+use App\Support\Paging;
+use App\Support\PersianText;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -19,7 +21,13 @@ class DebtorController extends Controller
 
     public function index(Request $request): View
     {
-        return view('finance.debtors.index', $this->load($request) + ['print' => $request->boolean('print')]);
+        $data = $this->load($request);
+        $print = $request->boolean('print');
+        if (! $print) {
+            $data['rows'] = Paging::collection($data['rows']);
+        }
+
+        return view('finance.debtors.index', $data + ['print' => $print, 'q' => (string) $request->query('q', '')]);
     }
 
     public function export(Request $request): StreamedResponse
@@ -42,6 +50,15 @@ class DebtorController extends Controller
         $sections = $year ? Section::with('gradeLevel')->where('academic_year_id', $year->id)->ordered()->get() : collect();
         $section = $sections->firstWhere('id', $request->integer('section'));
         $rows = $year ? $this->finance->debtors($year, $section ? [$section->id] : null) : collect();
+        // جستجو: هر واژه در نام، نام پدر یا نمبر اساس
+        foreach (PersianText::searchTerms($request->query('q')) as $word) {
+            $rows = $rows->filter(function ($r) use ($word) {
+                $s = $r->enrollment->student;
+
+                return str_contains(str_replace(PersianText::ZWNJ, '', $s->full_name.' '.$s->father_name.' '.$s->admission_no), $word);
+            });
+        }
+        $rows = $rows->values();
 
         return [
             'year' => $year,

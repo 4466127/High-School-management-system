@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Letters\AnnouncementRequest;
 use App\Models\Announcement;
 use App\Services\ActivityLogger;
+use App\Support\Paging;
 use App\Support\PrivateFiles;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -36,7 +37,7 @@ class AnnouncementController extends Controller
             ->when($manager && ! $status, fn ($q) => $q->where('status', '!=', AnnouncementStatus::Archived))
             ->with('author')
             ->newestFirst()
-            ->paginate(20)
+            ->paginate(Paging::size())
             ->withQueryString();
 
         return view('announcements.index', ['announcements' => $announcements, 'manager' => $manager, 'status' => $status?->value]);

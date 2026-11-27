@@ -14,7 +14,7 @@ class PasswordChangeTest extends TestCase
         $user = User::factory()->mustChangePassword()->withRole(Role::Principal)->create();
 
         $this->actingAs($user)->get('/')->assertRedirect(route('password.edit'));
-        $this->actingAs($user)->get('/password')->assertOk()->assertSee('تغییر رمز عبور');
+        $this->actingAs($user)->get('/password')->assertOk()->assertSee('تغییر رمز');
     }
 
     public function test_user_changes_own_password(): void

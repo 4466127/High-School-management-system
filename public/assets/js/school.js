@@ -180,3 +180,35 @@
     // پس از خطا پنجره دوباره باز می‌شود؛ عنوان خانه را دوباره بگذار
     if (field('day').value) { label.textContent = labelFor(field('day').value, field('period').value); }
 })();
+
+/* فرم فیلتر که با تغییر یک انتخاب خودش فرستاده می‌شود: <select data-submit-on-change data-reset="#id">
+   data-reset: خانه‌ای که پیش از فرستادن خالی می‌شود (مثلاً با عوض شدن بخش، کتاب قبلی پاک شود). */
+(function () {
+    document.addEventListener('change', function (ev) {
+        var el = ev.target;
+        if (!el.hasAttribute || !el.hasAttribute('data-submit-on-change') || !el.form) { return; }
+        var reset = el.getAttribute('data-reset');
+        if (reset) {
+            var target = document.querySelector(reset);
+            if (target) { target.value = ''; target.disabled = true; }
+        }
+        if (typeof el.form.requestSubmit === 'function') { el.form.requestSubmit(); } else { el.form.submit(); }
+    });
+})();
+
+/* منوی کنار در موبایل (کمتر از ۹۰۰ پیکسل): دکمه‌ی ☰ در نوار بالا منو را باز و بسته می‌کند */
+(function () {
+    var toggle = document.querySelector('[data-side-toggle]');
+    var side = document.getElementById('side-menu');
+    if (!toggle || !side) { return; }
+    var backdrop = document.querySelector('.side-backdrop');
+
+    function setOpen(open) {
+        document.body.classList.toggle('side-open', open);
+        toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    }
+    toggle.addEventListener('click', function () { setOpen(!document.body.classList.contains('side-open')); });
+    if (backdrop) { backdrop.addEventListener('click', function () { setOpen(false); }); }
+    document.addEventListener('keydown', function (ev) { if (ev.key === 'Escape') { setOpen(false); } });
+    side.addEventListener('click', function (ev) { if (ev.target.closest('a[href]')) { setOpen(false); } });
+})();

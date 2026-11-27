@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Library;
 
 use App\Enums\BorrowerType;
 use App\Enums\CopyCondition;
+use App\Enums\CopyStatus;
 use App\Enums\EmploymentStatus;
 use App\Enums\EnrollmentStatus;
 use App\Enums\LoanKind;
@@ -11,6 +12,8 @@ use App\Enums\LoanStatus;
 use App\Enums\StudentStatus;
 use App\Http\Controllers\Controller;
 use App\Models\AcademicYear;
+use App\Models\Book;
+use App\Models\BookCopy;
 use App\Models\BookLoan;
 use App\Models\Enrollment;
 use App\Models\Section;
@@ -22,6 +25,7 @@ use App\Services\LibraryService;
 use App\Support\Csv;
 use App\Support\Digits;
 use App\Support\JalaliDate;
+use App\Support\Paging;
 use App\Support\PersianText;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
@@ -48,7 +52,7 @@ class LoanController extends Controller
         $print = $request->boolean('print');
 
         return view('library.loans.index', [
-            'loans' => $print ? $loans->get() : $loans->paginate(30)->withQueryString(),
+            'loans' => $print ? $loans->get() : $loans->paginate(Paging::size())->withQueryString(),
             'filters' => $request->only(['status', 'type', 'kind', 'section', 'q']),
             'sections' => $year ? Section::ordered()->where('academic_year_id', $year->id)->get() : collect(),
             'matches' => $this->matches((string) $request->query('find')),
@@ -92,12 +96,12 @@ class LoanController extends Controller
 
     public function student(Request $request, Student $student): View
     {
-        return $this->borrowerPage($student, BorrowerType::Student);
+        return $this->borrowerPage($request, $student, BorrowerType::Student);
     }
 
     public function staff(Request $request, Staff $staff): View
     {
-        return $this->borrowerPage($staff, BorrowerType::Staff);
+        return $this->borrowerPage($request, $staff, BorrowerType::Staff);
     }
 
     public function storeStudent(Request $request, Student $student): RedirectResponse
@@ -157,22 +161,32 @@ class LoanController extends Controller
 
     private function issue(Request $request, Student|Staff $borrower): RedirectResponse
     {
+        // با نمبر ثبت (جلد روی میز) یا با انتخاب کتاب از جستجو (اولین جلد موجود)
         $data = $request->validate([
-            'accession_no' => ['required', 'string', 'max:30'],
+            'accession_no' => ['required_without:book_id', 'nullable', 'string', 'max:30'],
+            'book_id' => ['nullable', 'integer', 'exists:books,id'],
             'due_on' => ['nullable', new ValidJalaliDate],
             'notes' => ['nullable', 'string', 'max:300'],
-        ], [], __('library.attributes'));
-        $copy = $this->library->findCopy($data['accession_no']);
-        if (! $copy) {
-            throw ValidationException::withMessages(['accession_no' => __('library.copy_not_found')]);
+        ], ['accession_no.required_without' => __('library.accession_or_book')], __('library.attributes'));
+        if (! empty($data['accession_no'])) {
+            $copy = $this->library->findCopy($data['accession_no']);
+            if (! $copy) {
+                throw ValidationException::withMessages(['accession_no' => __('library.copy_not_found')]);
+            }
+        } else {
+            $copy = BookCopy::with('book')->where('book_id', $data['book_id'])->where('status', CopyStatus::Available->value)->orderBy('id')->first();
+            if (! $copy) {
+                throw ValidationException::withMessages(['accession_no' => __('library.no_copy_available')]);
+            }
         }
         $loan = $this->library->issue($copy, $borrower, JalaliDate::parse($data['due_on'] ?? null)?->toDateString(), $request->user(), $data['notes'] ?? null);
 
         return back()->with('success', __('library.issued', ['title' => $copy->book->title, 'date' => JalaliDate::format($loan->due_on)]));
     }
 
-    private function borrowerPage(Student|Staff $borrower, BorrowerType $type): View
+    private function borrowerPage(Request $request, Student|Staff $borrower, BorrowerType $type): View
     {
+        $bookQ = trim((string) $request->query('book_q'));
         $isStudent = $type === BorrowerType::Student;
         $history = BookLoan::with('copy.book')->where($isStudent ? 'student_id' : 'staff_id', $borrower->id)
             ->where('status', '!=', LoanStatus::Active->value)->latest('returned_on')->latest('id')->limit(30)->get();
@@ -192,6 +206,10 @@ class LoanController extends Controller
             'storeRoute' => $isStudent ? route('library.borrowers.student.store', $borrower) : route('library.borrowers.staff.store', $borrower),
             'conditions' => self::returnConditions(),
             'rules' => $rules,
+            'bookQ' => $bookQ,
+            'bookResults' => $bookQ === '' ? null : Book::query()->withCopyCounts()->search($bookQ)
+                ->orderByRaw('(select count(*) from book_copies where book_copies.book_id = books.id and book_copies.status = ?) = 0', [CopyStatus::Available->value])
+                ->orderBy('title')->limit(15)->get(),
         ]);
     }
 
@@ -217,11 +235,12 @@ class LoanController extends Controller
         if ($section = (int) $request->query('section')) {
             $q->whereIn('student_id', Enrollment::where('section_id', $section)->where('status', EnrollmentStatus::Active)->select('student_id'));
         }
+        // هر واژه: نمبر ثبت، نام کتاب یا نویسنده، نام یا نمبر اساس امانت‌گیرنده
         foreach (PersianText::searchTerms($request->query('q')) as $word) {
-            $like = PersianText::like($word);
-            $q->where(fn (Builder $w) => $w->whereHas('copy', fn ($c) => $c->where('accession_no', Digits::toLatin($word))->orWhereHas('book', fn ($b) => $b->where('title', 'like', $like)))
-                ->orWhereHas('student', fn ($s) => $s->where('first_name', 'like', $like)->orWhere('last_name', 'like', $like)->orWhere('admission_no', Digits::toLatin($word)))
-                ->orWhereHas('staff', fn ($s) => $s->where('first_name', 'like', $like)->orWhere('last_name', 'like', $like)));
+            $q->where(fn (Builder $w) => $w
+                ->whereHas('copy', fn ($c) => $c->where('accession_no', $word)->orWhereHas('book', fn ($b) => PersianText::whereMatches($b, ['title', 'author'], $word)))
+                ->orWhereHas('student', fn ($s) => PersianText::whereMatches($s, ['first_name', 'last_name', 'father_name'], $word, exact: ['admission_no']))
+                ->orWhereHas('staff', fn ($s) => PersianText::whereMatches($s, ['first_name', 'last_name', 'father_name'], $word)));
         }
 
         return $q;

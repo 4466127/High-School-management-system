@@ -6,6 +6,7 @@ return [
     'save' => 'ذخیره',
     'cancel' => 'لغو',
     'back' => 'برگشت',
+    'menu' => 'منو',
     'edit' => 'ویرایش',
     'view' => 'مشاهده',
     'delete' => 'حذف',
@@ -14,7 +15,7 @@ return [
     'confirm' => 'تأیید',
     'download' => 'دانلود',
     'optional' => 'اختیاری',
-    'search' => 'جست‌وجو',
+    'search' => 'جستجو',
     'filter' => 'فیلتر',
     'clear_filter' => 'پاک کردن فیلتر',
     'all' => 'همه',
@@ -39,7 +40,7 @@ return [
     'date_help' => 'سال/ماه/روز — بنویسید یا از تقویم انتخاب کنید',
     'choose_file' => 'انتخاب فایل',
     'no_file' => 'هیچ فایلی انتخاب نشده',
-    'form_has_errors' => 'ذخیره نشد؛ فرم خطا دارد:',
+    'form_has_errors' => 'ذخیره نشد؛ فورم خطا دارد:',
 
     'permission_groups' => [
         'general' => 'عمومی',

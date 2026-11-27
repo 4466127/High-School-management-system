@@ -15,6 +15,7 @@ use App\Models\Subject;
 use App\Services\LibraryService;
 use App\Support\Csv;
 use App\Support\Digits;
+use App\Support\Paging;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -32,7 +33,7 @@ class CatalogController extends Controller
     public function index(Request $request): View
     {
         $books = $this->filtered($request)->withCopyCounts()->with(['gradeLevel', 'subject'])
-            ->orderBy('title')->paginate(25)->withQueryString();
+            ->orderBy('title')->paginate(Paging::size())->withQueryString();
 
         return view('library.catalog.index', [
             'books' => $books,

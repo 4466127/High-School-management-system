@@ -13,6 +13,8 @@ use App\Support\Csv;
 use App\Support\Digits;
 use App\Support\JalaliDate;
 use App\Support\Money;
+use App\Support\Paging;
+use App\Support\PersianText;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -120,16 +122,18 @@ class PaymentController extends Controller
             ->when($from, fn ($q) => $q->where('paid_on', '>=', $from->toDateString()))
             ->when($to, fn ($q) => $q->where('paid_on', '<=', $to->toDateString()))
             ->when($request->filled('q'), function ($q) use ($request) {
+                // نمبر رسید دقیق، یا نام/نمبر اساس دانش‌آموز، یا نام پرداخت‌کننده
                 $term = Digits::toLatin(trim((string) $request->query('q')));
                 $q->where(fn ($w) => $w->where('receipt_no', ctype_digit($term) ? (int) $term : 0)
-                    ->orWhereHas('student', fn ($s) => $s->search($term)));
+                    ->orWhereHas('student', fn ($s) => $s->search($term))
+                    ->orWhere(fn ($p) => PersianText::whereMatches($p, ['payer_name'], $term)));
             });
 
         $total = Money::toCents((clone $query)->whereNull('voided_at')->sum('amount'));
         $query->orderByDesc('receipt_no');
 
         return [
-            'payments' => $paginate ? $query->paginate(50)->withQueryString() : $query->get(),
+            'payments' => $paginate ? $query->paginate(Paging::size())->withQueryString() : $query->get(),
             'total' => $total,
             'from' => $request->query('from'),
             'to' => $request->query('to'),

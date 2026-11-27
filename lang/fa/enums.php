@@ -29,8 +29,8 @@ return [
         'graduated' => 'فارغ',
     ],
     'shift' => [
-        'morning' => 'صبح',
-        'afternoon' => 'بعدازظهر',
+        'morning' => 'قبل از ظهر',
+        'afternoon' => 'بعد از ظهر',
     ],
     'enrollment_status' => [
         'active' => 'جاری',
@@ -65,7 +65,7 @@ return [
         'sick' => 'م',
     ],
     'exam_status' => [
-        'draft' => 'پیش‌نویس',
+        'draft' => 'مسوده',
         'open' => 'باز (ثبت نمره)',
         'locked' => 'قفل',
     ],
@@ -81,7 +81,7 @@ return [
         'once' => 'یک‌بار',
     ],
     'plan_status' => [
-        'draft' => 'پیش‌نویس',
+        'draft' => 'مسوده',
         'submitted' => 'فرستاده به مدیر',
         'approved' => 'منظور شد',
         'returned' => 'برگشت برای اصلاح',
@@ -105,7 +105,7 @@ return [
         'identity' => 'تذکره / هویت',
         'photo' => 'عکس',
         'certificate' => 'شهادت‌نامه / سند',
-        'report_card' => 'کارنامه',
+        'report_card' => 'کارنامه‌ی تحصیلی',
         'transfer' => 'اسناد انتقال',
         'medical' => 'صحی',
         'other' => 'دیگر',
@@ -122,16 +122,16 @@ return [
         'parents' => 'والدین',
     ],
     'announcement_status' => [
-        'draft' => 'پیش‌نویس',
+        'draft' => 'مسوده',
         'published' => 'منتشرشده',
-        'archived' => 'بایگانی',
+        'archived' => 'آرشیف',
     ],
     'letter_direction' => [
         'outgoing' => 'صادره',
         'incoming' => 'وارده',
     ],
     'letter_status' => [
-        'draft' => 'پیش‌نویس',
+        'draft' => 'مسوده',
         'issued' => 'صادر / ثبت شد',
         'cancelled' => 'باطل',
     ],

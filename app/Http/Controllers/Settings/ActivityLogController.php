@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\ActivityLog;
 use App\Models\User;
 use App\Support\JalaliDate;
+use App\Support\Paging;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -23,7 +24,7 @@ class ActivityLogController extends Controller
             ->when($from, fn ($q) => $q->where('created_at', '>=', $from->startOfDay()))
             ->when($to, fn ($q) => $q->where('created_at', '<=', $to->endOfDay()))
             ->latest('id')
-            ->paginate(50)
+            ->paginate(Paging::size())
             ->withQueryString();
 
         return view('settings.activity-logs.index', [

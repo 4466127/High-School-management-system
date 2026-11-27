@@ -40,9 +40,43 @@
                     @if (! $canBorrow)
                         <div class="alert alert-warning small mb-0">{{ __($t.'borrower_inactive') }}</div>
                     @else
+                        {{-- راه ۱: جستجوی کتاب با نام (کتابدار نمبر ثبت را لازم نیست بداند) --}}
+                        <form method="GET" action="{{ url()->current() }}" class="mb-2" role="search">
+                            <label class="form-label" for="book-q">{{ __($t.'find_book') }}</label>
+                            <div class="input-group">
+                                <input type="search" name="book_q" id="book-q" value="{{ $bookQ }}" class="form-control" placeholder="{{ __($t.'ph.find_book') }}" @if ($bookQ === '') autofocus @endif>
+                                <button type="submit" class="btn btn-outline-primary" aria-label="{{ __('app.search') }}"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i></button>
+                            </div>
+                            <div class="form-text">{{ __($t.'help.book_search') }}</div>
+                        </form>
+                        @if ($bookResults !== null)
+                            <ul class="list-group list-group-flush border rounded mb-3 book-results">
+                                @forelse ($bookResults as $b)
+                                    <li class="list-group-item d-flex align-items-center gap-2 px-2">
+                                        <span class="flex-grow-1 small">
+                                            <span class="fw-medium">{{ $b->title }}</span>@if ($b->author) <span class="text-secondary">— {{ $b->author }}</span>@endif
+                                            <span @class(['d-block', 'text-success' => $b->copies_available > 0, 'text-danger' => $b->copies_available === 0])>
+                                                {{ $b->is_reference ? __($t.'reference_short') : ($b->copies_available > 0 ? __($t.'available_n', ['count' => $n($b->copies_available)]) : __($t.'none_available')) }}</span>
+                                        </span>
+                                        @if ($b->copies_available > 0 && ! $b->is_reference)
+                                            <form method="POST" action="{{ $storeRoute }}">
+                                                @csrf
+                                                <input type="hidden" name="book_id" value="{{ $b->id }}">
+                                                <button type="submit" class="btn btn-sm btn-primary text-nowrap">{{ __($t.'do_lend') }}</button>
+                                            </form>
+                                        @endif
+                                    </li>
+                                @empty
+                                    <li class="list-group-item small text-secondary">{{ __($t.'no_book_found') }}</li>
+                                @endforelse
+                            </ul>
+                        @endif
+
+                        {{-- راه ۲: نمبر ثبت جلدی که روی میز است --}}
+                        <div class="text-secondary small text-center my-2">{{ __($t.'or_accession') }}</div>
                         <form method="POST" action="{{ $storeRoute }}" novalidate>
                             @csrf
-                            <x-form.input name="accession_no" :label="__($t.'accession_no')" required maxlength="30" autofocus :placeholder="__($t.'ph.accession_no')" :help="__($t.'help.accession_no')" />
+                            <x-form.input name="accession_no" :label="__($t.'accession_no')" maxlength="30" :placeholder="__($t.'ph.accession_no')" :help="__($t.'help.accession_no')" />
                             <x-jalali-date name="due_on" :label="__($t.'due_on')" :placeholder="$defaultDue" :help="__($t.'help.due_on', ['date' => $defaultDue])" />
                             <x-form.input name="notes" :label="__($t.'loan_notes')" maxlength="300" :placeholder="__($t.'ph.loan_notes')" />
                             <button type="submit" class="btn btn-primary w-100"><i class="fa-solid fa-check" aria-hidden="true"></i> {{ __($t.'do_lend') }}</button>

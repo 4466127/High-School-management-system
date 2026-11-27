@@ -21,6 +21,7 @@ use App\Services\AttendanceService;
 use App\Services\FinanceService;
 use App\Services\ResultService;
 use App\Services\StudentService;
+use App\Support\Paging;
 use App\Support\PrivateFiles;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -101,7 +102,7 @@ class StudentController extends Controller
             : collect();
 
         return view('students.index', [
-            'students' => $query->orderBy('first_name')->orderBy('last_name')->paginate(25)->withQueryString(),
+            'students' => $query->orderBy('first_name')->orderBy('last_name')->paginate(Paging::size())->withQueryString(),
             'status' => $status,
             'canManage' => $canManage,
             'seesAll' => $seesAll,

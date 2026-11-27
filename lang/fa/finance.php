@@ -75,7 +75,7 @@ return [
     'payments_title' => 'رسیدها',
     'new_payment' => 'پرداخت تازه',
     'find_student' => 'نام، نام پدر یا نمبر اساس دانش‌آموز',
-    'find' => 'جست‌وجو',
+    'find' => 'جستجو',
     'receipt' => 'رسید',
     'receipt_no' => 'نمبر رسید',
     'paid_on' => 'تاریخ پرداخت',

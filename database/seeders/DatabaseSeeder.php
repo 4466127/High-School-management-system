@@ -26,7 +26,7 @@ class DatabaseSeeder extends Seeder
         $this->call([...self::BASE, AdminUserSeeder::class]);
 
         if (app()->environment('local')) {
-            $this->call([DemoUserSeeder::class, DemoSchoolSeeder::class, DemoAcademicSeeder::class, DemoAttendanceSeeder::class, DemoExamSeeder::class, DemoFinanceSeeder::class, DemoCourseSeeder::class, DemoRecordsSeeder::class, DemoTimetableSeeder::class, DemoTeachingSeeder::class, DemoLibrarySeeder::class, DemoLabSeeder::class]);
+            $this->call([DemoUserSeeder::class, DemoSchoolSeeder::class, DemoAcademicSeeder::class, DemoAttendanceSeeder::class, DemoExamSeeder::class, DemoFinanceSeeder::class, DemoCourseSeeder::class, DemoRecordsSeeder::class, DemoTimetableSeeder::class, DemoTeachingSeeder::class, DemoLibrarySeeder::class, DemoTextbookSeeder::class, DemoLabSeeder::class]);
         }
     }
 }

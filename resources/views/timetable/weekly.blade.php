@@ -13,12 +13,13 @@
                 <a href="{{ route('timetable.'.$kind.'s.index', [$param => $current->id, 'print' => 1]) }}" class="btn btn-outline-secondary"><i class="fa-solid fa-print" aria-hidden="true"></i> {{ __('attendance.print') }}</a>
             @endif
         </div>
+        <div class="alert alert-light border small"><i class="fa-solid fa-circle-info" aria-hidden="true"></i> {{ __('timetable.'.$kind.'_intro') }}</div>
         @if ($options->count() > 1 || ($canManage && $options->isNotEmpty()))
             <form method="GET" class="card card-body mb-3">
                 <div class="row g-2 align-items-end">
                     <div class="col-sm-8 col-lg-5">
                         <label for="tt-pick" class="form-label">{{ __('timetable.'.$kind) }}</label>
-                        <select name="{{ $param }}" id="tt-pick" class="form-select">
+                        <select name="{{ $param }}" id="tt-pick" class="form-select" data-submit-on-change>
                             @foreach ($options as $o)<option value="{{ $o->id }}" @selected($current && $current->id === $o->id)>{{ $kind === 'teacher' ? $o->full_name : $o->name }}</option>@endforeach
                         </select>
                     </div>

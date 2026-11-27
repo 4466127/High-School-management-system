@@ -210,6 +210,8 @@ Route::middleware(['auth', 'active'])->group(function () {
                 Route::get('/setup', [TimetableSetupController::class, 'index'])->name('setup.index');
                 Route::post('/setup/periods', [TimetableSetupController::class, 'storePeriod'])->name('setup.periods.store');
                 Route::post('/setup/periods/defaults', [TimetableSetupController::class, 'defaults'])->name('setup.periods.defaults');
+                Route::post('/setup/periods/generate', [TimetableSetupController::class, 'generate'])->name('setup.periods.generate');
+                Route::post('/setup/shifts', [TimetableSetupController::class, 'shifts'])->name('setup.shifts');
                 Route::put('/setup/periods/{period}', [TimetableSetupController::class, 'updatePeriod'])->name('setup.periods.update');
                 Route::post('/setup/rooms', [TimetableSetupController::class, 'storeRoom'])->name('setup.rooms.store');
                 Route::put('/setup/rooms/{room}', [TimetableSetupController::class, 'updateRoom'])->name('setup.rooms.update');
@@ -264,6 +266,8 @@ Route::middleware(['auth', 'active'])->group(function () {
                 Route::get('/textbooks', [TextbookController::class, 'index'])->name('textbooks.index');
                 Route::post('/textbooks/distribute', [TextbookController::class, 'distribute'])->name('textbooks.distribute');
                 Route::post('/textbooks/collect', [TextbookController::class, 'collect'])->name('textbooks.collect');
+                Route::post('/textbooks/distribute-all', [TextbookController::class, 'distributeAll'])->name('textbooks.distribute-all');
+                Route::post('/textbooks/collect-all', [TextbookController::class, 'collectAll'])->name('textbooks.collect-all');
 
                 Route::get('/reports', [LibraryReportController::class, 'index'])->name('reports.index');
                 Route::get('/setup', [LibraryReportController::class, 'setup'])->name('setup.index');

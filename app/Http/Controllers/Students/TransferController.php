@@ -17,6 +17,7 @@ use App\Services\TransferService;
 use App\Support\Csv;
 use App\Support\Digits;
 use App\Support\JalaliDate;
+use App\Support\Paging;
 use App\Support\PersianText;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -35,7 +36,7 @@ class TransferController extends Controller
     public function index(Request $request): View
     {
         return view('students.transfers.index', [
-            'transfers' => $this->query($request)->with('student')->paginate(30)->withQueryString(),
+            'transfers' => $this->query($request)->with('student')->paginate(Paging::size())->withQueryString(),
             'filters' => $this->filters($request),
         ]);
     }
@@ -156,7 +157,7 @@ class TransferController extends Controller
             ->when($to, fn ($q) => $q->where('transfer_date', '<=', $to->toDateString()))
             ->when($terms !== [], fn ($q) => $q->where(fn ($w) => $w
                 ->whereHas('student', fn ($s) => $s->withTrashed()->search($request->query('q')))
-                ->orWhere('other_school', 'like', PersianText::like(implode(' ', $terms)))))
+                ->orWhere(fn ($o) => PersianText::whereMatches($o, ['other_school'], $request->query('q')))))
             ->orderByDesc('transfer_date')->orderByDesc('id');
     }
 }

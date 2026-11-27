@@ -58,6 +58,7 @@
                 </table>
             </div>
         </div>
+        @unless ($print)<div class="mt-3">{{ $rows->links() }}</div>@endunless
         <div class="small text-secondary mt-2">{{ __('teaching.reports_legend') }}</div>
     @endif
 @endsection

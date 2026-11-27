@@ -1,14 +1,14 @@
 <?php
 
 return [
-    'students_title' => 'آمار دانش‌آموزان',
+    'students_title' => 'احصائیه‌ی دانش‌آموزان',
     'attendance_title' => 'گزارش حاضری بخش‌ها',
     'results_title' => 'گزارش نتایج و ناکام‌ها',
     'finance_title' => 'خلاصه‌ی مالی',
     'all_sections' => 'همه‌ی بخش‌ها',
     'all_genders' => 'همه',
     'gender' => 'جنسیت',
-    'phone' => 'تلفن',
+    'phone' => 'شماره‌ی تماس',
     'by_section' => 'به تفکیک بخش',
     'by_grade' => 'به تفکیک صنف',
     'boys' => 'پسر',

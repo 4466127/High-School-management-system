@@ -15,6 +15,7 @@ use App\Services\TransferService;
 use App\Support\Csv;
 use App\Support\Digits;
 use App\Support\JalaliDate;
+use App\Support\Paging;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -34,7 +35,7 @@ class ArchiveController extends Controller
         $students = $this->query($request);
 
         return view('students.archive', [
-            'students' => $print ? $students->get() : $students->paginate(30)->withQueryString(),
+            'students' => $print ? $students->get() : $students->paginate(Paging::size())->withQueryString(),
             'filters' => $this->filters($request),
             'years' => AcademicYear::query()->orderByDesc('start_date')->get(),
             'print' => $print,

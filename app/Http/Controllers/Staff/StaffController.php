@@ -10,6 +10,7 @@ use App\Http\Requests\Staff\StaffRequest;
 use App\Http\Requests\Staff\StaffStatusRequest;
 use App\Models\Staff;
 use App\Services\StaffService;
+use App\Support\Paging;
 use App\Support\PrivateFiles;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -38,7 +39,7 @@ class StaffController extends Controller
         }
 
         return view('staff.index', [
-            'staff' => $query->orderBy('first_name')->orderBy('last_name')->paginate(25)->withQueryString(),
+            'staff' => $query->orderBy('first_name')->orderBy('last_name')->paginate(Paging::size())->withQueryString(),
             'status' => $status,
         ]);
     }

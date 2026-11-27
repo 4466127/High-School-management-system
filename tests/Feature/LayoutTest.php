@@ -36,4 +36,11 @@ class LayoutTest extends TestCase
         $this->assertMatchesRegularExpression('~class="nav-sub collapse show" id="nav-attendance"~', $html);
         $this->assertMatchesRegularExpression('~class="nav-sub collapse" id="nav-exams"~', $html);
     }
+
+    /** 1.8.1: موبایل — دکمه‌ی منو و پس‌زمینه‌ی منوی کشویی در هر صفحه */
+    public function test_mobile_menu_toggle_is_rendered(): void
+    {
+        $this->actingAs($this->userWithRole(Role::Teacher))->get('/')->assertOk()
+            ->assertSee('data-side-toggle', false)->assertSee('aria-controls="side-menu"', false)->assertSee('side-backdrop', false);
+    }
 }

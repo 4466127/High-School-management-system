@@ -12,6 +12,7 @@ use App\Models\TeacherAssignment;
 use App\Models\TimetableEntry;
 use App\Models\User;
 use App\Support\SchoolCalendar;
+use Carbon\Carbon;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -36,6 +37,90 @@ class TimetableService
     public function periods(Shift $shift): Collection
     {
         return Period::query()->where('is_active', true)->where('shift', $shift)->ordered()->get();
+    }
+
+    /**
+     * ساعت‌های یک نوبت از روی وقت شروع، طول هر ساعت، شمار ساعت‌ها و تفریح (بی پایگاه داده).
+     *
+     * @return list<array{name: string, start: string, end: string, break: bool}>
+     */
+    public static function periodPlan(string $start, int $minutes, int $lessons, int $breakAfter, int $breakMinutes): array
+    {
+        $ordinals = __('timetable.ordinals');
+        $t = Carbon::createFromFormat('H:i', $start);
+        $plan = [];
+        for ($i = 1; $i <= $lessons; $i++) {
+            $end = $t->copy()->addMinutes($minutes);
+            $plan[] = ['name' => __('timetable.period_n', ['n' => $ordinals[$i - 1] ?? $i]), 'start' => $t->format('H:i'), 'end' => $end->format('H:i'), 'break' => false];
+            $t = $end;
+            if ($i === $breakAfter && $breakMinutes > 0 && $i < $lessons) {
+                $end = $t->copy()->addMinutes($breakMinutes);
+                $plan[] = ['name' => __('timetable.break'), 'start' => $t->format('H:i'), 'end' => $end->format('H:i'), 'break' => true];
+                $t = $end;
+            }
+        }
+
+        return $plan;
+    }
+
+    /**
+     * ساعت‌های یک نوبت را با برنامه‌ی تازه هماهنگ می‌کند. ساعت درسی k-ام همان رکورد می‌ماند (فقط وقتش عوض می‌شود)
+     * تا خانه‌های تقسیم اوقات از دست نرود؛ ساعت اضافی غیرفعال می‌شود (حذف نیست).
+     *
+     * @param  list<array{name: string, start: string, end: string, break: bool}>  $plan
+     */
+    public function applyPeriodPlan(Shift $shift, array $plan, User $user): void
+    {
+        DB::transaction(function () use ($shift, $plan, $user) {
+            $existing = Period::where('shift', $shift)->ordered()->lockForUpdate()->get();
+            $pools = ['lesson' => $existing->where('is_break', false)->values(), 'break' => $existing->where('is_break', true)->values()];
+            $used = ['lesson' => 0, 'break' => 0];
+            foreach ($plan as $i => $p) {
+                $kind = $p['break'] ? 'break' : 'lesson';
+                $period = $pools[$kind]->get($used[$kind]++) ?? new Period;
+                $period->fill(['name' => $p['name'], 'shift' => $shift, 'start_time' => $p['start'], 'end_time' => $p['end'],
+                    'sort_order' => $i + 1, 'is_break' => $p['break'], 'is_active' => true])->save();
+            }
+            foreach (['lesson', 'break'] as $kind) {
+                $pools[$kind]->slice($used[$kind])->each(fn (Period $p) => $p->update(['is_active' => false]));
+            }
+            $lessons = collect($plan)->where('break', false)->count();
+            $this->logger->log('timetable.periods_generated', null, $shift->label().': '.$plan[0]['start'].' – '.end($plan)['end'],
+                new: ['lessons' => $lessons, 'periods' => count($plan)], user: $user);
+        });
+    }
+
+    /**
+     * نوبت (قبل/بعد از ظهر) همه‌ی بخش‌های هر صنف در یک سال. بخشی که خانه‌ی تقسیم اوقات دارد عوض نمی‌شود
+     * (ساعت‌هایش مال نوبت قبلی است).
+     *
+     * @param  array<int, Shift>  $shifts  grade_level_id ← نوبت
+     * @return array{changed: int, skipped: list<string>}
+     */
+    public function setGradeShifts(AcademicYear $year, array $shifts, User $user): array
+    {
+        return DB::transaction(function () use ($year, $shifts, $user) {
+            $result = ['changed' => 0, 'skipped' => []];
+            $sections = Section::with('gradeLevel')->where('academic_year_id', $year->id)->whereIn('grade_level_id', array_keys($shifts))->lockForUpdate()->get();
+            $withEntries = TimetableEntry::whereIn('section_id', $sections->pluck('id'))->distinct()->pluck('section_id')->flip();
+            foreach ($sections as $section) {
+                $shift = $shifts[$section->grade_level_id];
+                if ($section->shift === $shift) {
+                    continue;
+                }
+                if ($withEntries->has($section->id)) {
+                    $result['skipped'][] = $section->label;
+
+                    continue;
+                }
+                $old = $section->shift->label();
+                $section->update(['shift' => $shift]);
+                $this->logger->log('timetable.section_shift', $section, $section->label, ['shift' => $old], ['shift' => $shift->label()], user: $user);
+                $result['changed']++;
+            }
+
+            return $result;
+        });
     }
 
     /** @return array<string, array<int, TimetableEntry>> روز ← period_id ← خانه */

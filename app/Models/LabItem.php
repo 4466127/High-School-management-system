@@ -48,12 +48,7 @@ class LabItem extends Model
 
     public function scopeSearch(Builder $query, ?string $term): Builder
     {
-        foreach (PersianText::searchTerms($term) as $word) {
-            $like = PersianText::like($word);
-            $query->where(fn (Builder $q) => $q->where('name', 'like', $like)->orWhere('code', 'like', $like)->orWhere('specification', 'like', $like));
-        }
-
-        return $query;
+        return PersianText::whereMatches($query, ['name', 'code', 'specification', 'location'], $term);
     }
 
     /** فیلتر هشدار: low | expired | expiring | damaged */

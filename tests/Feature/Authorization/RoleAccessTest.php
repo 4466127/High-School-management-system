@@ -18,8 +18,9 @@ class RoleAccessTest extends TestCase
     {
         return [
             'admin' => [Role::Admin, ['dashboard', 'students', 'staff', 'academics', 'attendance', 'timetable', 'teaching', 'exams', 'courses', 'reports', 'library', 'labs', 'announcements', 'letters', 'settings'], ['school', 'users', 'activity_logs', 'import', 'backups', 'license']],
-            'principal' => [Role::Principal, ['dashboard', 'students', 'staff', 'academics', 'attendance', 'timetable', 'teaching', 'exams', 'courses', 'reports', 'library', 'labs', 'announcements', 'letters', 'settings'], ['school', 'import']],
-            'office' => [Role::Office, ['dashboard', 'students', 'staff', 'academics', 'attendance', 'timetable', 'teaching', 'exams', 'reports', 'library', 'labs', 'announcements', 'letters', 'settings'], ['import']],
+            'principal' => [Role::Principal, ['dashboard', 'students', 'staff', 'academics', 'attendance', 'timetable', 'teaching', 'exams', 'courses', 'reports', 'library', 'labs', 'announcements', 'letters', 'settings'], ['school', 'activity_logs', 'import']],
+            'head_teacher' => [Role::HeadTeacher, ['dashboard', 'students', 'academics', 'attendance', 'timetable', 'teaching', 'exams', 'reports', 'library', 'labs', 'announcements'], []],
+            'office' => [Role::Office, ['dashboard', 'students', 'staff', 'academics', 'attendance', 'timetable', 'exams', 'reports', 'library', 'labs', 'announcements', 'letters', 'settings'], ['import']],
             'teacher' => [Role::Teacher, ['dashboard', 'students', 'academics', 'attendance', 'timetable', 'teaching', 'exams', 'courses', 'reports', 'library', 'labs', 'announcements'], []],
             'accountant' => [Role::Accountant, ['dashboard', 'students', 'courses', 'reports', 'announcements'], []],
             'course_manager' => [Role::CourseManager, ['dashboard', 'students', 'courses', 'reports', 'announcements'], []],
@@ -139,7 +140,9 @@ class RoleAccessTest extends TestCase
     #[DataProvider('restrictedRoutes')]
     public function test_only_admin_reaches_system_pages(string $method, string $uri): void
     {
-        foreach ([Role::Principal, Role::Office, Role::Teacher, Role::Accountant, Role::CourseManager] as $role) {
+        // رویدادهای سیستم را مدیر مکتب هم می‌بیند (نظارت)؛ مدیریت کاربران فقط مدیر سیستم
+        $logs = $uri === '/settings/activity-logs';
+        foreach (array_filter([$logs ? null : Role::Principal, Role::HeadTeacher, Role::Office, Role::Teacher, Role::Accountant, Role::CourseManager]) as $role) {
             $this->actingAs($this->userWithRole($role))
                 ->call($method, $uri)
                 ->assertForbidden();
@@ -148,6 +151,27 @@ class RoleAccessTest extends TestCase
         if ($method === 'GET') {
             $this->actingAs($this->userWithRole(Role::Admin))->get($uri)->assertOk();
         }
+        if ($logs) {
+            $this->actingAs($this->userWithRole(Role::Principal))->get($uri)->assertOk();
+        }
+    }
+
+    /** 1.8.1: سرمعلم — کار درسی بله؛ پرونده‌ی کارکنان، مالی، تنظیمات و کاربران نه. مسئول اداری دیگر پلان منظور نمی‌کند. */
+    public function test_head_teacher_and_office_scope(): void
+    {
+        $head = $this->userWithRole(Role::HeadTeacher);
+        foreach (['/timetable/setup', '/teaching/plans', '/teaching/reports', '/exams/manage', '/academics/sections'] as $uri) {
+            $this->actingAs($head)->get($uri)->assertOk();
+        }
+        foreach (['/staff', '/settings/school', '/settings/users', '/finance/payments', '/library/loans'] as $uri) {
+            $this->actingAs($head)->get($uri)->assertForbidden();
+        }
+        $office = $this->userWithRole(Role::Office);
+        $this->actingAs($office)->get('/teaching/plans')->assertForbidden();
+        $this->actingAs($office)->get('/timetable/setup')->assertForbidden();
+        $this->actingAs($office)->get('/staff')->assertOk();
+        $this->assertTrue($head->hasPermission('teaching.manage'));
+        $this->assertFalse($office->hasPermission('teaching.manage'));
     }
 
     public function test_forbidden_page_is_persian(): void

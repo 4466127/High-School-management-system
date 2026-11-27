@@ -18,6 +18,7 @@ use App\Models\TeacherAssignment;
 use App\Services\AttendanceService;
 use App\Services\LabService;
 use App\Support\Digits;
+use App\Support\Paging;
 use App\Support\Quantity;
 use Closure;
 use Illuminate\Http\RedirectResponse;
@@ -57,7 +58,7 @@ class ActivityController extends Controller
 
         return view('labs.activities.index', [
             'year' => $year,
-            'activities' => $query->orderBy('period_id')->paginate(30)->withQueryString(),
+            'activities' => $query->orderBy('period_id')->paginate(Paging::size())->withQueryString(),
             'labs' => Lab::orderBy('name')->get(),
             'sections' => $year ? Section::ordered()->where('academic_year_id', $year->id)->get() : collect(),
             'filters' => $request->only(['lab', 'section', 'status', 'mine']) + ['status' => $status],

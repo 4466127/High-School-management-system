@@ -7,6 +7,7 @@ use App\Models\AcademicYear;
 use App\Models\Staff;
 use App\Services\TeacherReportService;
 use App\Support\Csv;
+use App\Support\Paging;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -19,11 +20,13 @@ class TeacherReportController extends Controller
     public function index(Request $request): View
     {
         $year = AcademicYear::current();
+        $print = $request->boolean('print');
+        $rows = $year ? $this->reports->overview($year) : collect();
 
         return view('teaching.reports', [
             'year' => $year,
-            'rows' => $year ? $this->reports->overview($year) : collect(),
-            'print' => $request->boolean('print'),
+            'rows' => $print ? $rows : Paging::collection($rows),
+            'print' => $print,
         ]);
     }
 

@@ -150,16 +150,6 @@ code { color: #9b3b5a; }
 .nav-sub a, .nav-sub .soon { font-size: .9rem; padding: 7px 12px; padding-inline-start: 34px; }
 .side-foot { opacity: .7; border-top: 1px solid rgba(255, 255, 255, .08); padding-top: 10px; margin-top: 8px; }
 
-@media (max-width: 900px) {
-    .nav-side > li { flex: 0 0 auto; }
-    .nav-side > li.is-open { flex: 1 1 100%; }
-    .nav-side .nav-group { width: auto; padding: 8px 10px; }
-    .nav-sub { flex-wrap: wrap; gap: 4px; padding: 0 0 6px; }
-    .nav-sub.show { display: flex; }
-    .nav-sub a, .nav-sub .soon { padding-inline-start: 10px; }
-    .side-foot { display: none; }
-}
-
 /* ---------- نوار بالا ---------- */
 .topbar {
     background: var(--sc-surface);
@@ -471,3 +461,36 @@ code { color: #9b3b5a; }
 .book-label-call { font-size: 10pt; font-weight: 600; border-top: 1px solid #ccc; margin-top: 1mm; padding-top: 1mm; }
 .book-label-title { font-size: 8pt; color: #333; }
 .loan-overdue td { background: #fff4e5; }
+
+/* ---------- موبایل و تبلت (کمتر از ۹۰۰ پیکسل): منو کشویی از سمت راست با دکمه‌ی ☰ ---------- */
+.side-toggle, .side-backdrop { display: none; }
+@media (max-width: 900px) {
+    .app { flex-direction: row; }
+    .side {
+        position: fixed; top: 0; bottom: 0; inset-inline-start: 0; z-index: 1045;
+        width: 280px; max-width: 86vw; height: 100vh; height: 100dvh;
+        transform: translateX(105%); transition: transform .22s ease; visibility: hidden;
+    }
+    body.side-open .side { transform: none; visibility: visible; }
+    body.side-open { overflow: hidden; }
+    .side-backdrop { position: fixed; inset: 0; z-index: 1040; background: rgba(15, 23, 42, .45); }
+    body.side-open .side-backdrop { display: block; }
+    .nav-side { display: block; }
+    .nav-side a, .nav-side .soon, .nav-side .nav-group { padding: 11px 12px; }   /* هدف لمس بزرگ‌تر */
+    .nav-sub a, .nav-sub .soon { padding-inline-start: 34px; }
+    .side-toggle { display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; font-size: 1.15rem; }
+    .main { padding: 10px 12px 40px; }
+    .topbar { padding: 6px 10px; margin-bottom: 12px; gap: 6px; }
+    .topbar-date { font-size: .8rem; flex-wrap: wrap; }
+    .topbar .dropdown-toggle { max-width: 46vw; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .page-title { font-size: 1.15rem; }
+    .page-head .btn { white-space: nowrap; }
+    .card-header { flex-wrap: wrap; }
+    .table { font-size: .88rem; }
+    .modal-dialog { margin: .5rem; }
+}
+@media (max-width: 575px) {
+    .btn-group-sm > .btn, .btn-sm { padding: .3rem .55rem; }
+    .kpi-row { gap: 8px; }
+    .book-results .btn { padding: .35rem .6rem; }
+}

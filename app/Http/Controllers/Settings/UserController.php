@@ -11,6 +11,8 @@ use App\Models\Role;
 use App\Models\Staff;
 use App\Models\User;
 use App\Services\ActivityLogger;
+use App\Support\Paging;
+use App\Support\PersianText;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -31,14 +33,12 @@ class UserController extends Controller
 
         $users = User::query()
             ->with('roles')
-            ->when($search !== '', fn ($q) => $q->where(fn ($q) => $q
-                ->where('name', 'like', "%{$search}%")
-                ->orWhere('username', 'like', "%{$search}%")))
+            ->when($search !== '', fn ($q) => PersianText::whereMatches($q, ['name', 'username'], $search))
             ->when($role !== '', fn ($q) => $q->whereHas('roles', fn ($q) => $q->where('key', $role)))
             ->when($status === 'active', fn ($q) => $q->where('is_active', true))
             ->when($status === 'inactive', fn ($q) => $q->where('is_active', false))
             ->orderBy('name')
-            ->paginate(20)
+            ->paginate(Paging::size())
             ->withQueryString();
 
         return view('settings.users.index', [

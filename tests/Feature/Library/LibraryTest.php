@@ -10,12 +10,14 @@ use App\Models\ActivityLog;
 use App\Models\Book;
 use App\Models\BookCopy;
 use App\Models\BookLoan;
+use App\Models\GradeLevel;
 use App\Models\Setting;
 use App\Models\Staff;
 use App\Models\User;
 use App\Services\ImportService;
 use Carbon\CarbonImmutable;
 use Database\Seeders\DemoLibrarySeeder;
+use Database\Seeders\DemoTextbookSeeder;
 use Database\Seeders\RolePermissionSeeder;
 use Illuminate\Support\Carbon;
 use Tests\Feature\Exams\ExamTestCase;
@@ -204,6 +206,74 @@ class LibraryTest extends ExamTestCase
         $this->assertSame(0, BookLoan::where('kind', 'textbook')->active()->count());
         $this->assertSame(2, $book->copies()->where('status', 'available')->count());
         $this->actingAs($this->librarian)->post(route('library.textbooks.collect'), [])->assertSessionHasErrors('loans');
+    }
+
+    /** 1.8.1: فقط کتاب‌های درسی صنف همان بخش؛ توزیع همه (اول سال) و جمع‌آوری همه (آخر سال) */
+    public function test_textbooks_of_section_grade_only_with_bulk_distribute_and_collect(): void
+    {
+        $grade7 = $this->section->grade_level_id;
+        $grade1 = GradeLevel::where('sort_order', 1)->value('id');
+        $math = $this->addBook(['title' => 'ریاضی صنف هفتم', 'category' => 'textbook', 'grade_level_id' => $grade7, 'copies' => 3, 'source' => 'ministry']);
+        $this->addBook(['title' => 'دری صنف هفتم', 'category' => 'textbook', 'grade_level_id' => $grade7, 'copies' => 3, 'source' => 'ministry']);
+        $this->addBook(['title' => 'قرآن کریم صنف اول', 'category' => 'textbook', 'grade_level_id' => $grade1, 'copies' => 3, 'source' => 'ministry']);
+
+        $page = $this->actingAs($this->librarian)->get(route('library.textbooks.index', ['section' => $this->section->id]))->assertOk();
+        $page->assertSee('ریاضی صنف هفتم')->assertSee('دری صنف هفتم')->assertDontSee('قرآن کریم صنف اول');
+        // بی بخش: هیچ کتابی فهرست نمی‌شود
+        $this->actingAs($this->librarian)->get(route('library.textbooks.index'))->assertOk()->assertDontSee('ریاضی صنف هفتم');
+
+        // توزیع همه: ۲ کتاب × ۳ شاگرد
+        $this->actingAs($this->librarian)->post(route('library.textbooks.distribute-all'), ['section' => $this->section->id, 'due_on' => '1405/12/29'])
+            ->assertSessionHasNoErrors()->assertSessionHas('success');
+        $this->assertSame(6, BookLoan::where('kind', LoanKind::Textbook->value)->active()->count());
+        $this->assertSame(3, BookLoan::active()->whereHas('copy', fn ($q) => $q->where('book_id', $math->id))->count());
+        // دوباره: کسی دو جلد نمی‌گیرد
+        $this->actingAs($this->librarian)->post(route('library.textbooks.distribute-all'), ['section' => $this->section->id, 'due_on' => '1405/12/29']);
+        $this->assertSame(6, BookLoan::count());
+        $this->actingAs($this->librarian)->get(route('library.textbooks.index', ['section' => $this->section->id]))->assertSee(__('library.of_limit', ['count' => '۳', 'max' => '۳']));
+
+        // بخش دیگر بی کتاب درسی صنف (صنف اول ندارد بخش) ← خطا
+        $grade1Section = $this->makeSection($this->year, 2);
+        $this->actingAs($this->librarian)->post(route('library.textbooks.distribute-all'), ['section' => $grade1Section->id, 'due_on' => '1405/12/29'])
+            ->assertSessionHasErrors('section');
+
+        // جمع‌آوری همه
+        $this->actingAs($this->librarian)->post(route('library.textbooks.collect-all'), ['section' => $this->section->id, 'condition' => 'good'])
+            ->assertSessionHas('success');
+        $this->assertSame(0, BookLoan::active()->count());
+        $this->assertSame(9, BookCopy::where('status', CopyStatus::Available->value)->count());
+        $this->actingAs($this->librarian)->post(route('library.textbooks.collect-all'), ['section' => $this->section->id])->assertSessionHas('warning');
+    }
+
+    public function test_demo_textbook_seeder_fills_grades_once(): void
+    {
+        $this->seed(DemoTextbookSeeder::class);
+        $books = Book::where('category', 'textbook')->where('grade_level_id', $this->section->grade_level_id)->get();
+        $this->assertSame(2, $books->count());   // ریاضی و دری صنف هفتم
+        $this->assertSame(5, $books->first()->copies()->count());   // ۳ شاگرد + ۲
+        $this->seed(DemoTextbookSeeder::class);
+        $this->assertSame(2, Book::where('category', 'textbook')->where('grade_level_id', $this->section->grade_level_id)->count());
+    }
+
+    /** 1.8.1: امانت با جستجوی نام کتاب (بی دانستن نمبر ثبت) */
+    public function test_lend_by_searching_book_title(): void
+    {
+        $book = $this->addBook(['title' => 'کتاب‌های داستان کوتاه', 'copies' => 2]);
+        $student = $this->student();
+
+        // جستجو بی نیم‌فاصله و با «ي» عربی هم پیدا می‌کند
+        $this->actingAs($this->librarian)->get(route('library.borrowers.student', ['student' => $student, 'book_q' => 'كتابهاي داستان']))
+            ->assertOk()->assertSee('کتاب‌های داستان کوتاه')->assertSee(__('library.available_n', ['count' => '۲']));
+
+        $this->actingAs($this->librarian)->post(route('library.borrowers.student.store', $student), ['book_id' => $book->id])->assertSessionHasNoErrors();
+        $this->assertSame('1', BookLoan::firstOrFail()->copy->accession_no);   // اولین جلد موجود
+        $this->actingAs($this->librarian)->post(route('library.borrowers.student.store', $this->student(1)), ['book_id' => $book->id])->assertSessionHasNoErrors();
+        $this->assertSame(2, BookLoan::active()->count());
+        // جلد موجود نمانده
+        $this->actingAs($this->librarian)->post(route('library.borrowers.student.store', $this->student(2)), ['book_id' => $book->id])->assertSessionHasErrors('accession_no');
+        $this->actingAs($this->librarian)->get(route('library.borrowers.student', ['student' => $this->student(2), 'book_q' => 'داستان']))->assertSee(__('library.none_available'));
+        // نه کتاب نه نمبر
+        $this->actingAs($this->librarian)->post(route('library.borrowers.student.store', $this->student(2)), [])->assertSessionHasErrors('accession_no');
     }
 
     public function test_import_books_from_csv(): void

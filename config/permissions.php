@@ -81,13 +81,30 @@ return [
             'labs.view', 'labs.activity', 'labs.manage',
             'announcements.manage', 'letters.manage',
             'settings.manage',
+            'activity_logs.view',
         ],
 
+        // سرمعلم / معاون تدریسی (1.8.1): همه‌ی کارهای درسی — تقسیم اوقات، منظوری پلان تدریس، امتحانات و نتایج،
+        // اصلاح حاضری؛ بی مالی، بی پرونده‌ی کارکنان، بی تنظیمات سیستم
+        'head_teacher' => [
+            'dashboard.view',
+            'students.view', 'students.view_all',
+            'academics.view', 'academics.manage', 'timetable.manage', 'teaching.plan', 'teaching.manage',
+            'attendance.take', 'attendance.edit',
+            'marks.enter', 'exams.manage', 'reportcards.print',
+            'reports.academic',
+            'library.view',
+            'labs.view', 'labs.activity',
+            'announcements.manage',
+        ],
+
+        // مسئول اداری (کاتب): ثبت و پرونده‌ی دانش‌آموزان و کارکنان، شمولیت در بخش‌ها، حاضری، مکاتیب و اعلان‌ها؛
+        // کار درسی (تقسیم اوقات، پلان تدریس، امتحانات) با سرمعلم است
         'office' => [
             'dashboard.view',
             'students.view', 'students.view_all', 'students.manage',
             'staff.manage',
-            'academics.view', 'academics.manage', 'timetable.manage', 'teaching.manage',
+            'academics.view', 'academics.manage',
             'attendance.take', 'attendance.edit',
             'reportcards.print',
             'reports.academic',

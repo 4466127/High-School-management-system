@@ -6,9 +6,13 @@
 <body>
 <div class="app">
     @include('layouts.partials.sidebar')
+    <div class="side-backdrop" aria-hidden="true"></div>
 
     <main class="main">
         <div class="topbar">
+            <button type="button" class="btn btn-light side-toggle" data-side-toggle aria-controls="side-menu" aria-expanded="false" aria-label="{{ __('app.menu') }}">
+                <i class="fa-solid fa-bars" aria-hidden="true"></i>
+            </button>
             <span class="topbar-date">
                 <i class="fa-regular fa-calendar" aria-hidden="true"></i> @jdate(now(), 'full')
                 @if ($currentYear = \App\Models\AcademicYear::current())

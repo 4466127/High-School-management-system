@@ -134,6 +134,29 @@ class TeachingPlanTest extends ExamTestCase
         $this->actingAs($this->teacher)->get(route('teaching.plans.show', [$plan, 'print' => 1]))->assertOk()->assertSee(__('teaching.sign_teacher'));
     }
 
+    /** 1.8.1: فهرست پلان‌ها صفحه‌بندی (۲۰ سطر)، فیلتر بخش و معلم، جستجو و خلاصه */
+    public function test_plans_list_is_paginated_and_filtered(): void
+    {
+        $staff = Staff::factory()->create(['first_name' => 'نجیب', 'last_name' => 'اللهی']);
+        foreach (range(1, 22) as $i) {
+            $this->makeSection($this->year, 8, 'ب'.$i)->assignments()->create(['subject_id' => $this->dari->id, 'staff_id' => $staff->id]);
+        }
+        // ۱ (ریاضی بخش الف) + ۲۲ (دری) = ۲۳ سطر
+        $first = $this->actingAs($this->principal)->get(route('teaching.plans.index'))->assertOk();
+        $this->assertSame(20, $first->viewData('rows')->count());
+        $this->assertSame(23, $first->viewData('rows')->total());
+        $this->assertSame(23, $first->viewData('summary')['none']);
+        $first->assertSee(__('teaching.how_title'));
+        $this->assertSame(3, $this->actingAs($this->principal)->get(route('teaching.plans.index', ['page' => 2]))->viewData('rows')->count());
+
+        $this->assertSame(1, $this->actingAs($this->principal)->get(route('teaching.plans.index', ['section' => $this->section->id]))->viewData('rows')->total());
+        $this->assertSame(22, $this->actingAs($this->principal)->get(route('teaching.plans.index', ['staff' => $staff->id]))->viewData('rows')->total());
+        $this->assertSame(1, $this->actingAs($this->principal)->get(route('teaching.plans.index', ['q' => 'رياضي']))->viewData('rows')->total());
+        $this->assertSame(22, $this->actingAs($this->principal)->get(route('teaching.plans.index', ['q' => 'اللهی']))->viewData('rows')->total());
+        // معلم فقط مضامین خودش
+        $this->assertSame(1, $this->actingAs($this->teacher)->get(route('teaching.plans.index'))->viewData('rows')->total());
+    }
+
     public function test_demo_seeder(): void
     {
         $this->seed(DemoTeachingSeeder::class);

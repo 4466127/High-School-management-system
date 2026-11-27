@@ -16,18 +16,15 @@
                 </div>
                 <div class="card-body">
                     @foreach (\App\Enums\Shift::cases() as $shift)
-                        <div class="d-flex align-items-center gap-2 mb-1">
-                            <h2 class="h6 fw-bold mb-0 flex-grow-1">{{ $shift->label() }}</h2>
-                            @if (! isset($periods[$shift->value]))
-                                <form method="POST" action="{{ route('timetable.setup.periods.defaults') }}">
-                                    @csrf
-                                    <input type="hidden" name="shift" value="{{ $shift->value }}">
-                                    <button type="submit" class="btn btn-sm btn-outline-success"><i class="fa-solid fa-wand-magic-sparkles" aria-hidden="true"></i> {{ __($t.'defaults') }}</button>
-                                </form>
-                            @endif
+                        @php($activeP = isset($periods[$shift->value]) ? $periods[$shift->value]->where('is_active', true) : collect())
+                        <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
+                            <h2 class="h6 fw-bold mb-0 flex-grow-1">{{ $shift->label() }}
+                                @if ($activeP->isNotEmpty())<span class="small fw-normal text-secondary">— {{ __($t.'plan_summary', ['start' => \App\Support\Digits::toPersian(substr($activeP->first()->start_time, 0, 5)), 'end' => \App\Support\Digits::toPersian(substr($activeP->last()->end_time, 0, 5))]) }}</span>@endif
+                            </h2>
+                            <button type="button" class="btn btn-sm btn-outline-success" data-bs-toggle="modal" data-bs-target="#plan-{{ $shift->value }}"><i class="fa-solid fa-wand-magic-sparkles" aria-hidden="true"></i> {{ __($t.'plan_button') }}</button>
                         </div>
                         @if (isset($periods[$shift->value]))
-                            <table class="table table-sm align-middle mb-3">
+                            <div class="table-responsive"><table class="table table-sm align-middle mb-3">
                                 <thead><tr><th>#</th><th>{{ __($t.'period_name') }}</th><th>{{ __($t.'time') }}</th><th></th><th></th></tr></thead>
                                 <tbody>
                                 @foreach ($periods[$shift->value] as $p)
@@ -41,7 +38,7 @@
                                     </tr>
                                 @endforeach
                                 </tbody>
-                            </table>
+                            </table></div>
                         @else
                             <p class="small text-secondary">{{ __($t.'no_periods_shift') }}</p>
                         @endif
@@ -50,9 +47,49 @@
             </div>
         </div>
 
-        {{-- اتاق‌ها --}}
+        {{-- نوبت صنف‌ها --}}
         <div class="col-xl-5">
-            <div class="card h-100">
+            <div class="card mb-3">
+                <div class="card-header fw-medium"><i class="fa-solid fa-sun" aria-hidden="true"></i> {{ __($t.'grade_shifts') }}</div>
+                <div class="card-body">
+                    <p class="small text-secondary">{{ __($t.'grade_shifts_intro') }}</p>
+                    @if ($grades->isEmpty())
+                        <p class="small text-secondary mb-0">{{ __($t.'no_sections_year') }}</p>
+                    @else
+                        <form method="POST" action="{{ route('timetable.setup.shifts') }}" class="mb-3">
+                            @csrf
+                            <input type="hidden" name="preset" value="common">
+                            <button type="submit" class="btn btn-sm btn-outline-primary w-100"><i class="fa-solid fa-wand-magic-sparkles" aria-hidden="true"></i> {{ __($t.'grade_shifts_preset') }}</button>
+                        </form>
+                        <form method="POST" action="{{ route('timetable.setup.shifts') }}">
+                            @csrf
+                            <div class="table-responsive">
+                                <table class="table table-sm align-middle mb-2">
+                                    <thead><tr><th>{{ __('academics.grade') }}</th><th>{{ __($t.'grade_sections') }}</th><th style="min-width: 9rem">{{ __('academics.shift') }}</th></tr></thead>
+                                    <tbody>
+                                    @foreach ($grades as $g)
+                                        @php($current = $g['sections']->countBy(fn ($s) => $s->shift->value)->sortDesc()->keys()->first())
+                                        <tr>
+                                            <td class="fw-medium">{{ $g['grade']->name }}</td>
+                                            <td class="small text-secondary">{{ $g['sections']->map(fn ($s) => $s->name.' ('.$s->shift->label().')')->join('، ') }}</td>
+                                            <td>
+                                                <select name="shifts[{{ $g['grade']->id }}]" class="form-select form-select-sm" aria-label="{{ __('academics.shift') }} — {{ $g['grade']->name }}">
+                                                    @foreach (\App\Enums\Shift::options() as $v => $l)<option value="{{ $v }}" @selected($current === $v)>{{ $l }}</option>@endforeach
+                                                </select>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-sm">{{ __($t.'grade_shifts_save') }}</button>
+                        </form>
+                    @endif
+                </div>
+            </div>
+
+        {{-- اتاق‌ها --}}
+            <div class="card">
                 <div class="card-header d-flex align-items-center gap-2">
                     <span class="fw-medium flex-grow-1"><i class="fa-solid fa-door-open" aria-hidden="true"></i> {{ __($t.'rooms') }}</span>
                     <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#roomNew"><i class="fa-solid fa-plus" aria-hidden="true"></i> {{ __($t.'add_room') }}</button>
@@ -73,6 +110,24 @@
     </div>
 
     {{-- پنجره‌ها --}}
+    {{-- تنظیم وقت هر نوبت --}}
+    @foreach (\App\Enums\Shift::cases() as $shift)
+        @php($pid = 'plan-'.$shift->value)
+        @php($open = old('_modal') === $pid)
+        @php($plan = $plans[$shift->value])
+        <x-modal-form :id="$pid" :title="__($t.'plan_title', ['shift' => $shift->label()])" :action="route('timetable.setup.periods.generate')" :submit="__('app.save')">
+            <input type="hidden" name="shift" value="{{ $shift->value }}">
+            <p class="small text-secondary">{{ __($t.'plan_help') }}</p>
+            <div class="row">
+                <x-form.input class="col-6 mb-3" :id="$pid.'-start'" name="start_time" type="time" ltr :label="__($t.'plan_start')" :value="$plan['start_time']" required :use-old="$open" />
+                <x-form.input class="col-6 mb-3" :id="$pid.'-min'" name="minutes" type="number" min="20" max="90" :label="__($t.'plan_minutes')" :value="$plan['minutes']" required :use-old="$open" placeholder="35" />
+                <x-form.input class="col-12 mb-3" :id="$pid.'-n'" name="lessons" type="number" min="1" max="10" :label="__($t.'plan_lessons')" :value="$plan['lessons']" required :use-old="$open" placeholder="6" />
+                <x-form.input class="col-6 mb-3" :id="$pid.'-ba'" name="break_after" type="number" min="0" max="10" :label="__($t.'plan_break_after')" :value="$plan['break_after']" required :use-old="$open" placeholder="3" :help="__($t.'plan_break_help')" />
+                <x-form.input class="col-6 mb-3" :id="$pid.'-bm'" name="break_minutes" type="number" min="0" max="60" :label="__($t.'plan_break_minutes')" :value="$plan['break_minutes']" required :use-old="$open" placeholder="15" />
+            </div>
+        </x-modal-form>
+    @endforeach
+
     @php($shifts = \App\Enums\Shift::options())
     @php($types = \App\Enums\RoomType::options())
     @foreach (array_merge([null], $periods->flatten()->all()) as $p)

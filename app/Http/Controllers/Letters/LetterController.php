@@ -17,6 +17,7 @@ use App\Services\LetterService;
 use App\Support\Csv;
 use App\Support\Digits;
 use App\Support\JalaliDate;
+use App\Support\Paging;
 use App\Support\PrivateFiles;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -224,7 +225,7 @@ class LetterController extends Controller
 
         return view('letters.index', [
             'direction' => $direction,
-            'letters' => $this->query($request, $direction)->with(['student', 'staff'])->paginate(30)->withQueryString(),
+            'letters' => $this->query($request, $direction)->with(['student', 'staff'])->paginate(Paging::size())->withQueryString(),
             'filters' => $filters,
             'pendingCount' => $direction === LetterDirection::Incoming ? $this->pendingQuery()->count() : 0,
         ]);

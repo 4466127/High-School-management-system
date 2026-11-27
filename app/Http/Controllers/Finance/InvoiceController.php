@@ -14,6 +14,7 @@ use App\Services\FinanceService;
 use App\Support\Digits;
 use App\Support\JalaliDate;
 use App\Support\Money;
+use App\Support\Paging;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -51,7 +52,7 @@ class InvoiceController extends Controller
         $active = $all->whereNull('voided_at');
 
         return view('finance.invoices.index', [
-            'invoices' => $query->orderByDesc('student_invoices.id')->paginate(50)->withQueryString(),
+            'invoices' => $query->orderByDesc('student_invoices.id')->paginate(Paging::size())->withQueryString(),
             'sections' => $sections,
             'types' => FeeType::orderBy('sort_order')->get(),
             'periods' => StudentInvoice::query()->distinct()->orderBy('period_label')->pluck('period_label'),

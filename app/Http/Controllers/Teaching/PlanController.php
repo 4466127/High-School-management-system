@@ -16,6 +16,8 @@ use App\Rules\ValidJalaliDate;
 use App\Services\TeachingPlanService;
 use App\Support\Digits;
 use App\Support\JalaliDate;
+use App\Support\Paging;
+use App\Support\PersianText;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -46,6 +48,17 @@ class PlanController extends Controller
         $rows = $assignments->map(fn ($a) => ['assignment' => $a, 'plan' => $plan = $plans->get($a->section_id.'|'.$a->subject_id), 'progress' => $plan?->progress()])
             ->sortBy(fn ($r) => [$r['assignment']->section->gradeLevel->sort_order, $r['assignment']->section->name, $r['assignment']->subject->name])->values();
 
+        // خلاصه پیش از فیلتر (کارت‌های بالای صفحه)
+        $summary = [
+            'total' => $rows->count(),
+            'none' => $rows->filter(fn ($r) => ! $r['plan'])->count(),
+            'submitted' => $rows->filter(fn ($r) => $r['plan']?->status === PlanStatus::Submitted)->count(),
+            'approved' => $rows->filter(fn ($r) => $r['plan']?->status === PlanStatus::Approved)->count(),
+            'overdue' => $rows->filter(fn ($r) => ($r['progress']['overdue'] ?? 0) > 0)->count(),
+        ];
+        $sectionOptions = $rows->map(fn ($r) => $r['assignment']->section)->unique('id')->values();
+        $teacherOptions = $rows->map(fn ($r) => $r['assignment']->teacher)->filter()->unique('id')->sortBy('first_name')->values();
+
         $status = (string) $request->query('status', '');
         $rows = match ($status) {
             'none' => $rows->filter(fn ($r) => ! $r['plan']),
@@ -53,12 +66,26 @@ class PlanController extends Controller
             '' => $rows,
             default => $rows->filter(fn ($r) => $r['plan']?->status->value === $status),
         };
+        if ($sectionId = $request->integer('section')) {
+            $rows = $rows->filter(fn ($r) => $r['assignment']->section_id === $sectionId);
+        }
+        if ($review && ($staffId = $request->integer('staff'))) {
+            $rows = $rows->filter(fn ($r) => $r['assignment']->staff_id === $staffId);
+        }
+        // جستجو در نام مضمون و معلم (هر واژه)
+        foreach (PersianText::searchTerms($request->query('q')) as $word) {
+            $rows = $rows->filter(fn ($r) => str_contains(str_replace(PersianText::ZWNJ, '', $r['assignment']->subject->name.' '.($r['assignment']->teacher?->full_name ?? '')), $word));
+        }
 
         return view('teaching.index', [
             'year' => $year,
-            'rows' => $rows->values(),
+            'rows' => Paging::collection($rows->values()),
             'review' => $review,
             'status' => $status,
+            'filters' => ['section' => $request->integer('section') ?: null, 'staff' => $request->integer('staff') ?: null, 'q' => (string) $request->query('q', '')],
+            'summary' => $summary,
+            'sectionOptions' => $sectionOptions,
+            'teacherOptions' => $teacherOptions,
             'noStaff' => ! $review && ! $user->staff_id,
         ]);
     }

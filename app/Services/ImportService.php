@@ -619,6 +619,12 @@ class ImportService
         foreach ($columns as $key => $c) {
             $byLabel[$this->headerKey($c[0])] = $key;
         }
+        // سربرگ‌های قدیمی (فایل‌هایی که پیش از تغییر نام ستون ساخته شده)
+        foreach ((array) __('import.header_aliases') as $old => $key) {
+            if (isset($columns[$key])) {
+                $byLabel[$this->headerKey($old)] ??= $key;
+            }
+        }
 
         $map = [];
         $unknown = [];

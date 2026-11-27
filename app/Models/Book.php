@@ -59,14 +59,8 @@ class Book extends Model
     /** جست‌وجو در عنوان، نویسنده، ISBN، کلیدواژه و نمبر ثبت جلدها */
     public function scopeSearch(Builder $query, ?string $term): Builder
     {
-        foreach (PersianText::searchTerms($term) as $word) {
-            $like = PersianText::like($word);
-            $query->where(fn (Builder $q) => $q->where('title', 'like', $like)->orWhere('author', 'like', $like)
-                ->orWhere('translator', 'like', $like)->orWhere('isbn', 'like', $like)->orWhere('keywords', 'like', $like)
-                ->orWhere('publisher', 'like', $like)->orWhereHas('copies', fn ($c) => $c->where('accession_no', $word)));
-        }
-
-        return $query;
+        return PersianText::whereMatches($query, ['title', 'author', 'translator', 'isbn', 'keywords', 'publisher', 'call_number'], $term,
+            extra: fn (Builder $q, string $word) => $q->orWhereHas('copies', fn ($c) => $c->where('accession_no', $word)));
     }
 
     /** «عنوان — نویسنده» برای فهرست‌ها */

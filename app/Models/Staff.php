@@ -75,17 +75,6 @@ class Staff extends Model
 
     public function scopeSearch(Builder $query, ?string $term): Builder
     {
-        foreach (PersianText::searchTerms($term) as $word) {
-            $like = PersianText::like($word);
-            $query->where(fn (Builder $q) => $q
-                ->where('first_name', 'like', $like)
-                ->orWhere('last_name', 'like', $like)
-                ->orWhere('father_name', 'like', $like)
-                ->orWhere('phone', 'like', $like)
-                ->orWhere('specialization', 'like', $like)
-                ->orWhere('position', 'like', $like));
-        }
-
-        return $query;
+        return PersianText::whereMatches($query, ['first_name', 'last_name', 'father_name', 'phone', 'specialization', 'position'], $term);
     }
 }

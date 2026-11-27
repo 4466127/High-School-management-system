@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\BookCategory;
 use App\Enums\BorrowerType;
 use App\Enums\CopyCondition;
 use App\Enums\CopyStatus;
@@ -351,6 +352,47 @@ class LibraryService
 
             return $result;
         });
+    }
+
+    /** کتاب‌های درسی صنف یک بخش (دسته‌ی «کتاب درسی» و صنف همان بخش)، به ترتیب نام */
+    public static function gradeTextbooks(Section $section): Collection
+    {
+        return Book::query()->withCopyCounts()->with('subject')
+            ->where('category', BookCategory::Textbook->value)->where('grade_level_id', $section->grade_level_id)
+            ->orderBy('title')->get();
+    }
+
+    /**
+     * اول سال: همه‌ی کتاب‌های درسی صنف این بخش، هر کدام یک جلد برای هر شاگرد فعال که ندارد.
+     *
+     * @return array{books: int, issued: int, already: int, missing: int}
+     */
+    public function distributeAllTextbooks(Section $section, string $dueOn, User $user): array
+    {
+        $books = self::gradeTextbooks($section)->reject(fn (Book $b) => $b->is_reference);
+        if ($books->isEmpty()) {
+            throw ValidationException::withMessages(['section' => __('library.no_grade_textbooks', ['grade' => $section->gradeLevel?->name ?? ''])]);
+        }
+
+        return DB::transaction(function () use ($books, $section, $dueOn, $user) {
+            $total = ['books' => $books->count(), 'issued' => 0, 'already' => 0, 'missing' => 0];
+            foreach ($books as $book) {
+                foreach ($this->distributeTextbooks($section, $book, $dueOn, $user) as $key => $n) {
+                    $total[$key] += $n;
+                }
+            }
+
+            return $total;
+        });
+    }
+
+    /** آخر سال: همه‌ی کتاب‌های درسی که شاگردان فعال این بخش در دست دارند، بازگشته ثبت می‌شود. */
+    public function collectSectionTextbooks(Section $section, ?string $condition, User $user): int
+    {
+        $students = Enrollment::where('section_id', $section->id)->where('status', EnrollmentStatus::Active)->select('student_id');
+        $ids = BookLoan::active()->where('kind', LoanKind::Textbook->value)->whereIn('student_id', $students)->pluck('id')->all();
+
+        return $ids === [] ? 0 : $this->collect($ids, $condition, $user);
     }
 
     /**

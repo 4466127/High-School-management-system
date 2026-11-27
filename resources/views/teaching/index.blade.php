@@ -7,27 +7,58 @@
             <a href="{{ route('teaching.reports.index') }}" class="btn btn-outline-secondary"><i class="fa-solid fa-chart-simple" aria-hidden="true"></i> {{ __('teaching.reports_title') }}</a>
         @endif
     </div>
-    <div class="alert alert-light border small"><i class="fa-solid fa-circle-info" aria-hidden="true"></i> {{ $review ? __('teaching.intro_manager') : __('teaching.intro_teacher') }}</div>
+    <div class="alert alert-light border small">
+        <div class="fw-medium mb-1"><i class="fa-solid fa-circle-info" aria-hidden="true"></i> {{ __('teaching.how_title') }}</div>
+        <ol class="mb-1 ps-3">@foreach (__('teaching.how_steps') as $step)<li>{{ $step }}</li>@endforeach</ol>
+        <div>{{ $review ? __('teaching.intro_manager') : __('teaching.intro_teacher') }}</div>
+    </div>
 
     @if ($noStaff)
         <div class="alert alert-warning">{{ __('teaching.no_staff') }}</div>
     @elseif (! $year)
         <div class="card card-body text-center text-secondary py-5">{{ __('academics.no_year') }}</div>
     @else
-        @if ($review)
-            <form method="GET" class="card card-body mb-3">
-                <div class="row g-2 align-items-end">
-                    <div class="col-sm-6 col-lg-4">
-                        <label for="tp-status" class="form-label">{{ __('teaching.filter') }}</label>
-                        <select name="status" id="tp-status" class="form-select">
+        @php($n = fn ($v) => \App\Support\Digits::toPersian((string) $v))
+        <div class="d-flex flex-wrap gap-2 mb-3 small">
+            <a href="{{ route('teaching.plans.index') }}" class="badge text-bg-light border text-decoration-none fs-6 fw-normal">{{ __('teaching.sum_total', ['count' => $n($summary['total'])]) }}</a>
+            <a href="{{ route('teaching.plans.index', ['status' => 'none']) }}" class="badge text-bg-secondary text-decoration-none fs-6 fw-normal">{{ __('teaching.sum_none', ['count' => $n($summary['none'])]) }}</a>
+            <a href="{{ route('teaching.plans.index', ['status' => 'submitted']) }}" class="badge text-bg-info text-decoration-none fs-6 fw-normal">{{ __('teaching.sum_submitted', ['count' => $n($summary['submitted'])]) }}</a>
+            <a href="{{ route('teaching.plans.index', ['status' => 'approved']) }}" class="badge text-bg-success text-decoration-none fs-6 fw-normal">{{ __('teaching.sum_approved', ['count' => $n($summary['approved'])]) }}</a>
+            <a href="{{ route('teaching.plans.index', ['status' => 'overdue']) }}" class="badge text-bg-warning text-decoration-none fs-6 fw-normal">{{ __('teaching.sum_overdue', ['count' => $n($summary['overdue'])]) }}</a>
+        </div>
+
+        <form method="GET" class="card card-body mb-3">
+            <div class="row g-2 align-items-end">
+                <div class="col-sm-6 col-lg-3">
+                    <label for="tp-status" class="form-label">{{ __('teaching.filter') }}</label>
+                    <select name="status" id="tp-status" class="form-select" data-submit-on-change>
+                        <option value="">{{ __('teaching.filter_all') }}</option>
+                        @foreach (\App\Http\Controllers\Teaching\PlanController::statusFilters() as $v => $l)<option value="{{ $v }}" @selected($status === $v)>{{ $l }}</option>@endforeach
+                    </select>
+                </div>
+                <div class="col-sm-6 col-lg-3">
+                    <label for="tp-section" class="form-label">{{ __('academics.section') }}</label>
+                    <select name="section" id="tp-section" class="form-select" data-submit-on-change>
+                        <option value="">{{ __('teaching.filter_all') }}</option>
+                        @foreach ($sectionOptions as $s)<option value="{{ $s->id }}" @selected($filters['section'] === $s->id)>{{ $s->label }}</option>@endforeach
+                    </select>
+                </div>
+                @if ($review)
+                    <div class="col-sm-6 col-lg-2">
+                        <label for="tp-staff" class="form-label">{{ __('timetable.teacher') }}</label>
+                        <select name="staff" id="tp-staff" class="form-select" data-submit-on-change>
                             <option value="">{{ __('teaching.filter_all') }}</option>
-                            @foreach (\App\Http\Controllers\Teaching\PlanController::statusFilters() as $v => $l)<option value="{{ $v }}" @selected($status === $v)>{{ $l }}</option>@endforeach
+                            @foreach ($teacherOptions as $tch)<option value="{{ $tch->id }}" @selected($filters['staff'] === $tch->id)>{{ $tch->full_name }}</option>@endforeach
                         </select>
                     </div>
-                    <div class="col-sm-3 col-lg-2"><button type="submit" class="btn btn-outline-primary w-100">{{ __('app.filter') }}</button></div>
+                @endif
+                <div class="col-sm-6 col-lg-2">
+                    <label for="tp-q" class="form-label">{{ __('app.search') }}</label>
+                    <input type="search" name="q" id="tp-q" value="{{ $filters['q'] }}" class="form-control" placeholder="{{ __('teaching.search_ph') }}">
                 </div>
-            </form>
-        @endif
+                <div class="col-sm-6 col-lg-2"><button type="submit" class="btn btn-outline-primary w-100">{{ __('app.filter') }}</button></div>
+            </div>
+        </form>
 
         <div class="card">
             <div class="table-responsive">
@@ -80,5 +111,6 @@
                 </table>
             </div>
         </div>
+        <div class="mt-3">{{ $rows->links() }}</div>
     @endif
 @endsection

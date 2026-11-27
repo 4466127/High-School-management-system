@@ -17,10 +17,14 @@
             <div class="row g-2 align-items-end">
                 <div class="col-sm-8 col-lg-5">
                     <label for="d-section" class="form-label">{{ __('academics.section') }}</label>
-                    <select name="section" id="d-section" class="form-select">
+                    <select name="section" id="d-section" class="form-select" data-submit-on-change>
                         <option value="">{{ __('app.all') }}</option>
                         @foreach ($sections as $s)<option value="{{ $s->id }}" @selected($section?->id === $s->id)>{{ $s->label }}</option>@endforeach
                     </select>
+                </div>
+                <div class="col-sm-8 col-lg-3">
+                    <label for="d-q" class="form-label">{{ __('app.search') }}</label>
+                    <input type="search" name="q" id="d-q" value="{{ $q }}" class="form-control" placeholder="{{ __('finance.find_student') }}">
                 </div>
                 <div class="col-sm-4 col-lg-2"><button type="submit" class="btn btn-outline-primary w-100">{{ __('app.view') }}</button></div>
             </div>
@@ -45,10 +49,10 @@
                 </tr>
                 </thead>
                 <tbody>
-                @forelse ($rows as $i => $r)
+                @forelse ($rows as $r)
                     @php($student = $r->enrollment->student)
                     <tr>
-                        <td>@fa($i + 1)</td>
+                        <td>@fa(($print ? 0 : $rows->firstItem() - 1) + $loop->iteration)</td>
                         <td class="fw-medium">{{ $student->full_name }}</td>
                         <td>{{ $student->father_name }}</td>
                         <td class="small">{{ $r->enrollment->section->shortLabel }}</td>
@@ -71,6 +75,7 @@
             </table>
         </div>
     </div>
+    @unless ($print)<div class="mt-3">{{ $rows->links() }}</div>@endunless
     @if ($print)
         <div class="signatures"><div>{{ __('app.signature_principal') }}</div></div>
     @endif

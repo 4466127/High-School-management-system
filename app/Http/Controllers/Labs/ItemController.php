@@ -13,6 +13,7 @@ use App\Services\LabService;
 use App\Support\Csv;
 use App\Support\JalaliDate;
 use App\Support\Money;
+use App\Support\Paging;
 use App\Support\Quantity;
 use Closure;
 use Illuminate\Database\Eloquent\Builder;
@@ -37,7 +38,7 @@ class ItemController extends Controller
         $base = LabItem::query()->where('is_active', true);
 
         return view('labs.items.index', [
-            'items' => $print ? $items->get() : $items->paginate(30)->withQueryString(),
+            'items' => $print ? $items->get() : $items->paginate(Paging::size())->withQueryString(),
             'labs' => Lab::orderBy('name')->get(),
             'filters' => $request->only(['lab', 'kind', 'alert', 'q', 'inactive']),
             'alerts' => collect(['low', 'expired', 'expiring', 'damaged'])->mapWithKeys(fn ($a) => [$a => (clone $base)->alert($a)->count()])->all(),
@@ -78,7 +79,7 @@ class ItemController extends Controller
 
         return view('labs.items.show', [
             'item' => $item,
-            'events' => $item->events()->with(['user', 'activity.section.gradeLevel'])->paginate(30),
+            'events' => $item->events()->with(['user', 'activity.section.gradeLevel'])->paginate(Paging::size()),
             'canManage' => $request->user()->hasPermission('labs.manage'),
         ]);
     }

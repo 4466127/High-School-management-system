@@ -108,7 +108,7 @@ return [
 
     'attributes' => [
         'username' => 'نام کاربری',
-        'password' => 'رمز عبور',
+        'password' => 'رمز',
         'current_password' => 'رمز فعلی',
         'name' => 'نام',
     ],

@@ -19,7 +19,7 @@ class SeederTest extends TestCase
     public function test_eight_roles_and_all_permissions_exist(): void
     {
         $this->assertEqualsCanonicalizing(
-            ['admin', 'principal', 'office', 'teacher', 'accountant', 'course_manager', 'librarian', 'lab_manager'],
+            ['admin', 'principal', 'head_teacher', 'office', 'teacher', 'accountant', 'course_manager', 'librarian', 'lab_manager'],
             Role::pluck('key')->all(),
         );
         $this->assertSame(count(config('permissions.permissions')), Permission::count());
@@ -32,7 +32,7 @@ class SeederTest extends TestCase
 
         $this->seed([RolePermissionSeeder::class, SettingsSeeder::class]);
 
-        $this->assertSame(8, Role::count());
+        $this->assertSame(9, Role::count());
         $this->assertSame(count(config('permissions.permissions')), Permission::count());
         $this->assertSame('لیسه‌ی آزمایشی', Setting::get('school_name'), 'Re-seeding must not overwrite school settings');
     }

@@ -32,10 +32,10 @@ return [
         ['key' => 'attendance_staff', 'icon' => 'fa-id-badge', 'route' => 'attendance.staff.index', 'can' => ['staff.manage']],
     ]],
     ['key' => 'timetable', 'icon' => 'fa-table-cells', 'route' => null, 'can' => ['timetable.manage', 'academics.view'], 'children' => [
+        ['key' => 'timetable_setup', 'icon' => 'fa-clock', 'route' => 'timetable.setup.index', 'can' => ['timetable.manage']],
         ['key' => 'timetable_sections', 'icon' => 'fa-table-cells', 'route' => 'timetable.sections.index', 'can' => ['timetable.manage', 'academics.view']],
         ['key' => 'timetable_teachers', 'icon' => 'fa-chalkboard-user', 'route' => 'timetable.teachers.index', 'can' => ['timetable.manage', 'academics.view']],
         ['key' => 'timetable_rooms', 'icon' => 'fa-door-open', 'route' => 'timetable.rooms.index', 'can' => ['timetable.manage']],
-        ['key' => 'timetable_setup', 'icon' => 'fa-clock', 'route' => 'timetable.setup.index', 'can' => ['timetable.manage']],
     ]],
     ['key' => 'teaching', 'icon' => 'fa-book-open', 'route' => null, 'can' => ['teaching.plan', 'teaching.manage'], 'children' => [
         ['key' => 'teaching_plans', 'icon' => 'fa-list-check', 'route' => 'teaching.plans.index', 'can' => ['teaching.plan', 'teaching.manage']],
