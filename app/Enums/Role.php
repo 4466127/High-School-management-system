@@ -2,7 +2,7 @@
 
 namespace App\Enums;
 
-/** هفت نقش ثابت سیستم (کتابدار از مرحله‌ی ۱۷) (ARCHITECTURE.md بخش ۶). مجوزهای هر نقش در config/permissions.php است. */
+/** هشت نقش ثابت سیستم (کتابدار از مرحله‌ی ۱۷، مسئول لابراتوار از ۱۸) (ARCHITECTURE.md بخش ۶). مجوزهای هر نقش در config/permissions.php است. */
 enum Role: string
 {
     case Admin = 'admin';
@@ -12,6 +12,7 @@ enum Role: string
     case Accountant = 'accountant';
     case CourseManager = 'course_manager';
     case Librarian = 'librarian';
+    case LabManager = 'lab_manager';
 
     public function label(): string
     {

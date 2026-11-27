@@ -8,4 +8,5 @@ return [
     'accountant' => 'حسابدار',
     'course_manager' => 'مسئول کورس‌ها',
     'librarian' => 'کتابدار',
+    'lab_manager' => 'مسئول لابراتوار',
 ];

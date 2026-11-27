@@ -52,6 +52,10 @@ return [
         'library.view' => 'library',
         'library.manage' => 'library',
 
+        'labs.view' => 'labs',
+        'labs.activity' => 'labs',
+        'labs.manage' => 'labs',
+
         'announcements.manage' => 'communication',
         'letters.manage' => 'communication',
 
@@ -74,6 +78,7 @@ return [
             'courses.manage', 'courses.attendance', 'courses.ledger',
             'reports.academic', 'reports.finance',
             'library.view', 'library.manage',
+            'labs.view', 'labs.activity', 'labs.manage',
             'announcements.manage', 'letters.manage',
             'settings.manage',
         ],
@@ -87,6 +92,7 @@ return [
             'reportcards.print',
             'reports.academic',
             'library.view',
+            'labs.view',
             'announcements.manage', 'letters.manage',
         ],
 
@@ -100,6 +106,7 @@ return [
             'courses.attendance',
             'reports.academic',
             'library.view',
+            'labs.view', 'labs.activity',
         ],
 
         'accountant' => [
@@ -122,6 +129,12 @@ return [
             'dashboard.view',
             'students.view', 'students.view_all',
             'library.view', 'library.manage',
+        ],
+
+        // مسئول لابراتوار (مرحله‌ی ۱۸): موجودی و دفتر، لابراتوارها، همه‌ی فعالیت‌های عملی و گزارش
+        'lab_manager' => [
+            'dashboard.view',
+            'labs.view', 'labs.activity', 'labs.manage',
         ],
     ],
 

@@ -4,10 +4,13 @@ namespace App\Services;
 
 use App\Enums\BookCategory;
 use App\Enums\BookLanguage;
+use App\Enums\ChemicalHazard;
 use App\Enums\CopyCondition;
 use App\Enums\CopySource;
 use App\Enums\EducationLevel;
 use App\Enums\Gender;
+use App\Enums\LabItemKind;
+use App\Enums\LabUnit;
 use App\Enums\StaffType;
 use App\Enums\StudentStatus;
 use App\Exceptions\ImportFileException;
@@ -16,6 +19,8 @@ use App\Models\AcademicYear;
 use App\Models\Book;
 use App\Models\BookCopy;
 use App\Models\GradeLevel;
+use App\Models\Lab;
+use App\Models\LabItem;
 use App\Models\Section;
 use App\Models\Staff;
 use App\Models\Student;
@@ -26,6 +31,7 @@ use App\Support\Digits;
 use App\Support\JalaliDate;
 use App\Support\Money;
 use App\Support\PersianText;
+use App\Support\Quantity;
 use App\Support\Xlsx;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -35,12 +41,13 @@ use Illuminate\Validation\Rule;
  * ورود گروهی دانش‌آموزان و کارکنان از Excel (یا CSV) هنگام راه‌اندازی سیستم.
  * گام ۱: خواندن و بررسی هر سطر (بدون ذخیره). گام ۲: ذخیره‌ی سطرهای درست از راه StudentService/StaffService
  * (همان قاعده‌ها و ثبت رویداد ثبت تکی). سطر خطادار یا تکراری وارد نمی‌شود.
+ * lab_items (مرحله‌ی ۱۸): موجودی لابراتوار با مقدار اول (LabService).
  * books (مرحله‌ی ۱۷): فهرست کتاب‌های کتابخانه با شمار جلد و نمبر ثبت (LibraryService).
  * graduates (مرحله‌ی ۱۴): فارغ‌ها و دانش‌آموزان سابق سال‌های قبل، مستقیم در بایگانی با اوسط صنف‌های ۱۰ تا ۱۲ (PastResultService).
  */
 class ImportService
 {
-    public const TYPES = ['students', 'staff', 'graduates', 'books'];
+    public const TYPES = ['students', 'staff', 'graduates', 'books', 'lab_items'];
 
     /** ستون اوسط فایل فارغ‌ها ← شماره‌ی صنف (GradeLevel::sort_order) و فاصله تا سال فراغت */
     private const GRADUATE_AVERAGES = ['avg_10' => [10, 2], 'avg_11' => [11, 1], 'avg_12' => [12, 0]];
@@ -54,6 +61,7 @@ class ImportService
         private readonly ActivityLogger $logger,
         private readonly PastResultService $pastResults,
         private readonly LibraryService $library,
+        private readonly LabService $labs,
     ) {}
 
     /**
@@ -129,6 +137,7 @@ class ImportService
                 'students' => $this->checkStudent($values, $i + 1, $seen),
                 'graduates' => $this->checkGraduate($values, $i + 1, $seen),
                 'books' => $this->checkBook($values, $i + 1, $seen),
+                'lab_items' => $this->checkLabItem($values, $i + 1, $seen),
                 default => $this->checkStaff($values, $i + 1, $seen),
             };
         }
@@ -148,7 +157,9 @@ class ImportService
         return DB::transaction(function () use ($type, $ok, $rows, $user) {
             $enrolled = 0;
             foreach ($ok as $row) {
-                if ($type === 'books') {
+                if ($type === 'lab_items') {
+                    $this->labs->createItem($row['data']['item'], $row['data']['quantity'], $user);
+                } elseif ($type === 'books') {
                     $this->library->createBook($row['data']['book'], $row['data']['copies'], $row['data']['start'], $row['data']['copy'], $user);
                 } elseif ($type === 'graduates') {
                     $this->pastResults->createFormerStudent($row['data']['student'], $row['data']['leaving'], $row['data']['results'], $user);
@@ -438,6 +449,74 @@ class ImportService
         ]];
     }
 
+    /** یک قلم موجودی لابراتوار: لابراتوار با نام؛ نوع، واحد، خطر و منبع با نام فارسی؛ مقدار با اعشار */
+    private function checkLabItem(array $v, int $line, array &$seen): array
+    {
+        $errors = [];
+        $name = mb_substr($v['name'] ?? '', 0, 150);
+        $lab = ($v['lab'] ?? '') !== '' ? Lab::where('name', $v['lab'])->first() : null;
+        if ($name === '') {
+            $errors[] = __('import.required', ['column' => __('import.columns.lab_items.name')[0]]);
+        }
+        if (! $lab) {
+            $errors[] = ($v['lab'] ?? '') === '' ? __('import.required', ['column' => __('import.columns.lab_items.lab')[0]]) : __('import.lab_not_found', ['lab' => $v['lab']]);
+        }
+        $kind = $this->enumByLabel(LabItemKind::class, $v['kind'] ?? '', LabItemKind::Equipment);
+        $unit = $this->enumByLabel(LabUnit::class, $v['unit'] ?? '', LabUnit::Piece);
+        $hazard = ($v['hazard'] ?? '') === '' ? null : $this->enumByLabel(ChemicalHazard::class, $v['hazard'], ChemicalHazard::None);
+        $source = $this->enumByLabel(CopySource::class, $v['source'] ?? '', CopySource::Purchase);
+        foreach (['kind' => $kind, 'unit' => $unit, 'source' => $source] + (($v['hazard'] ?? '') !== '' ? ['hazard' => $hazard] : []) as $key => $value) {
+            if (! $value) {
+                $errors[] = __('import.bad_choice', ['column' => __('import.columns.lab_items.'.$key)[0], 'value' => $v[$key]]);
+            }
+        }
+        $qty = ($v['quantity'] ?? '') === '' ? 0 : Quantity::parse($v['quantity']);
+        $min = ($v['min_quantity'] ?? '') === '' ? null : Quantity::parse($v['min_quantity']);
+        foreach (['quantity' => $qty, 'min_quantity' => $min] as $key => $value) {
+            if (($v[$key] ?? '') !== '' && $value === null) {
+                $errors[] = __('import.bad_number', ['column' => __('import.columns.lab_items.'.$key)[0]]);
+            }
+        }
+        $price = ($v['unit_price'] ?? '') !== '' ? FinanceService::parseAmount($v['unit_price']) : null;
+        if (($v['unit_price'] ?? '') !== '' && $price === null) {
+            $errors[] = __('import.bad_number', ['column' => __('import.columns.lab_items.unit_price')[0]]);
+        }
+        if (($v['expires_on'] ?? '') !== '' && ! JalaliDate::parse($v['expires_on'])) {
+            $errors[] = __('import.bad_date', ['column' => __('import.columns.lab_items.expires_on')[0]]);
+        }
+        $code = ($v['code'] ?? '') !== '' ? mb_substr($v['code'], 0, 30) : null;
+        if ($code !== null && (LabItem::where('code', $code)->exists() || isset($seen['code'][$code]))) {
+            $errors[] = __('import.code_taken', ['code' => $code]);
+        }
+
+        $status = $errors === [] ? 'ok' : 'error';
+        if ($status === 'ok') {
+            $key = $lab->id.'|'.PersianText::normalize($name);
+            if (LabItem::where('lab_id', $lab->id)->where('name', $name)->exists() || isset($seen['item'][$key])) {
+                $status = 'duplicate';
+                $errors[] = isset($seen['item'][$key]) ? __('import.duplicate_in_file', ['line' => Digits::toPersian((string) $seen['item'][$key])]) : __('import.duplicate_lab_item');
+            }
+            $seen['item'][$key] ??= $line;
+            if ($code !== null) {
+                $seen['code'][$code] = $line;
+            }
+        }
+        $v['kind'] = $kind?->label() ?? ($v['kind'] ?? '');
+
+        return ['line' => $line, 'values' => $v, 'status' => $status, 'errors' => $errors, 'data' => [
+            'item' => [
+                'lab_id' => $lab?->id, 'name' => $name, 'kind' => $kind?->value, 'unit' => $unit?->value, 'code' => $code,
+                'min_quantity' => $min !== null ? Quantity::fromHundredths($min) : null,
+                'location' => ($v['location'] ?? '') !== '' ? mb_substr($v['location'], 0, 50) : null,
+                'hazard' => $hazard?->value, 'expires_on' => JalaliDate::parse($v['expires_on'] ?? null)?->toDateString(),
+                'unit_price' => $price !== null ? Money::fromCents($price) : null, 'source' => $source?->value,
+                'specification' => ($v['specification'] ?? '') !== '' ? mb_substr($v['specification'], 0, 300) : null,
+                'notes' => ($v['notes'] ?? '') !== '' ? mb_substr($v['notes'], 0, 500) : null, 'is_active' => true,
+            ],
+            'quantity' => $qty ?? 0,
+        ]];
+    }
+
     /**
      * @template T of \BackedEnum
      *
@@ -574,7 +653,7 @@ class ImportService
     {
         $value = trim(preg_replace('/\s+/u', ' ', PersianText::normalize($value)) ?? '');
         if (in_array($key, ['admission_no', 'phone', 'guardian_phone', 'tazkira_no', 'birth_date', 'admission_date', 'hire_date',
-            'graduation_year', 'left_on', 'certificate_date', 'avg_10', 'avg_11', 'avg_12', 'publish_year', 'pages', 'copies', 'accession_start', 'price', 'acquired_on', 'isbn'], true)) {
+            'graduation_year', 'left_on', 'certificate_date', 'avg_10', 'avg_11', 'avg_12', 'publish_year', 'pages', 'copies', 'accession_start', 'price', 'acquired_on', 'isbn', 'quantity', 'min_quantity', 'unit_price', 'expires_on', 'code'], true)) {
             $value = Digits::toLatin($value);
         }
         // Excel صفر اول شماره را می‌برد: 799123456 ← 0799123456

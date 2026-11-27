@@ -38,11 +38,12 @@
         if (btn) { closeToast(btn.closest('.app-toast')); }
     });
 
-    /* «همه» برای چک‌باکس‌های هم‌نام: <button data-check-all="section_ids[]"> */
+    /* «همه» برای چک‌باکس‌های هم‌نام: <button data-check-all="section_ids[]">، یا گروه: <input data-group="x"> + data-check-all="x" */
     document.addEventListener('click', function (ev) {
         var btn = ev.target.closest && ev.target.closest('[data-check-all]');
         if (!btn) { return; }
-        var boxes = Array.prototype.slice.call(document.querySelectorAll('input[type=checkbox][name="' + btn.getAttribute('data-check-all') + '"]:not(:disabled)'));
+        var key = btn.getAttribute('data-check-all');
+        var boxes = Array.prototype.slice.call(document.querySelectorAll('input[type=checkbox][name="' + key + '"]:not(:disabled), input[type=checkbox][data-group="' + key + '"]:not(:disabled)'));
         var allChecked = boxes.every(function (b) { return b.checked; });
         boxes.forEach(function (b) { b.checked = !allChecked; });
     });

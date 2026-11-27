@@ -76,17 +76,24 @@ return [
         ['key' => 'library_reports', 'icon' => 'fa-chart-pie', 'route' => 'library.reports.index', 'can' => ['library.manage']],
         ['key' => 'library_setup', 'icon' => 'fa-sliders', 'route' => 'library.setup.index', 'can' => ['library.manage']],
     ]],
+    ['key' => 'labs', 'icon' => 'fa-flask', 'route' => null, 'can' => ['labs.view', 'labs.activity', 'labs.manage'], 'children' => [
+        ['key' => 'labs_items', 'icon' => 'fa-boxes-stacked', 'route' => 'labs.items.index', 'can' => ['labs.view', 'labs.manage']],
+        ['key' => 'labs_activities', 'icon' => 'fa-flask-vial', 'route' => 'labs.activities.index', 'can' => ['labs.view', 'labs.activity', 'labs.manage']],
+        ['key' => 'labs_schedule', 'icon' => 'fa-calendar-week', 'route' => 'labs.schedule.index', 'can' => ['labs.view', 'labs.activity', 'labs.manage']],
+        ['key' => 'labs_reports', 'icon' => 'fa-chart-pie', 'route' => 'labs.reports.index', 'can' => ['labs.manage']],
+        ['key' => 'labs_setup', 'icon' => 'fa-sliders', 'route' => 'labs.setup.index', 'can' => ['labs.manage']],
+    ]],
     ['key' => 'announcements', 'icon' => 'fa-bullhorn', 'route' => 'announcements.index', 'can' => ['dashboard.view']],
     ['key' => 'letters', 'icon' => 'fa-envelope-open-text', 'route' => null, 'can' => ['letters.manage'], 'children' => [
         ['key' => 'letters_outgoing', 'icon' => 'fa-paper-plane', 'route' => 'letters.outgoing.index', 'can' => ['letters.manage']],
         ['key' => 'letters_incoming', 'icon' => 'fa-inbox', 'route' => 'letters.incoming.index', 'can' => ['letters.manage']],
         ['key' => 'letters_templates', 'icon' => 'fa-file-lines', 'route' => 'letters.templates.index', 'can' => ['letters.manage']],
     ]],
-    ['key' => 'settings', 'icon' => 'fa-gear', 'route' => null, 'can' => ['settings.manage', 'users.manage', 'activity_logs.view', 'backups.manage', 'license.manage', 'students.manage', 'staff.manage', 'library.manage'], 'children' => [
+    ['key' => 'settings', 'icon' => 'fa-gear', 'route' => null, 'can' => ['settings.manage', 'users.manage', 'activity_logs.view', 'backups.manage', 'license.manage', 'students.manage', 'staff.manage', 'library.manage', 'labs.manage'], 'children' => [
         ['key' => 'school', 'icon' => 'fa-building-columns', 'route' => 'settings.school.edit', 'can' => ['settings.manage']],
         ['key' => 'users', 'icon' => 'fa-users-gear', 'route' => 'settings.users.index', 'can' => ['users.manage']],
         ['key' => 'activity_logs', 'icon' => 'fa-clock-rotate-left', 'route' => 'settings.activity-logs.index', 'can' => ['activity_logs.view']],
-        ['key' => 'import', 'icon' => 'fa-file-excel', 'route' => 'import.index', 'can' => ['students.manage', 'staff.manage', 'library.manage']],
+        ['key' => 'import', 'icon' => 'fa-file-excel', 'route' => 'import.index', 'can' => ['students.manage', 'staff.manage', 'library.manage', 'labs.manage']],
         ['key' => 'backups', 'icon' => 'fa-database', 'route' => 'settings.backups.index', 'can' => ['backups.manage']],
         ['key' => 'license', 'icon' => 'fa-key', 'route' => 'settings.license.index', 'can' => ['license.manage']],
     ]],

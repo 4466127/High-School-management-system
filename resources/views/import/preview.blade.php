@@ -4,6 +4,7 @@
     // ستون‌هایی که در پیش‌نمایش نشان داده می‌شوند (همه‌ی ستون‌های فایل در جدول جا نمی‌شوند)
     $shown = match ($type) {
         'students' => ['admission_no', 'first_name', 'last_name', 'father_name', 'gender', 'birth_date', 'phone', 'section_label', 'guardian_name'],
+        'lab_items' => ['lab', 'name', 'kind', 'unit', 'quantity', 'min_quantity', 'hazard', 'expires_on'],
         'books' => ['title', 'author', 'publisher', 'category', 'grade', 'copies', 'accession_start', 'call_number'],
         'graduates' => ['admission_no', 'first_name', 'last_name', 'father_name', 'gender', 'status_label', 'graduation_year', 'certificate_no', 'avg_10', 'avg_11', 'avg_12'],
         default => ['staff_type', 'first_name', 'last_name', 'father_name', 'gender', 'phone', 'education', 'position'],

@@ -75,6 +75,37 @@
         </div>
     @endif
 
+    {{-- لابراتوار (مرحله‌ی ۱۸) --}}
+    @if (($labs ?? null) !== null)
+        <div class="card mb-3">
+            <div class="card-header d-flex align-items-center gap-2">
+                <i class="fa-solid fa-flask" aria-hidden="true"></i>
+                <span class="fw-medium flex-grow-1">{{ __('labs.dashboard_title') }}</span>
+                <a href="{{ route('labs.schedule.index') }}" class="small">{{ __('menu.labs_schedule') }}</a>
+            </div>
+            <div class="card-body d-flex flex-wrap gap-2">
+                @foreach (['low' => 'text-bg-warning', 'expired' => 'text-bg-danger', 'expiring' => 'text-bg-info', 'damaged' => 'text-bg-secondary'] as $key => $badge)
+                    <a href="{{ route('labs.items.index', ['alert' => $key]) }}" class="badge {{ $labs[$key] ? $badge : 'text-bg-light border' }} text-decoration-none fs-6 fw-normal">{{ __('labs.alert_n.'.$key, ['count' => $n($labs[$key])]) }}</a>
+                @endforeach
+                <a href="{{ route('labs.schedule.index') }}" class="badge text-bg-primary text-decoration-none fs-6 fw-normal">{{ __('dashboard.labs_today', ['count' => $n($labs['today'])]) }}</a>
+            </div>
+        </div>
+    @endif
+
+    @if (($myActivities ?? null) !== null)
+        <div class="card mb-3">
+            <div class="card-header"><i class="fa-solid fa-flask-vial" aria-hidden="true"></i> <span class="fw-medium">{{ __('labs.dashboard_mine') }}</span></div>
+            <ul class="list-group list-group-flush dash-list">
+                @foreach ($myActivities as $a)
+                    <li class="list-group-item d-flex flex-wrap gap-2 small">
+                        <a href="{{ route('labs.activities.show', $a) }}" class="fw-medium flex-grow-1">{{ $a->title }}</a>
+                        <span class="text-secondary">@jdate($a->activity_date)@if ($a->period) · {{ $a->period->name }}@endif · {{ $a->section->gradeLevel->name }} {{ $a->section->name }} · {{ $a->lab->name }}</span>
+                    </li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
     @if (($myBooks ?? null) !== null)
         <div class="card mb-3">
             <div class="card-header"><i class="fa-solid fa-book-open-reader" aria-hidden="true"></i> <span class="fw-medium">{{ __('dashboard.my_books') }}</span></div>

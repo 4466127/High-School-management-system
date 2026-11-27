@@ -35,6 +35,6 @@ class DemoUserSeeder extends Seeder
             $user->roles()->syncWithoutDetaching([Role::where('key', $roleKey->value)->value('id')]);
         }
 
-        $this->command?->info('Demo users: demo.admin, demo.principal, demo.office, demo.teacher, demo.accountant, demo.course-manager, demo.librarian (password: '.self::PASSWORD.')');
+        $this->command?->info('Demo users: demo.admin, demo.principal, demo.office, demo.teacher, demo.accountant, demo.course-manager, demo.librarian, demo.lab-manager (password: '.self::PASSWORD.')');
     }
 }

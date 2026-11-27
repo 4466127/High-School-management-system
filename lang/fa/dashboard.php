@@ -32,4 +32,5 @@ return [
     'library_title' => 'کتابخانه — امروز',
     'library_titles' => ':count عنوان کتاب',
     'my_books' => 'کتاب‌های امانت من از کتابخانه',
+    'labs_today' => ':count فعالیت عملی امروز',
 ];

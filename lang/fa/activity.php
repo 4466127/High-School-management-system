@@ -43,6 +43,7 @@ return [
         'timetable' => 'تقسیم اوقات',
         'teaching' => 'پلان تدریس',
         'library' => 'کتابخانه',
+        'lab' => 'لابراتوار',
     ],
     'actions' => [
         'auth' => [
@@ -111,6 +112,25 @@ return [
         'subject' => [
             'created' => 'افزودن مضمون',
             'updated' => 'ویرایش مضمون',
+        ],
+        'lab' => [
+            'created' => 'افزودن لابراتوار',
+            'updated' => 'ویرایش لابراتوار',
+            'item_created' => 'ثبت قلم موجودی',
+            'item_updated' => 'ویرایش قلم موجودی',
+            'stock_received' => 'رسید مواد/وسایل',
+            'stock_used' => 'مصرف مواد',
+            'stock_damaged' => 'خراب شدن وسیله',
+            'stock_repaired' => 'ترمیم وسیله',
+            'stock_written_off' => 'از بین رفتن وسیله‌ی خراب',
+            'stock_lost' => 'گم شدن',
+            'stock_disposed' => 'دور انداختن مواد',
+            'stock_adjusted' => 'شمارش موجودی',
+            'activity_planned' => 'پلان فعالیت عملی',
+            'activity_updated' => 'ویرایش فعالیت عملی',
+            'activity_done' => 'ثبت انجام فعالیت عملی',
+            'activity_corrected' => 'اصلاح فعالیت عملی',
+            'activity_cancelled' => 'لغو فعالیت عملی',
         ],
         'library' => [
             'book_created' => 'ثبت کتاب',

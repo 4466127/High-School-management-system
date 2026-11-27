@@ -11,8 +11,18 @@
 <div class="row">
     @if ($withCount)
         <x-form.input class="col-6 col-md-3" :id="$prefix.'-copies'" name="copies" :label="__($t.'copies_count')" :value="$val('copies', 1)" inputmode="numeric" required :use-old="$open" :help="__($t.'help.copies_count')" />
-        <x-form.input class="col-6 col-md-3" :id="$prefix.'-start'" name="start_accession" :label="__($t.'start_accession')" :value="null" maxlength="30" :use-old="$open"
-                      :placeholder="__($t.'ph.start_accession', ['next' => \App\Support\Digits::toPersian((string) ($nextAccession ?? '1'))])" :help="__($t.'help.start_accession')" />
+        {{-- نمبر ثبت: خودکار؛ فقط مکتبی که دفتر ثبت کاغذی دارد نمبر اول را خودش می‌نویسد --}}
+        @php($manual = $open && (old('start_accession') !== null && old('start_accession') !== '' || $errors->has('start_accession')))
+        <div class="col-6 col-md-3 mb-3">
+            <div class="form-label">{{ __($t.'accession_no') }}</div>
+            <div class="form-control-plaintext py-1"><i class="fa-solid fa-wand-magic-sparkles text-success" aria-hidden="true"></i>
+                {{ __($t.'accession_auto', ['next' => \App\Support\Digits::toPersian((string) ($nextAccession ?? '1'))]) }}</div>
+            <a class="small" data-bs-toggle="collapse" href="#{{ $prefix }}-manual" role="button" aria-expanded="{{ $manual ? 'true' : 'false' }}" aria-controls="{{ $prefix }}-manual">{{ __($t.'accession_manual_link') }}</a>
+        </div>
+        <div @class(['col-12 collapse', 'show' => $manual]) id="{{ $prefix }}-manual">
+            <x-form.input class="col-md-6" :id="$prefix.'-start'" name="start_accession" :label="__($t.'start_accession')" :value="null" maxlength="30" :use-old="$open"
+                          :placeholder="__($t.'ph.start_accession', ['next' => \App\Support\Digits::toPersian((string) ($nextAccession ?? '1'))])" :help="__($t.'help.start_accession')" />
+        </div>
     @else
         <x-form.input class="col-6 col-md-3" :id="$prefix.'-acc'" name="accession_no" :label="__($t.'accession_no')" :value="$copy?->accession_no" required maxlength="30" :use-old="$open" />
     @endif

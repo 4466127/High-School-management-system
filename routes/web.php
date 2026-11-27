@@ -29,6 +29,9 @@ use App\Http\Controllers\Finance\InvoiceController;
 use App\Http\Controllers\Finance\LedgerController;
 use App\Http\Controllers\Finance\PaymentController;
 use App\Http\Controllers\ImportController;
+use App\Http\Controllers\Labs\ActivityController as LabActivityController;
+use App\Http\Controllers\Labs\ItemController as LabItemController;
+use App\Http\Controllers\Labs\LabController;
 use App\Http\Controllers\Letters\AnnouncementController;
 use App\Http\Controllers\Letters\LetterController;
 use App\Http\Controllers\Letters\LetterTemplateController;
@@ -271,6 +274,36 @@ Route::middleware(['auth', 'active'])->group(function () {
                 Route::get('/export', [CatalogController::class, 'export'])->name('catalog.export');
                 Route::get('/books/{book}', [CatalogController::class, 'show'])->name('catalog.show');
             });
+        });
+
+        // ---------- لابراتوار (مرحله‌ی ۱۸): موجودی labs.view/labs.manage؛ فعالیت‌ها PracticalActivityPolicy ----------
+        Route::prefix('labs')->name('labs.')->group(function () {
+            Route::middleware('can:labs.manage')->group(function () {
+                Route::get('/items/create', [LabItemController::class, 'create'])->name('items.create');
+                Route::post('/items', [LabItemController::class, 'store'])->name('items.store');
+                Route::get('/items/{item}/edit', [LabItemController::class, 'edit'])->name('items.edit');
+                Route::put('/items/{item}', [LabItemController::class, 'update'])->name('items.update');
+                Route::post('/items/{item}/move', [LabItemController::class, 'move'])->name('items.move');
+                Route::get('/reports', [LabController::class, 'reports'])->name('reports.index');
+                Route::get('/setup', [LabController::class, 'setup'])->name('setup.index');
+                Route::post('/setup', [LabController::class, 'store'])->name('setup.store');
+                Route::put('/setup/{lab}', [LabController::class, 'update'])->name('setup.update');
+            });
+            Route::middleware('can:labs.view')->group(function () {
+                Route::get('/', [LabItemController::class, 'index'])->name('items.index');
+                Route::get('/items/export', [LabItemController::class, 'export'])->name('items.export');
+                Route::get('/items/{item}', [LabItemController::class, 'show'])->name('items.show');
+            });
+            Route::get('/schedule', [LabController::class, 'schedule'])->name('schedule.index');
+            Route::get('/activities', [LabActivityController::class, 'index'])->name('activities.index');
+            Route::get('/activities/create', [LabActivityController::class, 'create'])->name('activities.create');
+            Route::post('/activities', [LabActivityController::class, 'store'])->name('activities.store');
+            Route::get('/activities/{activity}', [LabActivityController::class, 'show'])->name('activities.show');
+            Route::get('/activities/{activity}/edit', [LabActivityController::class, 'edit'])->name('activities.edit');
+            Route::put('/activities/{activity}', [LabActivityController::class, 'update'])->name('activities.update');
+            Route::post('/activities/{activity}/result', [LabActivityController::class, 'result'])->name('activities.result');
+            Route::post('/activities/{activity}/cancel', [LabActivityController::class, 'cancel'])->name('activities.cancel');
+            Route::post('/activities/{activity}/material', [LabActivityController::class, 'material'])->name('activities.material');
         });
 
         // ---------- حاضری (مجوز دقیق در AttendancePolicy) ----------

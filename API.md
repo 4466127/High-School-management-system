@@ -51,6 +51,7 @@
 | `/student-transfers/export?direction=&q=&from=&to=` | انتقال‌های میان مکاتب | ۱۳ ✅ |
 | `/library/export?q=&category=&language=&grade=&available=` | فهرست کتاب‌ها با شمار جلد، موجود، امانت و نمبرهای ثبت | ۱۷ ✅ |
 | `/library/loans/export?status=&type=&kind=&section=&q=` | امانت‌های کتابخانه (فعال، دیرکرده، بازگشته، …) با روز دیرکرد | ۱۷ ✅ |
+| `/labs/items/export?lab=&kind=&alert=&q=&inactive=` | موجودی لابراتوار (قابل استفاده، خراب، حد کمبود، خطر، تاریخ ختم) | ۱۸ ✅ |
 | `/student-archive/export?status=&year=&q=` | دانش‌آموزان سابق (فارغ، منتقل، ترک، غیرفعال)؛ برای سابق‌های بدون شمولیت، آخرین نتیجه‌ی درج دستی | ۱۳–۱۴ ✅ |
 
 **فایل سوابق دانش‌آموز (JSON، مرحله‌ی ۱۳):** `/student-transfers/record/{student}/file` — قالب `maktab-student-record`، نسخه‌ی ۱ (DATABASE.md بخش پرونده‌ی دانش‌آموز). در صفحه‌ی «ثبت انتقال از مکتب دیگر» آپلود می‌شود.

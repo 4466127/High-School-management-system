@@ -243,6 +243,19 @@ erDiagram
 - ترانسکریپت: اگر نتیجه‌ی نهایی‌شده‌ی همان صنف در `enrollments` باشد، آن مقدم است.
 - تنظیمات قالب چاپ: `reportcard_*` و `transcript_*` در `settings` (فهرست در `App\Support\ExamTemplate`).
 
+### لابراتوار (مرحله‌ی ۱۸)
+**labs** — `name` (یکتا), `type` (chemistry / physics / biology / computer / general), `room_id`, `staff_id` (مسئول), `safety_notes`, `notes`, `is_active`.
+
+**lab_items** — `lab_id`, `name`, `kind` (equipment / glassware / chemical / consumable / specimen / electronic), `code` (یکتا، اختیاری), `unit`, `quantity` (قابل استفاده)، `damaged_quantity`, `min_quantity` (حد کمبود), `location`, `hazard`, `expires_on`, `unit_price` DECIMAL(12,2), `source`, `specification`, `notes`, `is_active`, `created_by`.
+
+**lab_item_events** — دفتر هر قلم: `lab_item_id`, `type` (received / used / damaged / repaired / written_off / lost / disposed / adjusted), `quantity` (اندازه‌ی رویداد؛ شمارش با علامت), `balance_after`, `event_date`, `practical_activity_id`, `note`, `user_id`. ویرایش و حذف نمی‌شود.
+
+**practical_activities** — `lab_id`, `academic_year_id`, `section_id`, `subject_id`, `staff_id`, `period_id`, `activity_date`, `title`, `objectives`, `materials_note`, `status` (planned / done / cancelled), `max_score`, `result_note`, `cancel_reason`, `created_by`. حذف نمی‌شود.
+
+**practical_activity_student** — `practical_activity_id`, `enrollment_id` (یکتا با فعالیت), `present`, `score`, `note`.
+
+قواعد: مقدار فقط با رویداد عوض می‌شود و منفی نمی‌شود؛ مقدارها DECIMAL(12,2) و حساب با صدم. یک لابراتوار در یک روز و ساعت یک فعالیت. هر تغییر در `activity_logs`.
+
 ### کتابخانه (مرحله‌ی ۱۷)
 **books** — `title`, `author`, `translator`, `publisher`, `publish_year`, `edition`, `isbn`, `category` (App\Enums\BookCategory), `language` (dari / pashto / english / arabic / other), `subject_id`, `grade_level_id` (برای کتاب درسی), `call_number` (جای کتاب), `pages`, `keywords`, `notes`, `is_reference` (فقط مطالعه در کتابخانه), `created_by`.
 

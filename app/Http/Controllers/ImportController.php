@@ -16,7 +16,7 @@ use Throwable;
 
 /**
  * ورود گروهی از Excel: انتخاب نوع و آپلود ← بررسی (پیش‌نمایش) ← ذخیره‌ی سطرهای درست.
- * دانش‌آموزان و فارغ‌های سال‌های قبل: students.manage؛ کارکنان: staff.manage؛ کتاب‌ها: library.manage. فایل آپلودی تا ذخیره در storage/app/private/imports می‌ماند.
+ * دانش‌آموزان و فارغ‌های سال‌های قبل: students.manage؛ کارکنان: staff.manage؛ کتاب‌ها: library.manage؛ موجودی لابراتوار: labs.manage. فایل آپلودی تا ذخیره در storage/app/private/imports می‌ماند.
  */
 class ImportController extends Controller
 {
@@ -103,6 +103,7 @@ class ImportController extends Controller
             'students' => route('students.index'),
             'graduates' => route('student-archive.index'),
             'books' => route('library.catalog.index'),
+            'lab_items' => route('labs.items.index'),
             default => route('staff.index'),
         };
 
@@ -135,6 +136,7 @@ class ImportController extends Controller
         return array_values(array_filter(ImportService::TYPES, fn ($t) => $request->user()->hasPermission(match ($t) {
             'staff' => 'staff.manage',
             'books' => 'library.manage',
+            'lab_items' => 'labs.manage',
             default => 'students.manage',
         })));
     }

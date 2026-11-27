@@ -16,7 +16,9 @@ use App\Models\CourseLedgerEntry;
 use App\Models\CourseParticipant;
 use App\Models\CourseSession;
 use App\Models\Exam;
+use App\Models\LabItem;
 use App\Models\Payment;
+use App\Models\PracticalActivity;
 use App\Models\SchoolTransaction;
 use App\Models\Setting;
 use App\Models\Staff;
@@ -61,6 +63,8 @@ class DashboardService
             'lessons' => $this->lessonsToday($user, $year, $today),
             'library' => $this->library($user, $today),
             'myBooks' => $this->myBooks($user),
+            'labs' => $this->labs($user, $today),
+            'myActivities' => $this->myActivities($user, $today),
         ];
     }
 
@@ -77,6 +81,35 @@ class DashboardService
             'overdue' => BookLoan::overdue()->count(),
             'due_today' => BookLoan::active()->where('due_on', $today->toDateString())->count(),
         ];
+    }
+
+    /** کارت لابراتوار برای مسئول لابراتوار و مدیر (مرحله‌ی ۱۸): هشدارها و فعالیت‌های امروز */
+    private function labs(User $user, CarbonImmutable $today): ?array
+    {
+        if (! $user->hasPermission('labs.manage')) {
+            return null;
+        }
+        $base = LabItem::query()->where('is_active', true);
+
+        return [
+            'low' => (clone $base)->alert('low')->count(),
+            'expired' => (clone $base)->alert('expired')->count(),
+            'expiring' => (clone $base)->alert('expiring')->count(),
+            'damaged' => (clone $base)->alert('damaged')->count(),
+            'today' => PracticalActivity::where('activity_date', $today->toDateString())->where('status', '!=', 'cancelled')->count(),
+        ];
+    }
+
+    /** فعالیت‌های عملی پیش روی معلم (۷ روز)؛ null = ندارد */
+    private function myActivities(User $user, CarbonImmutable $today): ?Collection
+    {
+        if (! $user->staff_id || ! $user->hasPermission('labs.activity')) {
+            return null;
+        }
+        $list = PracticalActivity::with(['lab', 'section.gradeLevel', 'subject', 'period'])->where('staff_id', $user->staff_id)->where('status', 'planned')
+            ->whereBetween('activity_date', [$today->toDateString(), $today->addDays(7)->toDateString()])->orderBy('activity_date')->get();
+
+        return $list->isEmpty() ? null : $list;
     }
 
     /** کتاب‌های امانت خود کاربر (کارمند) از کتابخانه؛ null = ندارد */
