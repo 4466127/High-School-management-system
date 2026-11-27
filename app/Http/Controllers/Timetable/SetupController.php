@@ -12,6 +12,7 @@ use App\Models\Room;
 use App\Models\Section;
 use App\Services\ActivityLogger;
 use App\Services\TimetableService;
+use App\Support\Clock;
 use App\Support\Digits;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -81,7 +82,7 @@ class SetupController extends Controller
         $shift = Shift::from($data['shift']);
         $this->timetable->applyPeriodPlan($shift, $plan, $request->user());
 
-        return back()->with('success', __('timetable.plan_saved', ['shift' => $shift->label(), 'start' => Digits::toPersian($plan[0]['start']), 'end' => Digits::toPersian(end($plan)['end'])]));
+        return back()->with('success', __('timetable.plan_saved', ['shift' => $shift->label(), 'start' => Clock::withPeriod($plan[0]['start']), 'end' => Clock::withPeriod(end($plan)['end'])]));
     }
 
     /** نوبت بخش‌های هر صنف در سال جاری؛ preset=common ← صنف ۱ تا ۶ قبل از ظهر، ۷ تا ۱۲ بعد از ظهر */

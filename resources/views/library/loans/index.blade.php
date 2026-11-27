@@ -85,8 +85,9 @@
         </div>
 
         <div class="d-flex flex-wrap gap-2 mb-2">
-            @foreach (['active' => 'text-bg-primary', 'overdue' => 'text-bg-danger', 'due_today' => 'text-bg-warning'] as $key => $badge)
-                <a href="{{ route('library.loans.index', ['status' => $key === 'due_today' ? 'due_soon' : $key]) }}" class="badge {{ $badge }} text-decoration-none fs-6 fw-normal">{{ __($t.'count_'.$key, ['count' => $n($counts[$key])]) }}</a>
+            {{-- هر عدد با هر بار باز شدن صفحه از نو شمرده می‌شود و فهرست همان را باز می‌کند --}}
+            @foreach (['active' => 'text-bg-primary', 'overdue' => 'text-bg-danger', 'due_today' => 'text-bg-warning', 'returned_today' => 'text-bg-success'] as $key => $badge)
+                <a href="{{ route('library.loans.index', ['status' => $key]) }}" class="badge {{ $badge }} text-decoration-none fs-6 fw-normal" title="{{ __($t.'count_hint.'.$key) }}">{{ __($t.'count_'.$key, ['count' => $n($counts[$key])]) }}</a>
             @endforeach
         </div>
 

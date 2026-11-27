@@ -217,7 +217,7 @@ erDiagram
 **course_sessions** — `course_group_id`, `date`, `taken_by`, `updated_by`. یکتا: (`course_group_id`, `date`).
 **course_attendance** — `course_session_id`, `course_participant_id`, `status` (همان وضعیت‌های حاضری مکتب), `note`. یکتا روی هر دو.
 
-**course_ledger_entries** — `course_id`, `entry_type` (donation / teacher_salary / expense), `channel` (cashbox / direct_to_teacher), `staff_id` (معلم: برای معاش و کمک مستقیم), `amount`, `date`, `donor_name` (خالی = بی‌نام), `description`, `recorded_by`, `voided_at`, `voided_by`, `void_reason`
+**course_ledger_entries** — `course_id`, `entry_type` (donation / fee / teacher_salary / expense؛ `fee` = فیس اشتراک شاگرد، از 2.1.0), `channel` (cashbox / direct_to_teacher), `staff_id` (معلم: برای معاش و کمک مستقیم), `amount`, `date`, `donor_name` (خالی = بی‌نام), `description`, `recorded_by`, `voided_at`, `voided_by`, `void_reason`
 
 قواعد:
 - `direct_to_teacher` فقط با `donation`؛ معاش و کمک مستقیم باید معلم یکی از گروه‌های همان کورس را داشته باشد.

@@ -40,3 +40,6 @@ Thumbs.db
 # ویدیوی معرفی (فایل‌های حجیم و خصوصی؛ فقط ساختار پوشه‌ها در git)
 /resources/Ai video Editor/*/*
 !/resources/Ai video Editor/*/.gitkeep
+
+# اسناد مرجع وزارت معارف (فقط محلی، در git نیست)
+/resources/documents/

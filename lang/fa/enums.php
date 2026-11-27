@@ -167,6 +167,7 @@ return [
     ],
     'course_entry_type' => [
         'donation' => 'کمک مردمی',
+        'fee' => 'فیس اشتراک',
         'teacher_salary' => 'معاش معلم',
         'expense' => 'مصرف کورس',
     ],

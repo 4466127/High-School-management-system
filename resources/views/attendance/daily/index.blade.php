@@ -107,7 +107,7 @@
                                 @endforeach
                             </div>
                             <div class="small text-secondary text-truncate">
-                                {{ __('attendance.taken_by', ['name' => $session->takenBy?->name ?? '—', 'time' => \App\Support\Digits::toPersian($session->taken_at?->format('H:i') ?? '')]) }}
+                                {{ __('attendance.taken_by', ['name' => $session->takenBy?->name ?? '—', 'time' => \App\Support\Clock::withPeriod($session->taken_at)]) }}
                             </div>
                         @else
                             <div><span class="badge text-bg-light border text-secondary"><i class="fa-regular fa-clock" aria-hidden="true"></i> {{ __('attendance.not_taken') }}</span></div>

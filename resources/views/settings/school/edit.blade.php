@@ -36,6 +36,17 @@
                             </div>
                         @endif
                     </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="form-check form-switch mt-md-4">
+                            <input class="form-check-input" type="checkbox" role="switch" name="official_logos" value="1" id="official_logos" @checked(old('official_logos', ($values['official_logos'] ?? '1') === '1'))>
+                            <label class="form-check-label" for="official_logos">{{ __('school.official_logos') }}</label>
+                        </div>
+                        <div class="d-flex align-items-center gap-2 mt-1">
+                            <img src="{{ asset('assets/images/moe/emblem.png') }}" alt="" height="36">
+                            <img src="{{ asset('assets/images/moe/moe-logo.jpg') }}" alt="" height="36">
+                        </div>
+                        <div class="form-text">{{ __('school.official_logos_hint') }}</div>
+                    </div>
                 </div>
             </div>
         </div>

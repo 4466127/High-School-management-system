@@ -6,7 +6,7 @@
     $editable = $canUpdate && $activity->status !== \App\Enums\ActivityStatus::Cancelled;
     $info = [
         'date' => \App\Support\JalaliDate::format($activity->activity_date, 'full'),
-        'period' => $activity->period ? $activity->period->name.' ('.\App\Support\Digits::toPersian($activity->period->timeRange()).')' : null,
+        'period' => $activity->period ? $activity->period->name.' ('.$activity->period->timeRange().')' : null,
         'lab' => $activity->lab->name,
         'subject_section' => $activity->subject->name.' — '.$activity->section->gradeLevel->name.' '.$activity->section->name,
         'teacher' => $activity->teacher?->full_name,

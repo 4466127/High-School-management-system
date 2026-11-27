@@ -9,6 +9,7 @@
 @endphp
 <header class="print-head">
     <div class="d-flex align-items-center gap-2">
+        @if ($lhOfficial = \App\Models\Setting::enabled('official_logos'))<img src="{{ asset('assets/images/moe/emblem.png') }}" alt="" class="print-emblem">@endif
         @if ($lhSetting('logo_path') !== '')<img src="{{ route('school.logo') }}" alt="" width="{{ $logoSize ?? 56 }}" height="{{ $logoSize ?? 56 }}" class="object-fit-contain">@endif
         <div>
             @foreach ($lhLines as $line)
@@ -19,9 +20,12 @@
             @if ($lhContact !== '')<div class="small">{{ $lhContact }}</div>@endif
         </div>
     </div>
-    <div class="text-start small">
-        @foreach ($meta ?? [__('app.printed_on') => \App\Support\JalaliDate::format(now())] as $lhLabel => $lhValue)
-            <div>{{ $lhLabel }}: <span class="fw-medium">{{ $lhValue }}</span></div>
-        @endforeach
+    <div class="d-flex align-items-center gap-2">
+        <div class="text-start small">
+            @foreach ($meta ?? [__('app.printed_on') => \App\Support\JalaliDate::format(now())] as $lhLabel => $lhValue)
+                <div>{{ $lhLabel }}: <span class="fw-medium">{{ $lhValue }}</span></div>
+            @endforeach
+        </div>
+        @if ($lhOfficial)<img src="{{ asset('assets/images/moe/moe-logo.jpg') }}" alt="" class="print-moe-logo">@endif
     </div>
 </header>

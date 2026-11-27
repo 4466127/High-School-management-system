@@ -50,10 +50,7 @@ class TranscriptController extends Controller
     {
         abort_unless($this->canPrintAny($request), 403);
 
-        return view('exams.transcripts.print', [
-            'items' => [['student' => $student, 'data' => $this->transcripts->build($student)]],
-            'tpl' => ExamTemplate::transcript(),
-        ]);
+        return $this->printView([['student' => $student, 'data' => $this->transcripts->build($student)]]);
     }
 
     public function section(Section $section): View
@@ -61,11 +58,20 @@ class TranscriptController extends Controller
         Gate::authorize('viewResults', [Exam::class, $section]);
         $levels = $this->transcripts->gradeLevels();
 
-        return view('exams.transcripts.print', [
-            'items' => $this->results->sectionEnrollments($section)
-                ->map(fn ($e) => ['student' => $e->student, 'data' => $this->transcripts->build($e->student, $levels)])->all(),
-            'tpl' => ExamTemplate::transcript(),
-        ]);
+        return $this->printView($this->results->sectionEnrollments($section)
+            ->map(fn ($e) => ['student' => $e->student, 'data' => $this->transcripts->build($e->student, $levels)])->all());
+    }
+
+    /** فورم رسمی وزارت معارف (پیش‌فرض) یا جدول ساده؛ ?layout=simple|moe برای یک بار چاپ دیگر */
+    private function printView(array $items, bool $sample = false): View
+    {
+        $tpl = ExamTemplate::transcript();
+        $layout = in_array(request()->query('layout'), ExamTemplate::LAYOUTS, true) ? request()->query('layout') : $tpl['layout'];
+        if ($layout === 'moe') {
+            $items = array_map(fn ($i) => $i + ['official' => $this->transcripts->officialRows($i['data'])], $items);
+        }
+
+        return view($layout === 'moe' ? 'exams.transcripts.moe' : 'exams.transcripts.print', ['items' => $items, 'tpl' => $tpl, 'sample' => $sample]);
     }
 
     private function canPrintAny(Request $request): bool

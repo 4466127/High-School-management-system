@@ -212,3 +212,18 @@
     document.addEventListener('keydown', function (ev) { if (ev.key === 'Escape') { setOpen(false); } });
     side.addEventListener('click', function (ev) { if (ev.target.closest('a[href]')) { setOpen(false); } });
 })();
+
+/* پنجره‌ی «ساختن پلان تازه»: انتخاب «بخش|مضمون» در دو خانه‌ی پنهان فورم گذاشته می‌شود */
+(function () {
+    document.querySelectorAll('form[data-new-plan]').forEach(function (form) {
+        var pick = form.querySelector('[data-new-plan-pick]');
+        if (!pick) { return; }
+        function sync() {
+            var parts = (pick.value || '').split('|');
+            form.querySelector('input[name="section"]').value = parts[0] || '';
+            form.querySelector('input[name="subject"]').value = parts[1] || '';
+        }
+        pick.addEventListener('change', sync);
+        sync();
+    });
+})();

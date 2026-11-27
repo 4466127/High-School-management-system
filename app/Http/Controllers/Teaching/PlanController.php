@@ -57,6 +57,8 @@ class PlanController extends Controller
             'overdue' => $rows->filter(fn ($r) => ($r['progress']['overdue'] ?? 0) > 0)->count(),
         ];
         $sectionOptions = $rows->map(fn ($r) => $r['assignment']->section)->unique('id')->values();
+        // مضمون‌ها و بخش‌هایی که هنوز پلان ندارند (برای دکمه‌ی «ساختن پلان تازه» بالای صفحه)
+        $withoutPlan = $rows->filter(fn ($r) => ! $r['plan'])->values();
         $teacherOptions = $rows->map(fn ($r) => $r['assignment']->teacher)->filter()->unique('id')->sortBy('first_name')->values();
 
         $status = (string) $request->query('status', '');
@@ -86,6 +88,7 @@ class PlanController extends Controller
             'summary' => $summary,
             'sectionOptions' => $sectionOptions,
             'teacherOptions' => $teacherOptions,
+            'withoutPlan' => $withoutPlan,
             'noStaff' => ! $review && ! $user->staff_id,
         ]);
     }

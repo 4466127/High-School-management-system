@@ -18,7 +18,7 @@
                 @if ($session)
                     <div class="small mt-1">
                         <span class="badge text-bg-success"><i class="fa-solid fa-check" aria-hidden="true"></i> {{ __('attendance.taken') }}</span>
-                        <span class="text-secondary">{{ __('attendance.taken_by', ['name' => $session->takenBy?->name ?? '—', 'time' => \App\Support\Digits::toPersian($session->taken_at?->format('H:i') ?? '')]) }}</span>
+                        <span class="text-secondary">{{ __('attendance.taken_by', ['name' => $session->takenBy?->name ?? '—', 'time' => \App\Support\Clock::withPeriod($session->taken_at)]) }}</span>
                         @if ($session->updatedBy)
                             <span class="text-secondary">· {{ __('attendance.corrected_by', ['name' => $session->updatedBy->name]) }}</span>
                         @endif

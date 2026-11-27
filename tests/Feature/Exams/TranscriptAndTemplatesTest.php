@@ -54,8 +54,12 @@ class TranscriptAndTemplatesTest extends ExamTestCase
         $this->actingAs($this->principal)->get(route('exams.templates.index'))->assertOk()->assertSee(__('exam_templates.section_transcript'));
         $this->actingAs($this->principal)->get(route('exams.templates.preview', ['type' => 'reportcard']))
             ->assertOk()->assertSee(__('exam_templates.sample_notice'))->assertSee('احمد');
+        // پیش‌فرض: فورم رسمی وزارت معارف (نمرات سه ساله)
         $this->actingAs($this->principal)->get(route('exams.templates.preview', ['type' => 'transcript']))
-            ->assertOk()->assertSee(__('transcripts.default_title'))->assertSee('بیولوژی');
+            ->assertOk()->assertSee(__('moe_transcript.title'))->assertSee('بیولوژی')->assertSee('هشتاد و پنج')->assertSee('assets/images/moe/emblem.png', false);
+        Setting::put('transcript_layout', 'simple');
+        $this->actingAs($this->principal)->get(route('exams.templates.preview', ['type' => 'transcript']))
+            ->assertOk()->assertSee(__('transcripts.default_title'))->assertDontSee(__('moe_transcript.title'));
 
         $this->actingAs($this->principal)->put(route('exams.templates.update'), ['transcript_grades' => [999999]])->assertSessionHasErrors('transcript_grades.0');
         $this->actingAs($this->teacher)->get(route('exams.templates.index'))->assertForbidden();
@@ -85,8 +89,15 @@ class TranscriptAndTemplatesTest extends ExamTestCase
         $this->assertSame([80.0, 90.0, null], $math['marks']);
         $this->assertFalse($data['complete']);
 
-        $this->actingAs($this->principal)->get(route('exams.transcripts.student', $student))->assertOk()
+        $this->actingAs($this->principal)->get(route('exams.transcripts.student', [$student, 'layout' => 'simple']))->assertOk()
             ->assertSee('لیسه‌ی قبلی')->assertSee('تاریخ')->assertSee(__('transcripts.missing'));
+        // فورم رسمی: سطر «الجبر/ هندسه» نمره‌ی ریاضی را دارد (به عدد و به حروف)، «لسان اول» = دری
+        $official = app(TranscriptService::class)->officialRows($data);
+        $this->assertCount(22, $official);
+        $this->assertSame([80.0, 90.0, null], collect($official)->firstWhere('key', 'math')['marks']);
+        $this->assertSame(70.0, collect($official)->firstWhere('key', 'language_1')['marks'][0]);
+        $this->actingAs($this->principal)->get(route('exams.transcripts.student', $student))->assertOk()
+            ->assertSee(__('moe_transcript.title'))->assertSee(__('moe_transcript.subjects.math'))->assertSee('هشتاد')->assertSee($student->father_name);
         $this->actingAs($this->principal)->get(route('exams.transcripts.section', $this->section))->assertOk()
             ->assertSee($this->students[2]->student->full_name);
         $this->actingAs($this->principal)->get(route('exams.transcripts.index', ['q' => $student->first_name]))->assertOk()->assertSee($student->full_name);

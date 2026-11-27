@@ -7,7 +7,10 @@ use App\Enums\ParticipantStatus;
 use App\Enums\Role;
 use App\Models\ActivityLog;
 use App\Models\Course;
+use App\Models\CourseLedgerEntry;
 use App\Models\CourseParticipant;
+use App\Models\Permission;
+use App\Services\CourseLedgerService;
 
 /** کورس، گروه‌ها، اشتراک‌کنندگان و دسترسی‌ها. */
 class CourseManagementTest extends CourseTestCase
@@ -69,6 +72,23 @@ class CourseManagementTest extends CourseTestCase
         $this->actingAs($this->manager)->post(route('courses.list.participants.external', $this->course), [
             'course_group_id' => $this->afternoon->id, 'name' => 'فریدون رحیمی', 'father_name' => 'کریم', 'phone' => '0700123456', 'joined_on' => '۱۴۰۵/۰۸/۲۰',
         ])->assertSessionHasNoErrors();
+
+        // 2.1.0: فیس اختیاری ← سطر «فیس اشتراک» در صندوق کورس
+        $this->actingAs($this->manager)->post(route('courses.list.participants.external', $this->course), [
+            'course_group_id' => $this->afternoon->id, 'name' => 'نسرین احمدی', 'father_name' => 'احمد', 'joined_on' => '۱۴۰۵/۰۸/۲۱', 'fee' => '۵۰۰',
+        ])->assertSessionHasNoErrors()->assertSessionHas('success');
+        $fee = CourseLedgerEntry::where('entry_type', 'fee')->sole();
+        $this->assertSame('500.00', $fee->amount);
+        $this->assertSame('نسرین احمدی '.__('library.child_of').' احمد', $fee->donor_name);
+        $this->assertSame(50_000, app(CourseLedgerService::class)->summary($this->course)['fees']);
+        // کسی که دفتر مالی کورس ندارد فیس ثبت نمی‌کند (شخص هم ثبت نمی‌شود)
+        $principalLike = $this->userWithRole(Role::Teacher);
+        $principalLike->permissions()->attach(Permission::where('key', 'courses.manage')->value('id'));
+        $this->actingAs($principalLike)->post(route('courses.list.participants.external', $this->course), [
+            'course_group_id' => $this->afternoon->id, 'name' => 'بی دسترسی', 'joined_on' => '۱۴۰۵/۰۸/۲۱', 'fee' => '100',
+        ])->assertSessionHasErrors('fee');
+        $this->assertSame(0, CourseParticipant::where('name', 'بی دسترسی')->count());
+        $this->actingAs($this->manager)->get(route('courses.ledger.show', $this->course))->assertOk()->assertSee(__('courses.sum_fees'))->assertSee('نسرین احمدی');
 
         $html = $this->actingAs($this->manager)->get(route('courses.list.show', $this->course))->assertOk()->getContent();
         $this->assertStringContainsString('کورسیاول', $html);

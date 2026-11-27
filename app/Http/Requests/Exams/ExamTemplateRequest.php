@@ -34,6 +34,8 @@ class ExamTemplateRequest extends FormRequest
             'transcript_signature_1' => ['nullable', 'string', 'max:100'],
             'transcript_signature_2' => ['nullable', 'string', 'max:100'],
             'transcript_footer' => ['nullable', 'string', 'max:500'],
+            'transcript_layout' => ['nullable', Rule::in(ExamTemplate::LAYOUTS)],
+            'first_language' => ['nullable', Rule::in(ExamTemplate::LANGUAGES)],
             'transcript_grades' => ['array', 'max:6'],
             'transcript_grades.*' => ['integer', Rule::exists(GradeLevel::class, 'id')],
         ] + array_fill_keys(ExamTemplate::SWITCHES, ['boolean']);

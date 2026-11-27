@@ -61,6 +61,7 @@ class LoanController extends Controller
                 'active' => BookLoan::active()->count(),
                 'overdue' => BookLoan::overdue()->count(),
                 'due_today' => BookLoan::active()->where('due_on', AttendanceService::today()->toDateString())->count(),
+                'returned_today' => BookLoan::where('status', LoanStatus::Returned->value)->where('returned_on', AttendanceService::today()->toDateString())->count(),
             ],
             'conditions' => self::returnConditions(),
             'print' => $print,
@@ -221,6 +222,8 @@ class LoanController extends Controller
         match ($status) {
             'overdue' => $q->overdue(),
             'due_soon' => $q->active()->whereBetween('due_on', [$today->toDateString(), $today->addDays(3)->toDateString()]),
+            'due_today' => $q->active()->where('due_on', $today->toDateString()),
+            'returned_today' => $q->where('status', LoanStatus::Returned->value)->where('returned_on', $today->toDateString()),
             'returned' => $q->where('status', LoanStatus::Returned->value),
             'lost' => $q->where('status', LoanStatus::Lost->value),
             'all' => $q,

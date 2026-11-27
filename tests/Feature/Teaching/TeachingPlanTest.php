@@ -157,6 +157,15 @@ class TeachingPlanTest extends ExamTestCase
         $this->assertSame(1, $this->actingAs($this->teacher)->get(route('teaching.plans.index'))->viewData('rows')->total());
     }
 
+    /** 2.1.0: دکمه‌ی «ساختن پلان تازه» بالای صفحه با فهرست مضامین بی‌پلان */
+    public function test_create_new_plan_button_lists_subjects_without_plan(): void
+    {
+        $page = $this->actingAs($this->teacher)->get(route('teaching.plans.index'))->assertOk();
+        $page->assertSee(__('teaching.create_new'))->assertSee('data-new-plan', false)->assertSee($this->section->id.'|'.$this->math->id, false);
+        $this->openPlan();
+        $this->actingAs($this->teacher)->get(route('teaching.plans.index'))->assertOk()->assertDontSee('data-new-plan', false);
+    }
+
     public function test_demo_seeder(): void
     {
         $this->seed(DemoTeachingSeeder::class);

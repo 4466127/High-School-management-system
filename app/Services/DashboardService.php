@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Enums\CourseStatus;
 use App\Enums\EmploymentStatus;
 use App\Enums\ExamStatus;
+use App\Enums\LoanStatus;
 use App\Enums\ParticipantStatus;
 use App\Models\AcademicYear;
 use App\Models\Announcement;
@@ -80,6 +81,7 @@ class DashboardService
             'active' => BookLoan::active()->count(),
             'overdue' => BookLoan::overdue()->count(),
             'due_today' => BookLoan::active()->where('due_on', $today->toDateString())->count(),
+            'returned_today' => BookLoan::where('status', LoanStatus::Returned->value)->where('returned_on', $today->toDateString())->count(),
         ];
     }
 

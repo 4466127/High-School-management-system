@@ -2,6 +2,7 @@
 @php($m = fn (int $cents) => \App\Support\Money::format(\App\Support\Money::fromCents($cents)))
 <div class="row g-2 mb-3">
     <div class="col-6 col-lg"><div class="card card-body py-2"><div class="small text-secondary">{{ __('courses.sum_donations') }}</div><div class="fw-bold text-success">{{ $m($summary['donations_total']) }}</div></div></div>
+    <div class="col-6 col-lg"><div class="card card-body py-2"><div class="small text-secondary">{{ __('courses.sum_fees') }}</div><div class="fw-bold text-success">{{ $m($summary['fees']) }}</div></div></div>
     <div class="col-6 col-lg"><div class="card card-body py-2"><div class="small text-secondary">{{ __('courses.sum_donations_direct') }}</div><div class="fw-bold">{{ $m($summary['donations_direct']) }}</div></div></div>
     <div class="col-6 col-lg"><div class="card card-body py-2"><div class="small text-secondary">{{ __('courses.sum_salaries') }}</div><div class="fw-bold text-primary">{{ $m($summary['salaries']) }}</div></div></div>
     <div class="col-6 col-lg"><div class="card card-body py-2"><div class="small text-secondary">{{ __('courses.sum_expenses') }}</div><div class="fw-bold text-danger">{{ $m($summary['expenses']) }}</div></div></div>

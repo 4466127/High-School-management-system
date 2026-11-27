@@ -146,6 +146,7 @@ class ReportController extends Controller
         }
         if ($c = $data['summary']['courses']) {
             $rows[] = [__('reports.courses_part'), __('courses.sum_donations_cashbox'), $m($c['donations_cashbox'])];
+            $rows[] = [__('reports.courses_part'), __('courses.sum_fees'), $m($c['fees'] ?? 0)];
             $rows[] = [__('reports.courses_part'), __('courses.sum_donations_direct'), $m($c['donations_direct'])];
             $rows[] = [__('reports.courses_part'), __('courses.sum_salaries'), $m($c['salaries'])];
             $rows[] = [__('reports.courses_part'), __('courses.sum_expenses'), $m($c['expenses'])];

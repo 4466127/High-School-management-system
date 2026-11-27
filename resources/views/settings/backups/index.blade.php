@@ -20,7 +20,7 @@
             <div @class(['card card-body h-100', 'border-warning' => $due])>
                 <div class="small text-secondary">{{ __('backup.last') }}</div>
                 @if ($latest)
-                    <div class="fs-5 fw-bold">@jdate($latest['time'], 'long') · {{ $n($latest['time']->format('H:i')) }}</div>
+                    <div class="fs-5 fw-bold">@jdate($latest['time'], 'long') · {{ \App\Support\Clock::withPeriod($latest['time']) }}</div>
                     <div class="small text-secondary">{{ __('backup.days_ago', ['days' => $n((int) $latest['time']->diffInDays($now))]) }}</div>
                 @else
                     <div class="fs-5 fw-bold">{{ __('backup.never') }}</div>
@@ -48,7 +48,7 @@
                 <tbody>
                 @forelse ($backups as $b)
                     <tr>
-                        <td>@jdate($b['time'], 'long') · {{ $n($b['time']->format('H:i')) }}</td>
+                        <td>@jdate($b['time'], 'long') · {{ \App\Support\Clock::withPeriod($b['time']) }}</td>
                         <td><span class="badge text-bg-light border">{{ __('backup.reasons.'.$b['reason']) }}</span></td>
                         <td>{{ $n(number_format($b['size'] / 1024)) }} KB</td>
                         <td class="d-none d-md-table-cell small text-secondary" dir="ltr">{{ $b['name'] }}</td>

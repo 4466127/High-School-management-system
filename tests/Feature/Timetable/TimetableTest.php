@@ -183,6 +183,18 @@ class TimetableTest extends ExamTestCase
         $this->assertTrue(ActivityLog::where('action', 'timetable.periods_generated')->exists());
     }
 
+    /** 2.1.0: ساعت‌ها اول قبل از ظهر بعد بعد از ظهر؛ نمایش ۱۲ ساعته */
+    public function test_periods_order_morning_first_and_twelve_hour_display(): void
+    {
+        $this->actingAs($this->principal)->post(route('timetable.setup.periods.generate'), [
+            'shift' => 'afternoon', 'start_time' => '13:00', 'minutes' => 40, 'lessons' => 2, 'break_after' => 0, 'break_minutes' => 0,
+        ])->assertSessionHasNoErrors();
+        $this->assertSame('morning', Period::query()->ordered()->first()->shift->value);
+        $afternoon = Period::where('shift', 'afternoon')->ordered()->first();
+        $this->assertSame('۱:۰۰ – ۱:۴۰', $afternoon->timeRange());
+        $this->actingAs($this->principal)->get(route('timetable.setup.index'))->assertOk()->assertSee('۱:۰۰ – ۱:۴۰')->assertDontSee('۱۳:۰۰');
+    }
+
     /** 1.8.1: نوبت صنف‌ها — صنف ۱ تا ۶ قبل از ظهر، ۷ تا ۱۲ بعد از ظهر؛ بخش با تقسیم اوقات پر عوض نمی‌شود */
     public function test_grade_shifts_preset_and_protection(): void
     {

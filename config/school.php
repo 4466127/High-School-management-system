@@ -72,6 +72,11 @@ return [
         'transcript_signature_2' => '',
         'transcript_show_stamp' => '1',
         'transcript_footer' => '',
+        // 2.1.0: شکل چاپ ترانسکریپت — moe = «فورم اخذ ترانسکریپ (نمرات سه ساله) متعلم» وزارت معارف | simple = جدول ساده
+        'transcript_layout' => 'moe',
+        'first_language' => 'dari',             // لسان اول مکتب در فورم وزارت: dari | pashto
+        // نشان دولت و لوگوی وزارت معارف در سربرگ همه‌ی چاپ‌ها (public/assets/images/moe)
+        'official_logos' => '1',
         // کتابخانه (مرحله‌ی ۱۷؛ LibraryService::rules): مدت امانت (روز)، حد امانت هم‌زمان، شمار تمدید،
         // و این‌که امانت‌گیرنده‌ی دیرکرده کتاب تازه بگیرد یا نه. کتاب درسی سال در حد امانت حساب نمی‌شود.
         'library_loan_days_student' => '14',

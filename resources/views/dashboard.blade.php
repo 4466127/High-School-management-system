@@ -70,7 +70,8 @@
                 <a href="{{ route('library.catalog.index') }}" class="badge text-bg-light border text-decoration-none fs-6 fw-normal">{{ __('dashboard.library_titles', ['count' => $n($library['titles'])]) }}</a>
                 <a href="{{ route('library.loans.index') }}" class="badge text-bg-primary text-decoration-none fs-6 fw-normal">{{ __('library.count_active', ['count' => $n($library['active'])]) }}</a>
                 <a href="{{ route('library.loans.index', ['status' => 'overdue']) }}" class="badge {{ $library['overdue'] ? 'text-bg-danger' : 'text-bg-light border' }} text-decoration-none fs-6 fw-normal">{{ __('library.count_overdue', ['count' => $n($library['overdue'])]) }}</a>
-                <a href="{{ route('library.loans.index', ['status' => 'due_soon']) }}" class="badge text-bg-warning text-decoration-none fs-6 fw-normal">{{ __('library.count_due_today', ['count' => $n($library['due_today'])]) }}</a>
+                <a href="{{ route('library.loans.index', ['status' => 'due_today']) }}" class="badge text-bg-warning text-decoration-none fs-6 fw-normal">{{ __('library.count_due_today', ['count' => $n($library['due_today'])]) }}</a>
+                <a href="{{ route('library.loans.index', ['status' => 'returned_today']) }}" class="badge text-bg-success text-decoration-none fs-6 fw-normal">{{ __('library.count_returned_today', ['count' => $n($library['returned_today'])]) }}</a>
             </div>
         </div>
     @endif
@@ -134,7 +135,7 @@
                 <ul class="list-group list-group-flush dash-list">
                     @foreach ($lessons as $l)
                         <li class="list-group-item d-flex flex-wrap align-items-center gap-2">
-                            <span class="badge text-bg-light border">{{ $l->period->name }} · @fa($l->period->timeRange())</span>
+                            <span class="badge text-bg-light border">{{ $l->period->name }} · {{ $l->period->timeRange() }}</span>
                             <span class="fw-medium">{{ $l->subject->name }}</span>
                             <span class="small text-secondary">{{ $l->section->gradeLevel->name }} {{ $l->section->name }}@if ($l->room) · {{ $l->room->name }}@endif</span>
                         </li>

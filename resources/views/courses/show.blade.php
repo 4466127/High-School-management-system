@@ -223,6 +223,9 @@
                     <x-form.select class="col-md-6 mb-3" name="gender" :label="__('courses.gender')" :options="\App\Enums\Gender::studentOptions()" placeholder="—" />
                     <x-form.select class="col-md-6 mb-3" name="course_group_id" :label="__('courses.group')" :options="$groupOptions" required />
                     <x-jalali-date class="col-md-6 mb-3" name="joined_on" :label="__('courses.joined_on')" :value="now()" required :use-old="$open" />
+                    @can('ledger', \App\Models\Course::class)
+                        <x-form.input class="col-md-6 mb-3" name="fee" :label="__('courses.fee')" inputmode="decimal" maxlength="20" :use-old="$open" :placeholder="__('courses.fee_ph')" :help="__('courses.fee_help')" />
+                    @endcan
                     <x-form.input class="col-12 mb-0" name="note" :label="__('courses.note')" maxlength="255" :use-old="$open" />
                 </div>
             </x-modal-form>

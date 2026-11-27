@@ -19,7 +19,7 @@
                         @php($activeP = isset($periods[$shift->value]) ? $periods[$shift->value]->where('is_active', true) : collect())
                         <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
                             <h2 class="h6 fw-bold mb-0 flex-grow-1">{{ $shift->label() }}
-                                @if ($activeP->isNotEmpty())<span class="small fw-normal text-secondary">— {{ __($t.'plan_summary', ['start' => \App\Support\Digits::toPersian(substr($activeP->first()->start_time, 0, 5)), 'end' => \App\Support\Digits::toPersian(substr($activeP->last()->end_time, 0, 5))]) }}</span>@endif
+                                @if ($activeP->isNotEmpty())<span class="small fw-normal text-secondary">— {{ __($t.'plan_summary', ['start' => \App\Support\Clock::short($activeP->first()->start_time), 'end' => \App\Support\Clock::short($activeP->last()->end_time)]) }}</span>@endif
                             </h2>
                             <button type="button" class="btn btn-sm btn-outline-success" data-bs-toggle="modal" data-bs-target="#plan-{{ $shift->value }}"><i class="fa-solid fa-wand-magic-sparkles" aria-hidden="true"></i> {{ __($t.'plan_button') }}</button>
                         </div>
@@ -32,7 +32,7 @@
                                         <td>@fa($p->sort_order)</td>
                                         <td>{{ $p->name }}@if ($p->is_break) <span class="badge text-bg-light border">{{ __($t.'break') }}</span>@endif
                                             @unless ($p->is_active) <span class="badge text-bg-secondary">{{ __('app.inactive') }}</span>@endunless</td>
-                                        <td class="text-nowrap">@fa($p->timeRange())</td>
+                                        <td class="text-nowrap">{{ $p->timeRange() }}</td>
                                         <td class="small text-secondary">@if ($p->entries_count){{ __($t.'used_in', ['count' => \App\Support\Digits::toPersian((string) $p->entries_count)]) }}@endif</td>
                                         <td class="text-end"><button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#period{{ $p->id }}">{{ __('app.edit') }}</button></td>
                                     </tr>

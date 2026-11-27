@@ -56,11 +56,13 @@ class ExamTemplateController extends Controller
     public function preview(Request $request, TranscriptService $transcripts): View
     {
         if ($request->query('type') === 'transcript') {
-            return view('exams.transcripts.print', [
-                'items' => [ExamTemplateSample::transcript($transcripts->gradeLevels())],
-                'tpl' => ExamTemplate::transcript(),
-                'sample' => true,
-            ]);
+            $tpl = ExamTemplate::transcript();
+            $item = ExamTemplateSample::transcript($transcripts->gradeLevels());
+            if ($tpl['layout'] === 'moe') {
+                return view('exams.transcripts.moe', ['items' => [$item + ['official' => $transcripts->officialRows($item['data'])]], 'tpl' => $tpl, 'sample' => true]);
+            }
+
+            return view('exams.transcripts.print', ['items' => [$item], 'tpl' => $tpl, 'sample' => true]);
         }
 
         [$section, $cards] = ExamTemplateSample::reportCard();

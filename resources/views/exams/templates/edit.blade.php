@@ -47,6 +47,26 @@
                 <a href="{{ route('exams.templates.preview', ['type' => 'transcript']) }}" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary"><i class="fa-solid fa-eye" aria-hidden="true"></i> {{ __($t.'preview') }}</a>
             </div>
             <div class="card-body">
+                <div class="row">
+                    <div class="col-md-7 mb-3">
+                        <div class="form-label">{{ __('moe_transcript.layout') }}</div>
+                        @php($layout = old('transcript_layout', $values['transcript_layout'] ?: 'moe'))
+                        @foreach (\App\Support\ExamTemplate::LAYOUTS as $l)
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="transcript_layout" value="{{ $l }}" id="tl-{{ $l }}" @checked($layout === $l)>
+                                <label class="form-check-label" for="tl-{{ $l }}">{{ __('moe_transcript.layout_'.$l) }}</label>
+                            </div>
+                        @endforeach
+                        <div class="form-text">{{ __('moe_transcript.layout_hint') }}</div>
+                    </div>
+                    <div class="col-md-5 mb-3">
+                        <label class="form-label" for="first_language">{{ __('moe_transcript.first_language') }}</label>
+                        <select name="first_language" id="first_language" class="form-select">
+                            @foreach (__('moe_transcript.languages') as $v => $l)<option value="{{ $v }}" @selected(old('first_language', $values['first_language'] ?: 'dari') === $v)>{{ $l }}</option>@endforeach
+                        </select>
+                        <div class="form-text">{{ __('moe_transcript.first_language_hint') }}</div>
+                    </div>
+                </div>
                 <x-form.input name="transcript_title" :label="__($t.'transcript_title')" :value="$values['transcript_title']" maxlength="150" :placeholder="__('transcripts.default_title')" :help="__($t.'title_hint')" />
                 <div class="mb-3">
                     <div class="form-label">{{ __($t.'transcript_grades') }}</div>

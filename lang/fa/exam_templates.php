@@ -52,6 +52,7 @@ return [
         'reportcard_title' => 'عنوان کارنامه‌ی سالانه', 'reportcard_subtitle' => 'زیرعنوان', 'reportcard_footer' => 'یادداشت پایین صفحه',
         'reportcard_signature_1' => 'امضای اول', 'reportcard_signature_2' => 'امضای دوم', 'reportcard_signature_3' => 'امضای سوم',
         'transcript_title' => 'عنوان ترانسکریپت', 'transcript_footer' => 'یادداشت پایین صفحه',
+        'transcript_layout' => 'شکل چاپ ترانسکریپت', 'first_language' => 'لسان اول مکتب',
         'transcript_signature_1' => 'امضای اول', 'transcript_signature_2' => 'امضای دوم', 'transcript_grades' => 'صنف‌های ترانسکریپت',
     ],
 ];

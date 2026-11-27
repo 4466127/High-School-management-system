@@ -6,6 +6,7 @@ use App\Enums\Role as RoleKey;
 use App\Models\AcademicYear;
 use App\Models\Role;
 use App\Models\Setting;
+use App\Support\Clock;
 use App\Support\JalaliDate;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\DB;
@@ -126,7 +127,7 @@ class SystemCheckService
         $add('web', $this->portOpen(80) ? 'ok' : 'warn', $this->portOpen(80) ? __('backup.check.web_ok') : __('backup.check.web_down'));
 
         $now = CarbonImmutable::now(JalaliDate::TIMEZONE);
-        $add('clock', config('app.timezone') === JalaliDate::TIMEZONE ? 'ok' : 'warn', JalaliDate::format($now, 'full').' · '.$now->format('H:i').' — '.__('backup.check.clock_hint'));
+        $add('clock', config('app.timezone') === JalaliDate::TIMEZONE ? 'ok' : 'warn', JalaliDate::format($now, 'full').' · '.Clock::withPeriod($now).' — '.__('backup.check.clock_hint'));
 
         $error = $this->lastLoggedError();
         $add('log', $error === null ? 'ok' : 'warn', $error === null ? __('backup.check.log_ok') : __('backup.check.log_error', ['date' => $error]), 'caches');

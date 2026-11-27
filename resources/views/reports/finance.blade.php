@@ -47,6 +47,7 @@
                         <table class="table align-middle mb-0 @if ($print) table-bordered table-sm @endif">
                             <tbody>
                             <tr><td>{{ __('courses.sum_donations_cashbox') }}</td><td class="text-end text-success fw-medium">{{ $m($courses['donations_cashbox']) }}</td></tr>
+                            <tr><td>{{ __('courses.sum_fees') }}</td><td class="text-end text-success fw-medium">{{ $m($courses['fees'] ?? 0) }}</td></tr>
                             <tr><td>{{ __('courses.sum_donations_direct') }}</td><td class="text-end">{{ $m($courses['donations_direct']) }}</td></tr>
                             <tr><td>{{ __('courses.sum_salaries') }}</td><td class="text-end text-primary fw-medium">{{ $m($courses['salaries']) }}</td></tr>
                             <tr><td>{{ __('courses.sum_expenses') }}</td><td class="text-end text-danger fw-medium">{{ $m($courses['expenses']) }}</td></tr>

@@ -48,7 +48,7 @@ return [
     'courses' => 'کورس‌های تقویتی',
     'courses_list' => 'فهرست کورس‌ها',
     'courses_attendance' => 'حاضری کورس',
-    'courses_ledger' => 'مالی کورس‌ها',
+    'courses_ledger' => 'عواید و مصارف کورس‌ها',
     'reports_students' => 'احصائیه‌ی دانش‌آموزان',
     'reports_attendance' => 'حاضری بخش‌ها',
     'reports_results' => 'نتایج و ناکام‌ها',

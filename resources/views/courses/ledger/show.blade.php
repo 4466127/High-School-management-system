@@ -64,7 +64,7 @@
                         <td class="small">{{ $e->channel->label() }}</td>
                         <td class="text-end fw-medium">{{ \App\Support\Money::format($e->amount) }}</td>
                         <td class="small">
-                            @if ($e->entry_type === \App\Enums\CourseEntryType::Donation){{ $e->donor_name ?? __('courses.anonymous') }}@endif
+                            @if ($e->entry_type->isIncome()){{ $e->donor_name ?? __('courses.anonymous') }}@endif
                             @if ($e->teacher)<div>{{ __('courses.teacher') }}: {{ $e->teacher->full_name }}</div>@endif
                         </td>
                         <td class="small">{{ $e->description }}@if ($e->isVoided())<div class="text-danger">{{ __('finance.voided') }}: {{ $e->void_reason }}</div>@endif</td>

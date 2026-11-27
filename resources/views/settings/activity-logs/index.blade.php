@@ -54,7 +54,7 @@
                 <tbody>
                 @forelse ($logs as $log)
                     <tr>
-                        <td class="text-nowrap small">@jdate($log->created_at) <span dir="ltr">@fa($log->created_at?->format('H:i'))</span></td>
+                        <td class="text-nowrap small">@jdate($log->created_at) <span>{{ \App\Support\Clock::withPeriod($log->created_at) }}</span></td>
                         <td>{{ $log->user?->name ?? __('activity.system') }}</td>
                         <td class="text-nowrap">{{ $log->actionLabel() }}</td>
                         <td class="small">{{ $log->description }}</td>

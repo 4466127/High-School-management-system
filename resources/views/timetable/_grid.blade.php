@@ -7,12 +7,25 @@
 <div class="table-responsive">
     <table class="table table-bordered align-middle text-center timetable-grid mb-0">
         <thead>
+        @php($byShift = $periods->groupBy(fn ($p) => $p->shift->value))
+        @if ($byShift->count() > 1)
+            <tr class="tt-shift-row">
+                <th class="tt-day"></th>
+                @foreach ($byShift as $shiftPeriods)
+                    <th colspan="{{ $shiftPeriods->count() }}">{{ $shiftPeriods->first()->shift->label() }}</th>
+                @endforeach
+            </tr>
+        @endif
         <tr>
             <th class="tt-day">{{ __('timetable.day') }}</th>
             @foreach ($periods as $p)
-                <th @class(['tt-break' => $p->is_break])>
+                <th @class(['tt-break' => $p->is_break, 'tt-shift-start' => $byShift->count() > 1 && $loop->index > 0 && $periods[$loop->index - 1]->shift !== $p->shift])>
                     {{ $p->name }}
-                    <div class="tt-time">@fa($p->timeRange())</div>
+                    @if ($p->is_break)
+                        <div class="tt-time">{{ \App\Support\Clock::short($p->start_time) }}<br>{{ \App\Support\Clock::short($p->end_time) }}</div>
+                    @else
+                        <div class="tt-time">{{ $p->timeRange() }}</div>
+                    @endif
                 </th>
             @endforeach
         </tr>

@@ -9,14 +9,18 @@ use App\Http\Requests\Students\StudentRequest;
 use App\Models\Course;
 use App\Models\CourseGroup;
 use App\Models\CourseParticipant;
+use App\Rules\ValidAmount;
 use App\Rules\ValidJalaliDate;
 use App\Services\CourseService;
+use App\Services\FinanceService;
 use App\Support\Digits;
 use App\Support\JalaliDate;
+use App\Support\Money;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 
 /** اشتراک‌کنندگان کورس: شامل کردن دانش‌آموزان مکتب، ثبت فرد بیرونی، تغییر گروه و وضعیت (مجوز: courses.manage). */
 class ParticipantController extends Controller
@@ -56,12 +60,20 @@ class ParticipantController extends Controller
             'gender' => ['nullable', Rule::enum(Gender::class)],
             'joined_on' => ['required', new ValidJalaliDate],
             'note' => ['nullable', 'string', 'max:255'],
+            'fee' => ['nullable', new ValidAmount],
         ], ['phone.regex' => __('validation.phone')], __('courses.attributes'));
         $data['joined_on'] = JalaliDate::parse($data['joined_on'])->toDateString();
+        // فیس اختیاری ← سطر «فیس اشتراک» در صندوق همین کورس (فقط برای کسی که دفتر مالی کورس را دارد)
+        $fee = filled($data['fee'] ?? null) ? FinanceService::parseAmount($data['fee']) : 0;
+        unset($data['fee']);
+        if ($fee > 0 && ! Gate::allows('ledger', Course::class)) {
+            throw ValidationException::withMessages(['fee' => __('courses.fee_no_permission')]);
+        }
 
-        $this->courses->addExternal(CourseGroup::findOrFail($data['course_group_id']), $data, $request->user());
+        $this->courses->addExternal(CourseGroup::findOrFail($data['course_group_id']), $data, $request->user(), $fee);
 
-        return redirect()->to(route('courses.list.show', $course).'#participants')->with('success', __('courses.external_added', ['name' => $data['name']]));
+        return redirect()->to(route('courses.list.show', $course).'#participants')->with('success', __('courses.external_added', ['name' => $data['name']])
+            .($fee > 0 ? ' '.__('courses.fee_recorded', ['amount' => Money::format(Money::fromCents($fee))]) : ''));
     }
 
     public function update(Request $request, CourseParticipant $participant): RedirectResponse

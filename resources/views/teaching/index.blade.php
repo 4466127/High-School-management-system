@@ -3,9 +3,14 @@
 @section('content')
     <div class="page-head">
         <h1 class="page-title mb-0">{{ __('teaching.title') }}@if ($year) <span class="text-secondary fs-6">— {{ __('academics.year') }} @fa($year->name)</span>@endif</h1>
-        @if ($review)
-            <a href="{{ route('teaching.reports.index') }}" class="btn btn-outline-secondary"><i class="fa-solid fa-chart-simple" aria-hidden="true"></i> {{ __('teaching.reports_title') }}</a>
-        @endif
+        <div class="d-flex flex-wrap gap-2">
+            @if (($withoutPlan ?? collect())->isNotEmpty())
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newPlan"><i class="fa-solid fa-plus" aria-hidden="true"></i> {{ __('teaching.create_new') }}</button>
+            @endif
+            @if ($review)
+                <a href="{{ route('teaching.reports.index') }}" class="btn btn-outline-secondary"><i class="fa-solid fa-chart-simple" aria-hidden="true"></i> {{ __('teaching.reports_title') }}</a>
+            @endif
+        </div>
     </div>
     <div class="alert alert-light border small">
         <div class="fw-medium mb-1"><i class="fa-solid fa-circle-info" aria-hidden="true"></i> {{ __('teaching.how_title') }}</div>
@@ -112,5 +117,36 @@
             </div>
         </div>
         <div class="mt-3">{{ $rows->links() }}</div>
+
+        {{-- ساختن پلان تازه: انتخاب مضمون و بخشی که هنوز پلان ندارد --}}
+        @if ($withoutPlan->isNotEmpty())
+            <div class="modal fade" id="newPlan" tabindex="-1" aria-labelledby="newPlanTitle" aria-hidden="true">
+                <div class="modal-dialog">
+                    <form method="POST" action="{{ route('teaching.plans.open') }}" class="modal-content" data-new-plan>
+                        @csrf
+                        <input type="hidden" name="section" value="{{ $withoutPlan->first()['assignment']->section_id }}">
+                        <input type="hidden" name="subject" value="{{ $withoutPlan->first()['assignment']->subject_id }}">
+                        <div class="modal-header">
+                            <h2 class="modal-title h5" id="newPlanTitle">{{ __('teaching.create_new') }}</h2>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ __('app.close') }}"></button>
+                        </div>
+                        <div class="modal-body">
+                            <label for="new-plan-pick" class="form-label">{{ __('teaching.pick_subject_section') }}</label>
+                            <select id="new-plan-pick" class="form-select" data-new-plan-pick>
+                                @foreach ($withoutPlan as $r)
+                                    @php($a = $r['assignment'])
+                                    <option value="{{ $a->section_id }}|{{ $a->subject_id }}">{{ $a->subject->name }} — {{ $a->section->label }}@if ($review && $a->teacher) ({{ $a->teacher->full_name }})@endif</option>
+                                @endforeach
+                            </select>
+                            <div class="form-text">{{ __('teaching.create_new_hint') }}</div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">{{ __('app.cancel') }}</button>
+                            <button type="submit" class="btn btn-primary"><i class="fa-solid fa-plus" aria-hidden="true"></i> {{ __('teaching.create') }}</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        @endif
     @endif
 @endsection

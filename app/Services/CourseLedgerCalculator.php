@@ -9,7 +9,8 @@ use App\Enums\CourseEntryType;
  * جمع‌های دفتر مالی کورس (بدون پایگاه داده؛ تست Unit دارد). همه به پول (سنت، int).
  *
  * مجموع کمک‌ها            = کمک‌های صندوق + کمک‌های مستقیم به معلم
- * مانده‌ی صندوق کورس       = کمک‌های صندوق − معاش از صندوق − مصارف
+ * فیس اشتراک              = فیس شاگردان (همیشه به صندوق)
+ * مانده‌ی صندوق کورس       = کمک‌های صندوق + فیس − معاش از صندوق − مصارف
  * دریافتی هر معلم          = معاش از صندوق + کمک‌های مستقیم به او
  * سطرهای باطل حساب نمی‌شوند (پیش از فرستادن به این کلاس جدا شوند).
  */
@@ -17,11 +18,11 @@ final class CourseLedgerCalculator
 {
     /**
      * @param  iterable<array{type: CourseEntryType, channel: CourseChannel, staff_id: ?int, cents: int}>  $entries
-     * @return array{donations_cashbox: int, donations_direct: int, donations_total: int, salaries: int, expenses: int, balance: int, teachers: array<int, array{salary: int, direct: int, total: int}>}
+     * @return array{donations_cashbox: int, donations_direct: int, donations_total: int, fees: int, salaries: int, expenses: int, balance: int, teachers: array<int, array{salary: int, direct: int, total: int}>}
      */
     public static function summarize(iterable $entries): array
     {
-        $sum = ['donations_cashbox' => 0, 'donations_direct' => 0, 'salaries' => 0, 'expenses' => 0];
+        $sum = ['donations_cashbox' => 0, 'donations_direct' => 0, 'fees' => 0, 'salaries' => 0, 'expenses' => 0];
         $teachers = [];
 
         foreach ($entries as $e) {
@@ -29,6 +30,7 @@ final class CourseLedgerCalculator
             $key = match (true) {
                 $e['type'] === CourseEntryType::Donation && $e['channel'] === CourseChannel::DirectToTeacher => 'donations_direct',
                 $e['type'] === CourseEntryType::Donation => 'donations_cashbox',
+                $e['type'] === CourseEntryType::Fee => 'fees',
                 $e['type'] === CourseEntryType::TeacherSalary => 'salaries',
                 default => 'expenses',
             };
@@ -48,9 +50,10 @@ final class CourseLedgerCalculator
             'donations_cashbox' => $sum['donations_cashbox'],
             'donations_direct' => $sum['donations_direct'],
             'donations_total' => $sum['donations_cashbox'] + $sum['donations_direct'],
+            'fees' => $sum['fees'],
             'salaries' => $sum['salaries'],
             'expenses' => $sum['expenses'],
-            'balance' => $sum['donations_cashbox'] - $sum['salaries'] - $sum['expenses'],
+            'balance' => $sum['donations_cashbox'] + $sum['fees'] - $sum['salaries'] - $sum['expenses'],
             'teachers' => $teachers,
         ];
     }
@@ -61,6 +64,7 @@ final class CourseLedgerCalculator
         return match (true) {
             $type === CourseEntryType::Donation && $channel === CourseChannel::Cashbox => $cents,
             $type === CourseEntryType::Donation => 0,
+            $type === CourseEntryType::Fee => $cents,
             default => -$cents,
         };
     }

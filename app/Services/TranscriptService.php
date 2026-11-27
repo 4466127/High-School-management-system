@@ -107,6 +107,70 @@ class TranscriptService
         ];
     }
 
+    /**
+     * سطرهای فورم رسمی وزارت معارف (config/moe.php ← transcript_rows) از داده‌ی build().
+     * چند مضمون این سیستم در یک سطر فورم (مثلاً الجبر و هندسه) ← اوسط آن‌ها. مضمون بی‌سطر ← «انتخابی» یا سطر اضافه.
+     *
+     * @param  array{columns: list<array>, rows: list<array>}  $data
+     * @return list<array{no: int, key: ?string, label: string, marks: list<?float>, names: list<string>}>
+     */
+    public function officialRows(array $data): array
+    {
+        $norm = fn (string $s) => preg_replace('/[\s\x{200C}]+/u', '', PersianText::normalize($s));
+        $first = Setting::get('first_language', 'dari') === 'pashto' ? 'pashto' : 'dari';
+        $map = config('moe.transcript_rows');
+        $map['language_1'] = config('moe.languages.'.$first);
+        $map['language_2'] = config('moe.languages.'.($first === 'dari' ? 'pashto' : 'dari'));
+        $lookup = [];
+        foreach ($map as $key => $names) {
+            foreach ($names as $name) {
+                $lookup[$norm($name)] ??= $key;
+            }
+        }
+
+        $count = count($data['columns']);
+        $rows = [];
+        foreach (array_keys($map) as $i => $key) {
+            $rows[$key] = ['no' => $i + 1, 'key' => $key, 'label' => __('moe_transcript.subjects.'.$key), 'values' => array_fill(0, $count, []), 'names' => []];
+        }
+        $unmatched = [];
+        foreach ($data['rows'] as $row) {
+            $key = $lookup[$norm($row['name'])] ?? null;
+            if ($key === null) {
+                $unmatched[] = $row;
+
+                continue;
+            }
+            $rows[$key]['names'][] = $row['name'];
+            foreach ($row['marks'] as $c => $mark) {
+                if ($mark !== null) {
+                    $rows[$key]['values'][$c][] = $mark;
+                }
+            }
+        }
+        // یک مضمون بی‌سطر ← «انتخابی» (با نامش)؛ بیشتر ← سطرهای اضافه
+        if (count($unmatched) === 1) {
+            $rows['elective']['names'][] = $unmatched[0]['name'];
+            $rows['elective']['label'] .= ' ('.$unmatched[0]['name'].')';
+            foreach ($unmatched[0]['marks'] as $c => $mark) {
+                if ($mark !== null) {
+                    $rows['elective']['values'][$c][] = $mark;
+                }
+            }
+            $unmatched = [];
+        }
+        $no = count($rows);
+        foreach ($unmatched as $row) {
+            $rows['x'.(++$no)] = ['no' => $no, 'key' => null, 'label' => $row['name'], 'names' => [$row['name']],
+                'values' => array_map(fn ($m) => $m === null ? [] : [$m], $row['marks'])];
+        }
+
+        return array_values(array_map(fn ($r) => [
+            'no' => $r['no'], 'key' => $r['key'], 'label' => $r['label'], 'names' => $r['names'],
+            'marks' => array_map(fn ($v) => $v === [] ? null : round(array_sum($v) / count($v), 2), $r['values']),
+        ], $rows));
+    }
+
     private function column(GradeLevel $level, string $source, string $year, ?string $school, array $subjects, mixed $total, mixed $average, ?string $result, ?string $grade): array
     {
         return [

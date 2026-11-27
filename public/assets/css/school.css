@@ -440,7 +440,11 @@ code { color: #9b3b5a; }
 .timetable-grid th { background: #f1f4fa; font-weight: 600; }
 .timetable-grid .tt-day { width: 80px; }
 .timetable-grid .tt-time { font-size: .7rem; font-weight: 400; color: #555; }
-.timetable-grid .tt-break { width: 34px; background: repeating-linear-gradient(45deg, #f6f7f9, #f6f7f9 6px, #eceef2 6px, #eceef2 12px); }
+.timetable-grid .tt-break { width: 56px; min-width: 56px; background: repeating-linear-gradient(45deg, #f6f7f9, #f6f7f9 6px, #eceef2 6px, #eceef2 12px); }
+.timetable-grid th.tt-break { font-size: .75rem; padding-inline: 2px; white-space: normal; }
+.timetable-grid th .tt-time { white-space: nowrap; }
+.timetable-grid .tt-shift-row th { background: #eef3fb; color: var(--sc-navy); font-size: .85rem; }
+.timetable-grid .tt-shift-start { border-inline-start: 3px solid var(--sc-navy) !important; }
 .timetable-grid .tt-cell { padding: 0; height: 64px; vertical-align: middle; }
 .timetable-grid .tt-subject { font-weight: 600; line-height: 1.3; }
 .timetable-grid .tt-meta { font-size: .72rem; color: #555; line-height: 1.3; }
@@ -494,3 +498,62 @@ code { color: #9b3b5a; }
     .kpi-row { gap: 8px; }
     .book-results .btn { padding: .35rem .6rem; }
 }
+
+/* سربرگ: نشان دولت و لوگوی وزارت معارف (تنظیم official_logos) */
+.print-emblem { height: 15mm; width: auto; }
+.print-moe-logo { height: 15mm; width: auto; }
+
+/* ---------- فورم رسمی وزارت معارف: ترانسکریپ نمرات سه ساله (2.1.0) ---------- */
+.moe-sheet { font-size: 9pt; color: #000; line-height: 1.35; }
+.moe-sheet + .moe-sheet { break-before: page; page-break-before: always; padding-top: 2mm; }
+.moe-head { display: grid; grid-template-columns: 1.7fr auto 1.4fr auto 25mm; align-items: center; gap: 3mm; margin-bottom: 2mm; }
+.moe-head-reg { font-weight: 700; font-size: 9pt; line-height: 1.9; }
+.moe-form-title { margin-top: 2mm; white-space: nowrap; }
+.moe-head-lines { text-align: center; font-weight: 700; font-size: 9.5pt; line-height: 1.5; }
+.moe-emblem { width: 18mm; height: auto; }
+.moe-logo { width: 19mm; height: auto; }
+.moe-photo { width: 25mm; height: 30mm; border: 2px solid #000; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 9pt; overflow: hidden; }
+.moe-photo img { width: 100%; height: 100%; object-fit: cover; }
+.moe-gap { display: inline-block; min-width: 9mm; }
+.moe-dots { display: inline-block; min-width: 25mm; border-bottom: 1px dotted #000; margin: 0 2mm; }
+.moe-table { width: 100%; border-collapse: collapse; border: 2px solid #000; margin-bottom: 2mm; }
+.moe-table th, .moe-table td { border: 1px solid #000; padding: 1px 3px; vertical-align: middle; }
+.moe-table th { font-weight: 700; text-align: center; }
+.moe-bar th { background: #c6d9f1; text-align: center; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+.moe-bar-part { float: right; }
+.moe-sub th, th.moe-sub { background: #fbd4b4; text-align: center; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+.moe-lbl { font-weight: 400 !important; white-space: nowrap; }
+.moe-val { text-align: center; font-weight: 500; }
+.moe-tall td, .moe-tall th { height: 9mm; }
+.moe-request { height: 21mm; vertical-align: top !important; position: relative; }
+.moe-request-sign { position: absolute; bottom: 3mm; left: 40%; white-space: nowrap; }
+.moe-marks td, .moe-marks th { height: 5mm; padding-top: 0; padding-bottom: 0; }
+.moe-marks .moe-no { width: 7mm; text-align: center; font-size: 8pt; }
+.moe-marks .moe-subj, .moe-marks .moe-subj-head { width: 33mm; text-align: right; font-weight: 700; }
+.moe-marks .moe-subj-head { text-align: center; font-size: 11pt; }
+.moe-marks .moe-fig { width: 13mm; text-align: center; font-weight: 600; }
+.moe-marks .moe-words { text-align: center; font-size: 7.5pt; }
+.moe-marks .moe-fig-h, .moe-marks .moe-words-h { font-weight: 400; font-size: 8pt; }
+.moe-marks .moe-yg { font-weight: 400; text-align: right; }
+.moe-marks .moe-remarks-head { width: 22mm; font-size: 11pt; }
+.moe-marks .moe-foot th { font-size: 10.5pt; text-align: right; }
+.moe-marks .moe-foot td { text-align: center; font-weight: 600; }
+.moe-marks .moe-signrow td, .moe-marks .moe-signrow th { height: 16mm; font-size: 11pt; }
+.moe-vertical { writing-mode: vertical-rl; transform: rotate(180deg); white-space: nowrap; display: inline-block; font-size: 8.5pt; }
+.moe-flow .moe-c-time { width: 9mm; }
+.moe-flow .moe-c-date { width: 9mm; }
+.moe-flow .moe-side { text-align: center; vertical-align: bottom; padding: 2mm 0; }
+.moe-flow .moe-main { padding: 2mm 3mm; vertical-align: top; }
+.moe-flow .moe-block td { height: 33mm; }
+.moe-flow .moe-block-sm td { height: 22mm; }
+.moe-flow .moe-label-row td { height: 14mm; }
+.moe-letter { text-align: justify; line-height: 2; margin-bottom: 4mm; }
+.moe-signs { display: flex; justify-content: space-between; font-weight: 700; padding: 0 6mm; margin-top: 6mm; }
+.moe-sign-center { text-align: center; font-weight: 700; margin-top: 16mm; }
+.moe-actions { width: 100%; border-collapse: collapse; }
+.moe-actions th, .moe-actions td { border: 1px solid #000; padding: 2mm; text-align: center; }
+.moe-actions .moe-check { width: 10mm; }
+.moe-actions .moe-sign-cell { width: 45%; font-weight: 700; }
+.moe-box { display: inline-block; width: 6mm; height: 6mm; border: 1px solid #000; }
+.moe-note { font-size: 8pt; text-align: justify; margin: 1mm 0 0; }
+@media print { .moe-sheet { font-size: 8.5pt; } }

@@ -34,6 +34,20 @@ class CourseLedgerCalculatorTest extends TestCase
         $this->assertSame(['salary' => 100_000, 'direct' => 0, 'total' => 100_000], $s['teachers'][9]);
     }
 
+    /** 2.1.0: فیس اشتراک شاگرد بیرونی عاید صندوق است */
+    public function test_participant_fees_add_to_cashbox(): void
+    {
+        $s = CourseLedgerCalculator::summarize([
+            $this->e(CourseEntryType::Donation, 100_000),
+            $this->e(CourseEntryType::Fee, 50_000),
+            $this->e(CourseEntryType::Expense, 30_000),
+        ]);
+        $this->assertSame(50_000, $s['fees']);
+        $this->assertSame(100_000, $s['donations_total']);
+        $this->assertSame(120_000, $s['balance']);
+        $this->assertSame(500, CourseLedgerCalculator::cashEffect(CourseEntryType::Fee, CourseChannel::Cashbox, 500));
+    }
+
     public function test_empty_ledger_and_cash_effect(): void
     {
         $s = CourseLedgerCalculator::summarize([]);

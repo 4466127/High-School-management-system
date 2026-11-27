@@ -17,7 +17,6 @@ use App\Models\Subject;
 use App\Models\TeacherAssignment;
 use App\Services\AttendanceService;
 use App\Services\LabService;
-use App\Support\Digits;
 use App\Support\Paging;
 use App\Support\Quantity;
 use Closure;
@@ -175,7 +174,7 @@ class ActivityController extends Controller
             'assignments' => $assignments,
             'labs' => Lab::active()->orderBy('name')->pluck('name', 'id')->all(),
             'periods' => Period::query()->where('is_active', true)->where('is_break', false)->ordered()->get()
-                ->mapWithKeys(fn ($p) => [$p->id => $p->name.' ('.$p->shift->label().' · '.Digits::toPersian($p->timeRange()).')'])->all(),
+                ->mapWithKeys(fn ($p) => [$p->id => $p->name.' ('.$p->shift->label().' · '.$p->timeRange().')'])->all(),
         ];
     }
 }

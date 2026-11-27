@@ -245,6 +245,22 @@ class LibraryTest extends ExamTestCase
         $this->actingAs($this->librarian)->post(route('library.textbooks.collect-all'), ['section' => $this->section->id])->assertSessionHas('warning');
     }
 
+    /** 2.1.0: «امروز بازگشت شد» جدا از «موعد بازگشتش امروز»؛ هر عدد فهرست خودش را باز می‌کند */
+    public function test_loan_counts_returned_today_and_due_today(): void
+    {
+        $book = $this->addBook(['copies' => 3]);
+        $copies = $book->copies()->pluck('accession_no')->all();
+        $this->actingAs($this->librarian)->post(route('library.borrowers.student.store', $this->student()), ['accession_no' => $copies[0], 'due_on' => '1405/08/29']);
+        $this->actingAs($this->librarian)->post(route('library.borrowers.student.store', $this->student(1)), ['accession_no' => $copies[1]]);
+        $this->actingAs($this->librarian)->post(route('library.loans.quick-return'), ['return_accession' => $copies[1]])->assertSessionHasNoErrors();
+
+        $page = $this->actingAs($this->librarian)->get(route('library.loans.index'))->assertOk();
+        $this->assertSame(['active' => 1, 'overdue' => 0, 'due_today' => 1, 'returned_today' => 1], $page->viewData('counts'));
+        $page->assertSee(__('library.count_returned_today', ['count' => '۱']));
+        $this->assertSame(1, $this->actingAs($this->librarian)->get(route('library.loans.index', ['status' => 'returned_today']))->viewData('loans')->total());
+        $this->assertSame(1, $this->actingAs($this->librarian)->get(route('library.loans.index', ['status' => 'due_today']))->viewData('loans')->total());
+    }
+
     public function test_demo_textbook_seeder_fills_grades_once(): void
     {
         $this->seed(DemoTextbookSeeder::class);

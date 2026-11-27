@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\Shift;
+use App\Support\Clock;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -22,14 +23,15 @@ class Period extends Model
         return $this->hasMany(TimetableEntry::class);
     }
 
+    /** اول قبل از ظهر، بعد بعد از ظهر؛ در هر نوبت به ترتیب ساعت */
     public function scopeOrdered(Builder $query): void
     {
-        $query->orderBy('shift')->orderBy('sort_order')->orderBy('start_time');
+        $query->orderByRaw('shift = ? desc', [Shift::Morning->value])->orderBy('sort_order')->orderBy('start_time');
     }
 
-    /** «۰۸:۰۰ – ۰۸:۴۰» */
+    /** «۸:۰۰ – ۸:۴۰» (۱۲ ساعته، ارقام فارسی) */
     public function timeRange(): string
     {
-        return substr((string) $this->start_time, 0, 5).' – '.substr((string) $this->end_time, 0, 5);
+        return Clock::range($this->start_time, $this->end_time);
     }
 }

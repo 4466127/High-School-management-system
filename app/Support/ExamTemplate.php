@@ -18,7 +18,12 @@ final class ExamTemplate
 
     public const TRANSCRIPT_KEYS = [
         'transcript_title', 'transcript_grade_ids', 'transcript_signature_1', 'transcript_signature_2', 'transcript_show_stamp', 'transcript_footer',
+        'transcript_layout', 'first_language',
     ];
+
+    public const LAYOUTS = ['moe', 'simple'];
+
+    public const LANGUAGES = ['dari', 'pashto'];
 
     public const SWITCHES = [
         'reportcard_show_exams', 'reportcard_show_attendance', 'reportcard_show_grade', 'reportcard_show_rules', 'reportcard_show_remarks',
@@ -42,10 +47,11 @@ final class ExamTemplate
         ];
     }
 
-    /** @return array{title: string, signatures: list<string>, stamp: bool, footer: string} */
+    /** @return array{layout: string, title: string, signatures: list<string>, stamp: bool, footer: string} */
     public static function transcript(): array
     {
         return [
+            'layout' => in_array(self::text('transcript_layout'), self::LAYOUTS, true) ? self::text('transcript_layout') : 'moe',
             'title' => self::text('transcript_title') ?: __('transcripts.default_title'),
             'signatures' => self::signatures(['transcript_signature_1', 'transcript_signature_2']),
             'stamp' => Setting::enabled('transcript_show_stamp'),

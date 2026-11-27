@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use App\Enums\AttendanceStatus;
+use App\Enums\CourseChannel;
+use App\Enums\CourseEntryType;
 use App\Enums\ParticipantStatus;
 use App\Models\Course;
 use App\Models\CourseAttendance;
@@ -101,12 +103,24 @@ class CourseService
         });
     }
 
-    public function addExternal(CourseGroup $group, array $data, User $user): CourseParticipant
+    /** فرد بیرونی؛ با $feeCents > ۰ فیس اشتراک او هم‌زمان در صندوق کورس ثبت می‌شود (یک transaction). */
+    public function addExternal(CourseGroup $group, array $data, User $user, int $feeCents = 0): CourseParticipant
     {
-        return DB::transaction(function () use ($group, $data, $user) {
+        return DB::transaction(function () use ($group, $data, $user, $feeCents) {
             $participant = CourseParticipant::create($data + ['course_group_id' => $group->id, 'status' => ParticipantStatus::Active]);
             $group->loadMissing('course');
             $this->logger->log('course.participants_added', $group->course, $group->label, new: ['names' => $participant->name], user: $user);
+            if ($feeCents > 0) {
+                app(CourseLedgerService::class)->record($group->course, [
+                    'entry_type' => CourseEntryType::Fee,
+                    'channel' => CourseChannel::Cashbox,
+                    'staff_id' => null,
+                    'amount_cents' => $feeCents,
+                    'date' => $participant->joined_on->toDateString(),
+                    'donor_name' => trim($participant->name.($participant->father_name ? ' '.__('library.child_of').' '.$participant->father_name : '')),
+                    'description' => __('courses.fee_description', ['group' => $group->label]),
+                ], $user);
+            }
 
             return $participant;
         });

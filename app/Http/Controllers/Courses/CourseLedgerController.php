@@ -35,7 +35,7 @@ class CourseLedgerController extends Controller
         $courses = Course::query()->orderByRaw("FIELD(status, 'active', 'planned', 'finished', 'cancelled')")->orderByDesc('start_date')->get();
         $summaries = $this->ledger->summaries($courses->pluck('id')->all());
 
-        $totals = ['donations_total' => 0, 'donations_direct' => 0, 'salaries' => 0, 'expenses' => 0, 'balance' => 0];
+        $totals = ['donations_total' => 0, 'donations_direct' => 0, 'fees' => 0, 'salaries' => 0, 'expenses' => 0, 'balance' => 0];
         foreach ($summaries as $s) {
             foreach ($totals as $key => $_) {
                 $totals[$key] += $s[$key];
@@ -54,7 +54,7 @@ class CourseLedgerController extends Controller
     {
         $rows = $this->load($request, $course)['entries']->map(fn (CourseLedgerEntry $e) => [
             Digits::toLatin(JalaliDate::format($e->date)), $e->entry_type->label(), $e->channel->label(), Money::plain($e->amount),
-            $e->donor_name ?? ($e->entry_type === CourseEntryType::Donation ? __('courses.anonymous') : ''), $e->teacher?->full_name,
+            $e->donor_name ?? ($e->entry_type->isIncome() ? __('courses.anonymous') : ''), $e->teacher?->full_name,
             $e->description, $e->recorder?->name, $e->isVoided() ? __('finance.voided').': '.$e->void_reason : '',
         ]);
 
@@ -98,7 +98,7 @@ class CourseLedgerController extends Controller
                 'staff_id' => $staffId,
                 'amount_cents' => FinanceService::parseAmount($data['amount']),
                 'date' => JalaliDate::parse($data['date'])->toDateString(),
-                'donor_name' => $type === CourseEntryType::Donation ? ($data['donor_name'] ?? null) : null,
+                'donor_name' => $type->isIncome() ? ($data['donor_name'] ?? null) : null,
                 'description' => $data['description'] ?? null,
             ], $request->user());
         } catch (ValidationException $e) {

@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Services\BackupService;
+use App\Support\Clock;
 use App\Support\Digits;
 use App\Support\JalaliDate;
 use Carbon\CarbonImmutable;
@@ -37,7 +38,7 @@ class RestoreCommand extends Command
                 return self::FAILURE;
             }
             foreach ($list as $i => $b) {
-                $this->line(sprintf('  %d) %s  ·  %s  ·  %s KB', $i + 1, JalaliDate::format($b['time'], 'long').' '.$b['time']->format('H:i'), __('backup.reasons.'.$b['reason']), number_format($b['size'] / 1024)));
+                $this->line(sprintf('  %d) %s  ·  %s  ·  %s KB', $i + 1, JalaliDate::format($b['time'], 'long').' '.Clock::withPeriod($b['time']), __('backup.reasons.'.$b['reason']), number_format($b['size'] / 1024)));
             }
             $n = (int) Digits::toLatin((string) $this->ask(__('backup.cli.choose'), '0'));
             if ($n < 1 || $n > $list->count()) {
@@ -59,7 +60,7 @@ class RestoreCommand extends Command
         $created = isset($m['created_at']) ? CarbonImmutable::parse($m['created_at'])->setTimezone(JalaliDate::TIMEZONE) : null;
         $this->line(basename($path));
         $this->line(__('backup.cli.info', [
-            'date' => $created ? JalaliDate::format($created, 'long').' '.$created->format('H:i') : '—',
+            'date' => $created ? JalaliDate::format($created, 'long').' '.Clock::withPeriod($created) : '—',
             'reason' => __('backup.reasons.'.($m['reason'] ?? 'manual')),
             'students' => $m['counts']['students'] ?? '—',
             'users' => $m['counts']['users'] ?? '—',
