@@ -21,6 +21,7 @@
 
 # داده و نسخه‌های پشتیبان
 /backups/
+/releases/
 *.sql
 *.sql.gz
 

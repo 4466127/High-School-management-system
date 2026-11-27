@@ -48,6 +48,7 @@ class ImportController extends Controller
 
     public function upload(Request $request): RedirectResponse
     {
+        abort_if($this->allowedTypes($request) === [], 403);   // مجوز پیش از اعتبارسنجی
         $data = $request->validate([
             'type' => ['required', Rule::in(ImportService::TYPES)],
             'file' => ['required', 'file', 'max:2048', 'extensions:xlsx,csv'],

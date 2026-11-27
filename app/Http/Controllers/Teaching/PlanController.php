@@ -92,6 +92,8 @@ class PlanController extends Controller
 
     public function open(Request $request): RedirectResponse
     {
+        // مجوز پیش از اعتبارسنجی؛ محدوده‌ی دقیق (مضمون و بخش خودش) با Policy پایین‌تر
+        abort_unless(Gate::allows('review', TeachingPlan::class) || $request->user()->hasPermission('teaching.plan'), 403);
         $data = $request->validate(['section' => ['required', 'integer', 'exists:sections,id'], 'subject' => ['required', 'integer', 'exists:subjects,id']]);
         $section = Section::findOrFail($data['section']);
         $subject = Subject::findOrFail($data['subject']);

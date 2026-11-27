@@ -5,16 +5,23 @@ namespace App\Http\Requests\Courses;
 use App\Enums\CourseSeason;
 use App\Enums\CourseStatus;
 use App\Http\Requests\Concerns\ConvertsJalaliDates;
+use App\Models\Course;
 use App\Rules\ValidJalaliDate;
 use App\Support\JalaliDate;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Validator;
 
-/** ساخت و ویرایش کورس (مجوز مسیر: courses.manage). */
+/** ساخت و ویرایش کورس (courses.manage؛ مجوز پیش از اعتبارسنجی — مرحله‌ی ۱۹). */
 class CourseRequest extends FormRequest
 {
     use ConvertsJalaliDates;
+
+    public function authorize(): bool
+    {
+        return Gate::allows('manage', Course::class);
+    }
 
     protected function jalaliDateFields(): array
     {

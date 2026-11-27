@@ -90,11 +90,12 @@ php artisan license:keygen --out=E:\my-keys
 
 ## ۶. ساختن نسخه‌ی تازه (برای صاحب نرم‌افزار)
 
-1. همه‌ی تست‌ها سبز: `php artisan test`.
+1. همه‌ی تست‌ها سبز: `php artisan test` (جاروب امنیتی مسیرها هم در آن است) و بسته‌ها بی هشدار امنیتی: `composer audit`.
 2. شماره‌ی نسخه در `config/app.php` (`version`) بالا برود: اصلاح کوچک ← `1.1.1`، ماژول تازه ← `1.2.0`، تغییر بزرگ ← `2.0.0`.
 3. CHANGELOG.md: عنوان با شماره‌ی نسخه و تاریخ.
 4. commit، tag (`git tag v1.2.0`) و push.
-5. بسته‌ی نسخه: کاپی تمیز مخزن ← `composer install --no-dev --optimize-autoloader` ← zip بدون `.env`، `storage/app/*` (به جز پوشه‌های خالی)، `storage/logs/*`، `backups`، `tests`، `references`، `resources/Ai video Editor`.
+5. بسته‌ی نسخه: کاپی تمیز مخزن (`git archive v2.0.0`) ← `composer install --no-dev --optimize-autoloader` ← zip بدون `.env`، `storage/app/*` (به جز پوشه‌های خالی)، `storage/logs/*`، `backups`، `tests`، `references`، `resources/Ai video Editor`. بسته در `releases/maktab-<نسخه>.zip` (بیرون از git) نگه داشته می‌شود.
+6. آزمایش بسته پیش از فرستادن: باز کردن در پوشه‌ی تازه، `php artisan --version` و نصب آزمایشی مثل بخش ۲ (در مرحله‌ی ۱۹ نصب تازه‌ی production و به‌روزرسانی از 1.1.0 با داده آزموده شد).
 
 ## ۷. پشتیبان و بازیابی
 
