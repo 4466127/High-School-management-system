@@ -66,6 +66,16 @@ return [
         'transcript_signature_2' => '',
         'transcript_show_stamp' => '1',
         'transcript_footer' => '',
+        // کتابخانه (مرحله‌ی ۱۷؛ LibraryService::rules): مدت امانت (روز)، حد امانت هم‌زمان، شمار تمدید،
+        // و این‌که امانت‌گیرنده‌ی دیرکرده کتاب تازه بگیرد یا نه. کتاب درسی سال در حد امانت حساب نمی‌شود.
+        'library_loan_days_student' => '14',
+        'library_loan_days_staff' => '30',
+        'library_max_student' => '2',
+        'library_max_staff' => '5',
+        'library_max_renewals' => '1',
+        'library_block_overdue' => '1',
+        'library_name' => '',                   // نام کتابخانه روی چاپ‌ها؛ خالی = «کتابخانه‌ی <نام مکتب>»
+
         // شناسه‌ی این نصب (برای لایسنس؛ school:install یا اولین بار LicenseService می‌سازد)
         'installation_id' => '',
 

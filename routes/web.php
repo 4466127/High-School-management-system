@@ -32,6 +32,11 @@ use App\Http\Controllers\ImportController;
 use App\Http\Controllers\Letters\AnnouncementController;
 use App\Http\Controllers\Letters\LetterController;
 use App\Http\Controllers\Letters\LetterTemplateController;
+use App\Http\Controllers\Library\CatalogController;
+use App\Http\Controllers\Library\CopyController;
+use App\Http\Controllers\Library\LoanController;
+use App\Http\Controllers\Library\ReportController as LibraryReportController;
+use App\Http\Controllers\Library\TextbookController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\Settings\ActivityLogController;
 use App\Http\Controllers\Settings\BackupController;
@@ -225,6 +230,46 @@ Route::middleware(['auth', 'active'])->group(function () {
                 Route::get('/reports', [TeacherReportController::class, 'index'])->name('reports.index');
                 Route::get('/reports/export', [TeacherReportController::class, 'export'])->name('reports.export');
                 Route::get('/reports/{staff}', [TeacherReportController::class, 'show'])->withTrashed()->name('reports.show');
+            });
+        });
+
+        // ---------- کتابخانه (مرحله‌ی ۱۷): دیدن فهرست library.view؛ بقیه library.manage ----------
+        Route::prefix('library')->name('library.')->group(function () {
+            Route::middleware('can:library.manage')->group(function () {
+                Route::get('/books/create', [CatalogController::class, 'create'])->name('catalog.create');
+                Route::post('/books', [CatalogController::class, 'store'])->name('catalog.store');
+                Route::get('/books/{book}/edit', [CatalogController::class, 'edit'])->name('catalog.edit');
+                Route::put('/books/{book}', [CatalogController::class, 'update'])->name('catalog.update');
+                Route::delete('/books/{book}', [CatalogController::class, 'destroy'])->name('catalog.destroy');
+                Route::get('/books/{book}/labels', [CatalogController::class, 'labels'])->name('catalog.labels');
+                Route::post('/books/{book}/copies', [CopyController::class, 'store'])->name('copies.store');
+                Route::put('/copies/{copy}', [CopyController::class, 'update'])->name('copies.update');
+                Route::post('/copies/{copy}/status', [CopyController::class, 'status'])->name('copies.status');
+
+                Route::get('/loans', [LoanController::class, 'index'])->name('loans.index');
+                Route::get('/loans/export', [LoanController::class, 'export'])->name('loans.export');
+                Route::get('/loans/lookup', [LoanController::class, 'lookup'])->name('loans.lookup');
+                Route::post('/loans/quick-return', [LoanController::class, 'quickReturn'])->name('loans.quick-return');
+                Route::post('/loans/{loan}/return', [LoanController::class, 'returnLoan'])->name('loans.return');
+                Route::post('/loans/{loan}/renew', [LoanController::class, 'renew'])->name('loans.renew');
+                Route::post('/loans/{loan}/lost', [LoanController::class, 'lost'])->name('loans.lost');
+                Route::get('/borrowers/student/{student}', [LoanController::class, 'student'])->withTrashed()->name('borrowers.student');
+                Route::post('/borrowers/student/{student}', [LoanController::class, 'storeStudent'])->name('borrowers.student.store');
+                Route::get('/borrowers/staff/{staff}', [LoanController::class, 'staff'])->withTrashed()->name('borrowers.staff');
+                Route::post('/borrowers/staff/{staff}', [LoanController::class, 'storeStaff'])->name('borrowers.staff.store');
+
+                Route::get('/textbooks', [TextbookController::class, 'index'])->name('textbooks.index');
+                Route::post('/textbooks/distribute', [TextbookController::class, 'distribute'])->name('textbooks.distribute');
+                Route::post('/textbooks/collect', [TextbookController::class, 'collect'])->name('textbooks.collect');
+
+                Route::get('/reports', [LibraryReportController::class, 'index'])->name('reports.index');
+                Route::get('/setup', [LibraryReportController::class, 'setup'])->name('setup.index');
+                Route::put('/setup', [LibraryReportController::class, 'saveSetup'])->name('setup.update');
+            });
+            Route::middleware('can:library.view')->group(function () {
+                Route::get('/', [CatalogController::class, 'index'])->name('catalog.index');
+                Route::get('/export', [CatalogController::class, 'export'])->name('catalog.export');
+                Route::get('/books/{book}', [CatalogController::class, 'show'])->name('catalog.show');
             });
         });
 

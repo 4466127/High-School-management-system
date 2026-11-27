@@ -58,6 +58,37 @@
         </div>
     @endif
 
+    {{-- کتابخانه (مرحله‌ی ۱۷) --}}
+    @if (($library ?? null) !== null)
+        <div class="card mb-3">
+            <div class="card-header d-flex align-items-center gap-2">
+                <i class="fa-solid fa-book" aria-hidden="true"></i>
+                <span class="fw-medium flex-grow-1">{{ __('dashboard.library_title') }}</span>
+                <a href="{{ route('library.loans.index') }}" class="small">{{ __('menu.library_loans') }}</a>
+            </div>
+            <div class="card-body d-flex flex-wrap gap-2">
+                <a href="{{ route('library.catalog.index') }}" class="badge text-bg-light border text-decoration-none fs-6 fw-normal">{{ __('dashboard.library_titles', ['count' => $n($library['titles'])]) }}</a>
+                <a href="{{ route('library.loans.index') }}" class="badge text-bg-primary text-decoration-none fs-6 fw-normal">{{ __('library.count_active', ['count' => $n($library['active'])]) }}</a>
+                <a href="{{ route('library.loans.index', ['status' => 'overdue']) }}" class="badge {{ $library['overdue'] ? 'text-bg-danger' : 'text-bg-light border' }} text-decoration-none fs-6 fw-normal">{{ __('library.count_overdue', ['count' => $n($library['overdue'])]) }}</a>
+                <a href="{{ route('library.loans.index', ['status' => 'due_soon']) }}" class="badge text-bg-warning text-decoration-none fs-6 fw-normal">{{ __('library.count_due_today', ['count' => $n($library['due_today'])]) }}</a>
+            </div>
+        </div>
+    @endif
+
+    @if (($myBooks ?? null) !== null)
+        <div class="card mb-3">
+            <div class="card-header"><i class="fa-solid fa-book-open-reader" aria-hidden="true"></i> <span class="fw-medium">{{ __('dashboard.my_books') }}</span></div>
+            <ul class="list-group list-group-flush dash-list">
+                @foreach ($myBooks as $l)
+                    <li class="list-group-item d-flex flex-wrap gap-2 small">
+                        <span class="fw-medium flex-grow-1">{{ $l->copy->book->title }}</span>
+                        <span @class(['text-danger' => $l->isOverdue(), 'text-secondary' => ! $l->isOverdue()])>{{ __('library.due') }} @jdate($l->due_on)</span>
+                    </li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
     {{-- درس‌های امروز معلم (مرحله‌ی ۱۵) --}}
     @if (($lessons ?? null) !== null)
         <div class="card mb-3">

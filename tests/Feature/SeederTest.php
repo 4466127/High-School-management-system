@@ -16,10 +16,10 @@ use Tests\TestCase;
 
 class SeederTest extends TestCase
 {
-    public function test_six_roles_and_all_permissions_exist(): void
+    public function test_seven_roles_and_all_permissions_exist(): void
     {
         $this->assertEqualsCanonicalizing(
-            ['admin', 'principal', 'office', 'teacher', 'accountant', 'course_manager'],
+            ['admin', 'principal', 'office', 'teacher', 'accountant', 'course_manager', 'librarian'],
             Role::pluck('key')->all(),
         );
         $this->assertSame(count(config('permissions.permissions')), Permission::count());
@@ -32,7 +32,7 @@ class SeederTest extends TestCase
 
         $this->seed([RolePermissionSeeder::class, SettingsSeeder::class]);
 
-        $this->assertSame(6, Role::count());
+        $this->assertSame(7, Role::count());
         $this->assertSame(count(config('permissions.permissions')), Permission::count());
         $this->assertSame('لیسه‌ی آزمایشی', Setting::get('school_name'), 'Re-seeding must not overwrite school settings');
     }

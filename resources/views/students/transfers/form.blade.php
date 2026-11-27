@@ -45,6 +45,9 @@
                     @else
                         <div class="small text-success">{{ __('transfers.clearance_ok') }}</div>
                     @endif
+                    @if (($libraryLoans ?? collect())->isNotEmpty())
+                        <div class="small text-danger mt-2"><i class="fa-solid fa-book" aria-hidden="true"></i> {{ __('library.transfer_warning', ['count' => \App\Support\Digits::toPersian((string) $libraryLoans->count()), 'titles' => $libraryLoans->map(fn ($l) => $l->copy->book->title)->implode('، ')]) }}</div>
+                    @endif
                     <x-form.input class="mb-0 mt-2" name="clearance_note" :label="__('transfers.clearance_note')" maxlength="500" />
                 </div>
             @endunless

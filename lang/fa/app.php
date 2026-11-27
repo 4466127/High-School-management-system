@@ -51,6 +51,7 @@ return [
         'finance' => 'مالی مکتب',
         'courses' => 'کورس‌های جداگانه',
         'reports' => 'گزارش‌ها',
+        'library' => 'کتابخانه',
         'communication' => 'اعلان‌ها و مکاتیب',
         'system' => 'سیستم',
     ],

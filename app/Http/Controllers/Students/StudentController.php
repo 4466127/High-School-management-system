@@ -9,6 +9,7 @@ use App\Http\Requests\DeleteWithReasonRequest;
 use App\Http\Requests\Students\StudentRequest;
 use App\Http\Requests\Students\StudentStatusRequest;
 use App\Models\AcademicYear;
+use App\Models\BookLoan;
 use App\Models\Exam;
 use App\Models\FeeRate;
 use App\Models\FeeType;
@@ -156,6 +157,10 @@ class StudentController extends Controller
             'fees' => $this->feesData($request, $student, $current),
             'transfers' => $sensitive ? $student->transfers()->get() : collect(),
             'pastResults' => $sensitive ? $student->pastResults()->active()->get() : collect(),
+            // کتابخانه (مرحله‌ی ۱۷): امانت‌های فعلی و قبلی
+            'libraryLoans' => $request->user()->hasPermission('library.view')
+                ? BookLoan::with('copy.book')->where('student_id', $student->id)->orderByRaw("status = 'active' desc")->latest('loaned_on')->limit(20)->get()
+                : collect(),
             'yearSections' => $year && $request->user()->can('update', $student)
                 ? Section::query()->with('gradeLevel')->where('academic_year_id', $year->id)->ordered()->get()
                 : collect(),

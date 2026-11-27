@@ -7,4 +7,5 @@ return [
     'teacher' => 'معلم',
     'accountant' => 'حسابدار',
     'course_manager' => 'مسئول کورس‌ها',
+    'librarian' => 'کتابدار',
 ];

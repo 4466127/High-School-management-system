@@ -42,6 +42,7 @@ return [
         'letter_template' => 'قالب‌های مکتوب',
         'timetable' => 'تقسیم اوقات',
         'teaching' => 'پلان تدریس',
+        'library' => 'کتابخانه',
     ],
     'actions' => [
         'auth' => [
@@ -111,6 +112,19 @@ return [
             'created' => 'افزودن مضمون',
             'updated' => 'ویرایش مضمون',
         ],
+        'library' => [
+            'book_created' => 'ثبت کتاب',
+            'book_updated' => 'ویرایش کتاب',
+            'book_deleted' => 'حذف کتاب (بی جلد)',
+            'copies_added' => 'افزودن جلد',
+            'copy_updated' => 'ویرایش جلد',
+            'copy_status' => 'تغییر وضعیت جلد',
+            'issued' => 'امانت دادن کتاب',
+            'renewed' => 'تمدید امانت',
+            'returned' => 'بازگشت کتاب',
+            'lost' => 'گم شدن کتاب',
+            'textbooks_distributed' => 'توزیع کتاب درسی',
+        ],
         'teaching' => [
             'plan_created' => 'ساختن پلان تدریس',
             'plan_updated' => 'ویرایش یادداشت پلان تدریس',
@@ -135,6 +149,7 @@ return [
         'settings' => [
             'updated' => 'تغییر مشخصات مکتب',
             'exam_templates' => 'تغییر قالب کارنامه و ترانسکریپت',
+            'library' => 'تغییر قاعده‌های امانت کتابخانه',
         ],
         'attendance' => [
             'taken' => 'ثبت حاضری بخش',

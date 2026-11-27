@@ -17,12 +17,13 @@ class RoleAccessTest extends TestCase
     public static function expectedMenus(): array
     {
         return [
-            'admin' => [Role::Admin, ['dashboard', 'students', 'staff', 'academics', 'attendance', 'timetable', 'teaching', 'exams', 'courses', 'reports', 'announcements', 'letters', 'settings'], ['school', 'users', 'activity_logs', 'import', 'backups', 'license']],
-            'principal' => [Role::Principal, ['dashboard', 'students', 'staff', 'academics', 'attendance', 'timetable', 'teaching', 'exams', 'courses', 'reports', 'announcements', 'letters', 'settings'], ['school', 'import']],
-            'office' => [Role::Office, ['dashboard', 'students', 'staff', 'academics', 'attendance', 'timetable', 'teaching', 'exams', 'reports', 'announcements', 'letters', 'settings'], ['import']],
-            'teacher' => [Role::Teacher, ['dashboard', 'students', 'academics', 'attendance', 'timetable', 'teaching', 'exams', 'courses', 'reports', 'announcements'], []],
+            'admin' => [Role::Admin, ['dashboard', 'students', 'staff', 'academics', 'attendance', 'timetable', 'teaching', 'exams', 'courses', 'reports', 'library', 'announcements', 'letters', 'settings'], ['school', 'users', 'activity_logs', 'import', 'backups', 'license']],
+            'principal' => [Role::Principal, ['dashboard', 'students', 'staff', 'academics', 'attendance', 'timetable', 'teaching', 'exams', 'courses', 'reports', 'library', 'announcements', 'letters', 'settings'], ['school', 'import']],
+            'office' => [Role::Office, ['dashboard', 'students', 'staff', 'academics', 'attendance', 'timetable', 'teaching', 'exams', 'reports', 'library', 'announcements', 'letters', 'settings'], ['import']],
+            'teacher' => [Role::Teacher, ['dashboard', 'students', 'academics', 'attendance', 'timetable', 'teaching', 'exams', 'courses', 'reports', 'library', 'announcements'], []],
             'accountant' => [Role::Accountant, ['dashboard', 'students', 'courses', 'reports', 'announcements'], []],
             'course_manager' => [Role::CourseManager, ['dashboard', 'students', 'courses', 'reports', 'announcements'], []],
+            'librarian' => [Role::Librarian, ['dashboard', 'students', 'library', 'announcements', 'settings'], ['import']],
         ];
     }
 

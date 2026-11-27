@@ -7,6 +7,7 @@ use App\Enums\TransferDirection;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Students\TransferRequest;
 use App\Models\AcademicYear;
+use App\Models\BookLoan;
 use App\Models\Enrollment;
 use App\Models\LetterTemplate;
 use App\Models\Student;
@@ -65,6 +66,8 @@ class TransferController extends Controller
             'incoming' => $incoming,
             'enrollment' => $enrollment,
             'outstanding' => $incoming ? 0 : $this->records->outstandingCents($student),
+            // کتاب‌های امانت کتابخانه (مرحله‌ی ۱۷) — فقط هشدار
+            'libraryLoans' => $incoming ? collect() : BookLoan::active()->with('copy.book')->where('student_id', $student->id)->get(),
         ]);
     }
 

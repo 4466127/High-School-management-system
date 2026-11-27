@@ -243,6 +243,15 @@ erDiagram
 - ترانسکریپت: اگر نتیجه‌ی نهایی‌شده‌ی همان صنف در `enrollments` باشد، آن مقدم است.
 - تنظیمات قالب چاپ: `reportcard_*` و `transcript_*` در `settings` (فهرست در `App\Support\ExamTemplate`).
 
+### کتابخانه (مرحله‌ی ۱۷)
+**books** — `title`, `author`, `translator`, `publisher`, `publish_year`, `edition`, `isbn`, `category` (App\Enums\BookCategory), `language` (dari / pashto / english / arabic / other), `subject_id`, `grade_level_id` (برای کتاب درسی), `call_number` (جای کتاب), `pages`, `keywords`, `notes`, `is_reference` (فقط مطالعه در کتابخانه), `created_by`.
+
+**book_copies** — `book_id`, `accession_no` (نمبر ثبت، یکتا), `status` (available / on_loan / damaged / lost / withdrawn), `condition` (new / good / fair / poor), `source` (purchase / donation / ministry / other), `acquired_on`, `price` DECIMAL(12,2), `notes`, `status_reason`, `status_changed_on`, `created_by`. حذف نمی‌شود.
+
+**book_loans** — `book_copy_id`, `borrower_type` (student / staff), `student_id` یا `staff_id`, `academic_year_id`, `kind` (loan / textbook), `loaned_on`, `due_on`, `returned_on`, `renewals`, `status` (active / returned / lost), `return_condition`, `notes`, `issued_by`, `closed_by`. حذف نمی‌شود.
+
+قواعد: یک جلد در هر زمان حداکثر یک امانت فعال (قفل جلد در سرویس + وضعیت on_loan). دیرکرد ذخیره نمی‌شود (`due_on` گذشته و active). قاعده‌های امانت در `settings` (`library_*`). هر تغییر در `activity_logs`.
+
 ### پلان تدریس (مرحله‌ی ۱۶)
 **teaching_plans** — `academic_year_id`, `section_id`, `subject_id` (یکتا با بخش), `staff_id`, `status` (draft / submitted / approved / returned), `notes`, `submitted_at`, `reviewed_by`, `reviewed_at`, `review_note`, `created_by`. حذف نمی‌شود.
 

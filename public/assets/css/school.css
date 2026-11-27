@@ -462,3 +462,12 @@ code { color: #9b3b5a; }
     .timetable-grid { min-width: 0; font-size: 8.5pt; }
     .timetable-grid .tt-cell { height: 16mm; }
 }
+
+/* ---------- کتابخانه (مرحله‌ی ۱۷): برچسب جلدها ---------- */
+.book-labels { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3mm; }
+.book-label { border: 1px dashed #888; border-radius: 2mm; padding: 2mm 3mm; text-align: center; min-height: 30mm; break-inside: avoid; page-break-inside: avoid; }
+.book-label-lib { font-size: 8pt; color: #555; }
+.book-label-no { font-size: 18pt; font-weight: 700; line-height: 1.3; letter-spacing: .5px; }
+.book-label-call { font-size: 10pt; font-weight: 600; border-top: 1px solid #ccc; margin-top: 1mm; padding-top: 1mm; }
+.book-label-title { font-size: 8pt; color: #333; }
+.loan-overdue td { background: #fff4e5; }

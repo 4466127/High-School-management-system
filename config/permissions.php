@@ -49,6 +49,9 @@ return [
         'reports.academic' => 'reports',
         'reports.finance' => 'reports',
 
+        'library.view' => 'library',
+        'library.manage' => 'library',
+
         'announcements.manage' => 'communication',
         'letters.manage' => 'communication',
 
@@ -70,6 +73,7 @@ return [
             'finance.view', 'finance.manage',
             'courses.manage', 'courses.attendance', 'courses.ledger',
             'reports.academic', 'reports.finance',
+            'library.view', 'library.manage',
             'announcements.manage', 'letters.manage',
             'settings.manage',
         ],
@@ -82,6 +86,7 @@ return [
             'attendance.take', 'attendance.edit',
             'reportcards.print',
             'reports.academic',
+            'library.view',
             'announcements.manage', 'letters.manage',
         ],
 
@@ -94,6 +99,7 @@ return [
             'reportcards.print',
             'courses.attendance',
             'reports.academic',
+            'library.view',
         ],
 
         'accountant' => [
@@ -109,6 +115,13 @@ return [
             'students.view', 'students.view_all',
             'courses.manage', 'courses.attendance', 'courses.ledger',
             'reports.finance',
+        ],
+
+        // کتابدار (مرحله‌ی ۱۷): فهرست کتاب‌ها، جلدها، امانت و کتاب درسی؛ دانش‌آموزان فقط برای امانت دیده می‌شوند
+        'librarian' => [
+            'dashboard.view',
+            'students.view', 'students.view_all',
+            'library.view', 'library.manage',
         ],
     ],
 

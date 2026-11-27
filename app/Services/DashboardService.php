@@ -8,6 +8,8 @@ use App\Enums\ExamStatus;
 use App\Enums\ParticipantStatus;
 use App\Models\AcademicYear;
 use App\Models\Announcement;
+use App\Models\Book;
+use App\Models\BookLoan;
 use App\Models\Course;
 use App\Models\CourseGroup;
 use App\Models\CourseLedgerEntry;
@@ -57,7 +59,35 @@ class DashboardService
             'license' => $this->licenseWarning($user),
             'announcements' => $this->announcements($user),
             'lessons' => $this->lessonsToday($user, $year, $today),
+            'library' => $this->library($user, $today),
+            'myBooks' => $this->myBooks($user),
         ];
+    }
+
+    /** کارت کتابخانه برای کتابدار و مدیر (مرحله‌ی ۱۷) */
+    private function library(User $user, CarbonImmutable $today): ?array
+    {
+        if (! $user->hasPermission('library.manage')) {
+            return null;
+        }
+
+        return [
+            'titles' => Book::count(),
+            'active' => BookLoan::active()->count(),
+            'overdue' => BookLoan::overdue()->count(),
+            'due_today' => BookLoan::active()->where('due_on', $today->toDateString())->count(),
+        ];
+    }
+
+    /** کتاب‌های امانت خود کاربر (کارمند) از کتابخانه؛ null = ندارد */
+    private function myBooks(User $user): ?Collection
+    {
+        if (! $user->staff_id) {
+            return null;
+        }
+        $loans = BookLoan::active()->with('copy.book')->where('staff_id', $user->staff_id)->orderBy('due_on')->get();
+
+        return $loans->isEmpty() ? null : $loans;
     }
 
     /** آخرین اعلان‌های فعال که این کاربر می‌بیند (مرحله‌ی ۱۲) */

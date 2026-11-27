@@ -16,7 +16,7 @@ use Throwable;
 
 /**
  * ورود گروهی از Excel: انتخاب نوع و آپلود ← بررسی (پیش‌نمایش) ← ذخیره‌ی سطرهای درست.
- * دانش‌آموزان و فارغ‌های سال‌های قبل: students.manage؛ کارکنان: staff.manage. فایل آپلودی تا ذخیره در storage/app/private/imports می‌ماند.
+ * دانش‌آموزان و فارغ‌های سال‌های قبل: students.manage؛ کارکنان: staff.manage؛ کتاب‌ها: library.manage. فایل آپلودی تا ذخیره در storage/app/private/imports می‌ماند.
  */
 class ImportController extends Controller
 {
@@ -102,6 +102,7 @@ class ImportController extends Controller
         $target = match ($type) {
             'students' => route('students.index'),
             'graduates' => route('student-archive.index'),
+            'books' => route('library.catalog.index'),
             default => route('staff.index'),
         };
 
@@ -131,7 +132,11 @@ class ImportController extends Controller
     /** @return list<string> */
     private function allowedTypes(Request $request): array
     {
-        return array_values(array_filter(ImportService::TYPES, fn ($t) => $request->user()->hasPermission($t === 'staff' ? 'staff.manage' : 'students.manage')));
+        return array_values(array_filter(ImportService::TYPES, fn ($t) => $request->user()->hasPermission(match ($t) {
+            'staff' => 'staff.manage',
+            'books' => 'library.manage',
+            default => 'students.manage',
+        })));
     }
 
     private function authorizeType(Request $request, string $type): void

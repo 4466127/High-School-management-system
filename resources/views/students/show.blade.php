@@ -90,6 +90,14 @@
                 <button class="nav-link" data-bs-toggle="tab" data-bs-target="#marks-pane" type="button" role="tab">{{ __('exams.tab') }}</button>
             </li>
         @endif
+        @if ($libraryLoans->isNotEmpty())
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#library-pane" type="button" role="tab">
+                    {{ __('library.student_tab') }}
+                    @if ($libraryLoans->contains(fn ($l) => $l->isOverdue()))<span class="badge text-bg-danger">!</span>@endif
+                </button>
+            </li>
+        @endif
         @if ($fees)
             <li class="nav-item" role="presentation">
                 <button class="nav-link" data-bs-toggle="tab" data-bs-target="#fees-pane" type="button" role="tab">
@@ -240,6 +248,12 @@
         @if ($canSeeMarks)
             <div class="tab-pane fade" id="marks-pane" role="tabpanel">
                 @include('students.partials.marks')
+            </div>
+        @endif
+
+        @if ($libraryLoans->isNotEmpty())
+            <div class="tab-pane fade" id="library-pane" role="tabpanel">
+                @include('students.partials.library')
             </div>
         @endif
 

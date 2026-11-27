@@ -2,6 +2,10 @@
 
 namespace App\Services;
 
+use App\Enums\BookCategory;
+use App\Enums\BookLanguage;
+use App\Enums\CopyCondition;
+use App\Enums\CopySource;
 use App\Enums\EducationLevel;
 use App\Enums\Gender;
 use App\Enums\StaffType;
@@ -9,14 +13,18 @@ use App\Enums\StudentStatus;
 use App\Exceptions\ImportFileException;
 use App\Http\Requests\Students\StudentRequest;
 use App\Models\AcademicYear;
+use App\Models\Book;
+use App\Models\BookCopy;
 use App\Models\GradeLevel;
 use App\Models\Section;
 use App\Models\Staff;
 use App\Models\Student;
+use App\Models\Subject;
 use App\Models\User;
 use App\Rules\ValidJalaliDate;
 use App\Support\Digits;
 use App\Support\JalaliDate;
+use App\Support\Money;
 use App\Support\PersianText;
 use App\Support\Xlsx;
 use Illuminate\Support\Facades\DB;
@@ -27,11 +35,12 @@ use Illuminate\Validation\Rule;
  * ورود گروهی دانش‌آموزان و کارکنان از Excel (یا CSV) هنگام راه‌اندازی سیستم.
  * گام ۱: خواندن و بررسی هر سطر (بدون ذخیره). گام ۲: ذخیره‌ی سطرهای درست از راه StudentService/StaffService
  * (همان قاعده‌ها و ثبت رویداد ثبت تکی). سطر خطادار یا تکراری وارد نمی‌شود.
+ * books (مرحله‌ی ۱۷): فهرست کتاب‌های کتابخانه با شمار جلد و نمبر ثبت (LibraryService).
  * graduates (مرحله‌ی ۱۴): فارغ‌ها و دانش‌آموزان سابق سال‌های قبل، مستقیم در بایگانی با اوسط صنف‌های ۱۰ تا ۱۲ (PastResultService).
  */
 class ImportService
 {
-    public const TYPES = ['students', 'staff', 'graduates'];
+    public const TYPES = ['students', 'staff', 'graduates', 'books'];
 
     /** ستون اوسط فایل فارغ‌ها ← شماره‌ی صنف (GradeLevel::sort_order) و فاصله تا سال فراغت */
     private const GRADUATE_AVERAGES = ['avg_10' => [10, 2], 'avg_11' => [11, 1], 'avg_12' => [12, 0]];
@@ -44,6 +53,7 @@ class ImportService
         private readonly EnrollmentService $enrollments,
         private readonly ActivityLogger $logger,
         private readonly PastResultService $pastResults,
+        private readonly LibraryService $library,
     ) {}
 
     /**
@@ -118,6 +128,7 @@ class ImportService
             $rows[] = match ($type) {
                 'students' => $this->checkStudent($values, $i + 1, $seen),
                 'graduates' => $this->checkGraduate($values, $i + 1, $seen),
+                'books' => $this->checkBook($values, $i + 1, $seen),
                 default => $this->checkStaff($values, $i + 1, $seen),
             };
         }
@@ -137,7 +148,9 @@ class ImportService
         return DB::transaction(function () use ($type, $ok, $rows, $user) {
             $enrolled = 0;
             foreach ($ok as $row) {
-                if ($type === 'graduates') {
+                if ($type === 'books') {
+                    $this->library->createBook($row['data']['book'], $row['data']['copies'], $row['data']['start'], $row['data']['copy'], $user);
+                } elseif ($type === 'graduates') {
                     $this->pastResults->createFormerStudent($row['data']['student'], $row['data']['leaving'], $row['data']['results'], $user);
                 } elseif ($type === 'students') {
                     $student = $this->students->create($row['data']['student'], null, $row['data']['guardian']);
@@ -333,6 +346,127 @@ class ImportService
         return $row;
     }
 
+    /** یک کتاب: دسته و زبان با نام فارسی؛ صنف و مضمون با نام؛ نمبر ثبت اول اختیاری (خالی = سیستم پشت سر هم می‌دهد) */
+    private function checkBook(array $v, int $line, array &$seen): array
+    {
+        $errors = [];
+        $title = mb_substr($v['title'] ?? '', 0, 200);
+        if ($title === '') {
+            $errors[] = __('import.required', ['column' => __('import.columns.books.title')[0]]);
+        }
+        $category = $this->enumByLabel(BookCategory::class, $v['category'] ?? '', BookCategory::General);
+        $language = $this->enumByLabel(BookLanguage::class, $v['language'] ?? '', BookLanguage::Dari);
+        $source = $this->enumByLabel(CopySource::class, $v['source'] ?? '', CopySource::Purchase);
+        $condition = $this->enumByLabel(CopyCondition::class, $v['condition'] ?? '', CopyCondition::Good);
+        foreach (['category' => $category, 'language' => $language, 'source' => $source, 'condition' => $condition] as $key => $value) {
+            if (! $value) {
+                $errors[] = __('import.bad_choice', ['column' => __('import.columns.books.'.$key)[0], 'value' => $v[$key]]);
+            }
+        }
+        $grade = ($v['grade'] ?? '') !== '' ? GradeLevel::where('name', $v['grade'])->first() : null;
+        if (($v['grade'] ?? '') !== '' && ! $grade) {
+            $errors[] = __('import.grade_not_found', ['grade' => $v['grade']]);
+        }
+        $subject = ($v['subject'] ?? '') !== '' ? Subject::where('name', $v['subject'])->first() : null;
+        if (($v['subject'] ?? '') !== '' && ! $subject) {
+            $errors[] = __('import.subject_not_found', ['subject' => $v['subject']]);
+        }
+        foreach (['publish_year' => [1000, 2100], 'pages' => [1, 20000], 'copies' => [0, LibraryService::MAX_COPIES]] as $key => [$min, $max]) {
+            if (($v[$key] ?? '') !== '' && (! ctype_digit($v[$key]) || (int) $v[$key] < $min || (int) $v[$key] > $max)) {
+                $errors[] = __('import.bad_number', ['column' => __('import.columns.books.'.$key)[0]]);
+            }
+        }
+        $price = ($v['price'] ?? '') !== '' ? FinanceService::parseAmount($v['price']) : null;
+        if (($v['price'] ?? '') !== '' && $price === null) {
+            $errors[] = __('import.bad_number', ['column' => __('import.columns.books.price')[0]]);
+        }
+        if (($v['acquired_on'] ?? '') !== '' && ! JalaliDate::parse($v['acquired_on'])) {
+            $errors[] = __('import.bad_date', ['column' => __('import.columns.books.acquired_on')[0]]);
+        }
+
+        // نمبر ثبت: در پایگاه داده یا در سطرهای بالاتر نباشد
+        $copies = ($v['copies'] ?? '') === '' ? 1 : (int) $v['copies'];
+        $start = $v['accession_start'] ?? '';
+        if ($start !== '' && $copies > 0 && $errors === []) {
+            preg_match('/^(.*?)(\d+)$/u', $start, $m);
+            $numbers = $m ? array_map(fn ($i) => $m[1].str_pad((string) ((int) $m[2] + $i), strlen($m[2]), '0', STR_PAD_LEFT), range(0, $copies - 1)) : [$start];
+            if (! $m && $copies > 1) {
+                $errors[] = __('library.accession_needs_number');
+            } elseif (BookCopy::whereIn('accession_no', $numbers)->exists()) {
+                $errors[] = __('library.accession_taken', ['numbers' => Digits::toPersian($numbers[0])]);
+            } elseif ($clash = array_intersect($numbers, array_keys($seen['accession'] ?? []))) {
+                $errors[] = __('import.duplicate_in_file', ['line' => Digits::toPersian((string) $seen['accession'][reset($clash)])]);
+            } else {
+                foreach ($numbers as $no) {
+                    $seen['accession'][$no] = $line;
+                }
+            }
+        }
+
+        $status = $errors === [] ? 'ok' : 'error';
+        if ($status === 'ok') {
+            $key = PersianText::normalize($title.'|'.($v['author'] ?? '').'|'.($v['edition'] ?? ''));
+            $exists = Book::where('title', $title)->where(fn ($q) => ($v['author'] ?? '') !== '' ? $q->where('author', $v['author']) : $q->whereNull('author'))
+                ->where(fn ($q) => ($v['edition'] ?? '') !== '' ? $q->where('edition', $v['edition']) : $q->whereNull('edition'))->exists();
+            if ($exists || isset($seen['book'][$key])) {
+                $status = 'duplicate';
+                $errors[] = $exists ? __('import.duplicate_book') : __('import.duplicate_in_file', ['line' => Digits::toPersian((string) $seen['book'][$key])]);
+            }
+            $seen['book'][$key] ??= $line;
+        }
+        $v['category'] = $category?->label() ?? ($v['category'] ?? '');
+        $v['copies'] = Digits::toPersian((string) $copies);
+
+        $nullable = fn (string $k, int $max) => ($v[$k] ?? '') !== '' ? mb_substr($v[$k], 0, $max) : null;
+
+        return ['line' => $line, 'values' => $v, 'status' => $status, 'errors' => $errors, 'data' => [
+            'book' => [
+                'title' => $title, 'author' => $nullable('author', 150), 'translator' => $nullable('translator', 150), 'publisher' => $nullable('publisher', 150),
+                'publish_year' => ($v['publish_year'] ?? '') !== '' ? (int) $v['publish_year'] : null, 'edition' => $nullable('edition', 50),
+                'isbn' => ($v['isbn'] ?? '') !== '' ? mb_substr(strtoupper(preg_replace('/\s+/', '', $v['isbn'])), 0, 20) : null,
+                'category' => $category?->value, 'language' => $language?->value, 'grade_level_id' => $grade?->id, 'subject_id' => $subject?->id,
+                'call_number' => $nullable('call_number', 30), 'pages' => ($v['pages'] ?? '') !== '' ? (int) $v['pages'] : null,
+                'notes' => $nullable('notes', 500), 'is_reference' => in_array($v['is_reference'] ?? '', ['بلی', 'بله', 'هو', 'yes', '1'], true),
+            ],
+            'copies' => $copies,
+            'start' => $start !== '' ? $start : null,
+            'copy' => [
+                'source' => $source?->value, 'condition' => $condition?->value,
+                'acquired_on' => JalaliDate::parse($v['acquired_on'] ?? null)?->toDateString(),
+                'price' => $price !== null ? Money::fromCents($price) : null,
+            ],
+        ]];
+    }
+
+    /**
+     * @template T of \BackedEnum
+     *
+     * @param  class-string<T>  $enum
+     * @return ?T خالی = پیش‌فرض؛ نام فارسی یا مقدار انگلیسی؛ ناشناخته = null
+     */
+    private function enumByLabel(string $enum, string $value, \BackedEnum $default): ?\BackedEnum
+    {
+        if ($value === '') {
+            return $default;
+        }
+        $norm = fn (string $s) => preg_replace('/[\s\x{200C}]+/u', '', PersianText::normalize($s));
+        foreach ($enum::cases() as $case) {
+            if ($case->value === strtolower($value) || $norm($case->label()) === $norm($value)) {
+                return $case;
+            }
+        }
+        // نام کوتاه: «مرجع» ← «مرجع (قاموس، دایرةالمعارف)»، «تکنالوژی» ← «تکنالوژی، صحت و …»
+        if (mb_strlen($norm($value)) >= 3) {
+            foreach ($enum::cases() as $case) {
+                if (str_starts_with($norm($case->label()), $norm($value))) {
+                    return $case;
+                }
+            }
+        }
+
+        return null;
+    }
+
     private function checkStaff(array $v, int $line, array &$seen): array
     {
         $errors = [];
@@ -440,7 +574,7 @@ class ImportService
     {
         $value = trim(preg_replace('/\s+/u', ' ', PersianText::normalize($value)) ?? '');
         if (in_array($key, ['admission_no', 'phone', 'guardian_phone', 'tazkira_no', 'birth_date', 'admission_date', 'hire_date',
-            'graduation_year', 'left_on', 'certificate_date', 'avg_10', 'avg_11', 'avg_12'], true)) {
+            'graduation_year', 'left_on', 'certificate_date', 'avg_10', 'avg_11', 'avg_12', 'publish_year', 'pages', 'copies', 'accession_start', 'price', 'acquired_on', 'isbn'], true)) {
             $value = Digits::toLatin($value);
         }
         // Excel صفر اول شماره را می‌برد: 799123456 ← 0799123456

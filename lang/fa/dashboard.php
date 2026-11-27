@@ -29,4 +29,7 @@ return [
     'enter_marks' => 'ثبت نمره',
     'starts' => 'شروع',
     'course_groups_today' => 'حاضری کورس — امروز',
+    'library_title' => 'کتابخانه — امروز',
+    'library_titles' => ':count عنوان کتاب',
+    'my_books' => 'کتاب‌های امانت من از کتابخانه',
 ];
